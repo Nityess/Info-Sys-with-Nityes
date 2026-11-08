@@ -10,9 +10,9 @@ export const costAndValue: Unit = {
   title: 'Cost and Value Assessment',
   objective: 'Ch7 §1.4: is more information worth getting?',
   cards: [
-    card('benefits', 'Extra benefits expected', 'Extra benefits', 'Weigh the extra benefit expected from getting more information.'),
-    card('costs', 'Extra costs of obtaining', 'Extra costs', 'Weigh the extra cost of obtaining it. Information gaining NRs 9,000 profit is not worth NRs 10,000.'),
-    card('action', 'Actual value from action taken', 'Value from action', 'Information obtained but not used has no value. Only the action taken from it has actual value.'),
+    card('benefits', '➕', 'Extra benefits expected', 'Extra benefits', 'Weigh the extra benefit expected from getting more information.'),
+    card('costs', '➖', 'Extra costs of obtaining', 'Extra costs', 'Weigh the extra cost of obtaining it. Information gaining NRs 9,000 profit is not worth NRs 10,000.'),
+    card('action', '⚡', 'Actual value from action taken', 'Value from action', 'Information obtained but not used has no value. Only the action taken from it has actual value.'),
   ],
   practice: [
     item('p1', 'action', 'A detailed report is produced every month but nobody reads it.', 'Unused information has no actual value.'),
@@ -28,11 +28,11 @@ export const itDeliverySupport: Unit = {
   title: 'IT Delivery and Support',
   objective: 'Ch7 §1.5 – §1.8: running the IT function so it adds value.',
   cards: [
-    card('delivery', 'IT delivery (operations, capacity, billing, continuity)', 'IT delivery', 'Service operations (reports), capacity management, customer billing and budgeting, service levels, continuity.'),
-    card('support', 'IT support (configuration, integrity, security, incident resolution)', 'IT support', 'Configuring hardware, software and networks; maintenance; security and access control; resolving incidents.'),
-    card('management', 'Management actions (monitoring, planning, structure, staffing)', 'Management actions', 'Monitor IT developments, plan change, prioritise and document tasks, recruit and retain skilled staff.'),
-    card('external', 'External support and outsourcing', 'External & outsourcing', 'User groups and peer communities; outsourcing contracts out a function, with service level agreements.'),
-    card('innovation', 'Innovation and distributed ledger technology', 'Innovation', 'Invest in new IT to keep up with competitors, e.g. distributed ledgers for asset recording.'),
+    card('delivery', '📦', 'IT delivery (operations, capacity, billing, continuity)', 'IT delivery', 'Service operations (reports), capacity management, customer billing and budgeting, service levels, continuity.'),
+    card('support', '🛠️', 'IT support (configuration, integrity, security, incident resolution)', 'IT support', 'Configuring hardware, software and networks; maintenance; security and access control; resolving incidents.'),
+    card('management', '🧭', 'Management actions (monitoring, planning, structure, staffing)', 'Management actions', 'Monitor IT developments, plan change, prioritise and document tasks, recruit and retain skilled staff.'),
+    card('external', '🤝', 'External support and outsourcing', 'External & outsourcing', 'User groups and peer communities; outsourcing contracts out a function, with service level agreements.'),
+    card('innovation', '💡', 'Innovation and distributed ledger technology', 'Innovation', 'Invest in new IT to keep up with competitors, e.g. distributed ledgers for asset recording.'),
   ],
   practice: [
     item('p1', 'support', 'The IT team investigates why the server crashed last night.', 'Resolving incidents is IT support.'),
@@ -50,12 +50,12 @@ export const cativa: Unit = {
   title: 'Information Processing (CATIVA)',
   objective: 'Ch7 §1.9: the CATIVA criteria for effective information processing.',
   cards: [
-    card('completeness', 'Completeness (everything processed)', 'Completeness', 'Everything that needs to be processed should be processed.'),
-    card('accuracy', 'Accuracy (true to sources, no errors)', 'Accuracy', 'Data stays true to its sources and the information produced contains no errors.'),
-    card('timeliness', 'Timeliness (real-time processing)', 'Timeliness', 'Processing keeps pace with data availability and needs, often in real time.'),
-    card('inalterability', 'Inalterability (no unauthorized intervention)', 'Inalterability', 'No unauthorised intervention during processing, and no alteration once completed.'),
-    card('verifiability', 'Verifiability (audit trail capable)', 'Verifiability', 'The trail from data through processing to information can be followed (audit trail).'),
-    card('assessability', 'Assessability (open to scrutiny)', 'Assessability', 'The effectiveness of processing is open to scrutiny so its quality can be judged.'),
+    card('completeness', '🧩', 'Completeness (everything processed)', 'Completeness', 'Everything that needs to be processed should be processed.'),
+    card('accuracy', '✅', 'Accuracy (true to sources, no errors)', 'Accuracy', 'Data stays true to its sources and the information produced contains no errors.'),
+    card('timeliness', '⏱️', 'Timeliness (real-time processing)', 'Timeliness', 'Processing keeps pace with data availability and needs, often in real time.'),
+    card('inalterability', '🔒', 'Inalterability (no unauthorized intervention)', 'Inalterability', 'No unauthorised intervention during processing, and no alteration once completed.'),
+    card('verifiability', '🔎', 'Verifiability (audit trail capable)', 'Verifiability', 'The trail from data through processing to information can be followed (audit trail).'),
+    card('assessability', '🧪', 'Assessability (open to scrutiny)', 'Assessability', 'The effectiveness of processing is open to scrutiny so its quality can be judged.'),
   ],
   practice: [
     item('p1', 'inalterability', 'Only authorised staff can change the transaction processing system.', 'No unauthorised intervention: inalterability.'),

@@ -2,8 +2,9 @@ import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Menu, Moon, Sun, X } from 'lucide-react'
 import { chapters } from './content/chapters'
 import type { ConceptCard, Unit } from './content/types'
-import { ConceptCards } from './components/ConceptCards'
-import { ScenarioSorter } from './components/ScenarioSorter'
+import { MindMapView } from './components/MindMapView'
+import { QuickMatch } from './components/QuickMatch'
+import { themeFor } from './components/sectionTheme'
 import { Sidebar } from './components/Sidebar'
 import { SplitLayout } from './components/SplitLayout'
 import { HintBar } from './components/HintBar'
@@ -149,28 +150,19 @@ function UnitView({ unit, onPass }: { unit: Unit; onPass: () => void }) {
   )
 }
 
-/** Data-driven unit: mind-map leaves as cards, then a "match it" practice. */
+/** Data-driven unit: mind-map view of the branch, then the Quick Match game. */
 function CardsUnitView({ unit, cards, onPass }: { unit: Unit; cards: ConceptCard[]; onPass: () => void }) {
-  const chip = 'bg-indigo-100 text-indigo-900 dark:bg-indigo-900/40 dark:text-indigo-100'
+  const theme = themeFor(unit.section)
   return (
     <SplitLayout
-      visualizer={<ConceptCards title={unit.title} cards={cards} />}
+      visualizer={<MindMapView section={unit.section} title={unit.title} cards={cards} theme={theme} />}
       lab={
-        <div className="space-y-5">
+        <div className="space-y-4">
           {unit.objective && (
-            <p className="rounded-md bg-indigo-50 p-2 text-sm text-indigo-900 dark:bg-indigo-900/30 dark:text-indigo-100">
-              {unit.objective}
-            </p>
+            <p className={`text-xs font-medium ${theme.accentText}`}>{unit.objective}</p>
           )}
           {unit.practice && unit.practice.length > 0 && (
-            <ScenarioSorter
-              title="Match it"
-              prompt="Which card does each example belong to?"
-              buckets={cards.map((c) => ({ id: c.id, label: c.short, chip }))}
-              items={unit.practice}
-              wrongHint="Not quite. Open the cards on the left and try again."
-              onPerfect={onPass}
-            />
+            <QuickMatch cards={cards} items={unit.practice} theme={theme} onFinish={onPass} />
           )}
         </div>
       }

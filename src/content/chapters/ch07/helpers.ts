@@ -1,7 +1,8 @@
 import type { ConceptCard, PracticeItem } from '../../types'
 
-export const card = (id: string, title: string, short: string, detail: string): ConceptCard => ({
+export const card = (id: string, icon: string, title: string, short: string, detail: string): ConceptCard => ({
   id,
+  icon,
   title,
   short,
   detail,

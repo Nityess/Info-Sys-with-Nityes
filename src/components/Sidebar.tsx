@@ -1,6 +1,7 @@
 import { CheckCircle2, Circle } from 'lucide-react'
 import type { Chapter } from '../content/types'
 import { completionPercent } from '../state/progress'
+import { themeFor } from './sectionTheme'
 
 interface Props {
   chapters: Chapter[]
@@ -39,7 +40,7 @@ export function Sidebar({ chapters, done, selectedId, onSelect }: Props) {
                 return (
                   <li key={u.id}>
                     {heading && (
-                      <p className="mt-2 px-2 pb-0.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      <p className={`mt-2 px-2 pb-0.5 text-xs font-semibold uppercase tracking-wide ${themeFor(heading).accentText}`}>
                         {heading}
                       </p>
                     )}

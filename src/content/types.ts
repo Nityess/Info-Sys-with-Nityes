@@ -22,6 +22,8 @@ export interface UnitHints {
 /** One concept card (a mind-map leaf) with its textbook explanation */
 export interface ConceptCard {
   id: string
+  /** Emoji shown on the mind-map node */
+  icon: string
   /** Leaf label, as on the owner's mind map */
   title: string
   /** Short label used on practice buttons */

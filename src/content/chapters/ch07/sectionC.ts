@@ -10,9 +10,9 @@ export const software: Unit = {
   title: 'IT Software Applications',
   objective: 'Ch7 §3.1: spreadsheets, databases and accounting packages. Choice depends on size, needs, cost and staff skills.',
   cards: [
-    card('spreadsheet', 'Spreadsheets (cells, formulae, functions, workbooks)', 'Spreadsheet', 'Cells hold text, values, formulae (B4+B5) or functions (SUM). Worksheets sit in a workbook. Small firms often keep records here.'),
-    card('database', 'Database systems (structured and unstructured data storage)', 'Database', 'Stores and manages structured (financial records) or unstructured (text, audio, video) data. Large ones need servers or cloud.'),
-    card('accounting', 'Accounting software packages (off-the-shelf or custom)', 'Accounting package', 'Records and reports transactions. Easier calculations, less space, aids audit, quick reports any time.'),
+    card('spreadsheet', '📊', 'Spreadsheets (cells, formulae, functions, workbooks)', 'Spreadsheet', 'Cells hold text, values, formulae (B4+B5) or functions (SUM). Worksheets sit in a workbook. Small firms often keep records here.'),
+    card('database', '🗄️', 'Database systems (structured and unstructured data storage)', 'Database', 'Stores and manages structured (financial records) or unstructured (text, audio, video) data. Large ones need servers or cloud.'),
+    card('accounting', '🧮', 'Accounting software packages (off-the-shelf or custom)', 'Accounting package', 'Records and reports transactions. Easier calculations, less space, aids audit, quick reports any time.'),
   ],
   practice: [
     item('p1', 'spreadsheet', 'A shop owner totals weekly sales with =SUM(B2:B8).', 'Cells and functions: spreadsheet.'),
@@ -29,9 +29,9 @@ export const networks: Unit = {
   title: 'Computer Networks',
   objective: 'Ch7 §3.2: a network is two or more devices connected to exchange information and resources.',
   cards: [
-    card('advantages', 'Advantages (productivity, remote working, flexibility)', 'Advantages', 'Productivity, better communication, remote working, central resource management, on-demand flexibility.'),
-    card('architecture', 'Architecture types (client server and peer-to-peer)', 'Architecture', 'Client server: a central server serves client devices. Peer-to-peer: equal computers share resources, no server.'),
-    card('scope', 'Geographical scope (LAN, WAN, WLAN, VPN)', 'Geographical scope', 'LAN: one building. WAN: region or country. WLAN: wireless, e.g. radio. VPN: encrypted connection.'),
+    card('advantages', '🚀', 'Advantages (productivity, remote working, flexibility)', 'Advantages', 'Productivity, better communication, remote working, central resource management, on-demand flexibility.'),
+    card('architecture', '🖥️', 'Architecture types (client server and peer-to-peer)', 'Architecture', 'Client server: a central server serves client devices. Peer-to-peer: equal computers share resources, no server.'),
+    card('scope', '🌍', 'Geographical scope (LAN, WAN, WLAN, VPN)', 'Geographical scope', 'LAN: one building. WAN: region or country. WLAN: wireless, e.g. radio. VPN: encrypted connection.'),
   ],
   practice: [
     item('p1', 'advantages', 'Staff work from home, so the firm rents a smaller office.', 'Remote working saves office costs.'),
