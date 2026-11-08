@@ -17,11 +17,18 @@ interface Props<B extends string> {
   items: SortItem<B>[]
   /** Feedback when a wrong bucket is chosen */
   wrongHint: string
+  /** Called once when every item is sorted correctly */
+  onPerfect?: () => void
 }
 
 /** Lab widget: put each item in one bucket, with instant feedback, score and reset. */
-export function ScenarioSorter<B extends string>({ title, prompt, buckets, items, wrongHint }: Props<B>) {
+export function ScenarioSorter<B extends string>({ title, prompt, buckets, items, wrongHint, onPerfect }: Props<B>) {
   const [answers, setAnswers] = useState<SortAnswers<B>>({})
+  const choose = (id: string, b: B) => {
+    const next = { ...answers, [id]: b }
+    setAnswers(next)
+    if (scoreSort(answers, items) < items.length && scoreSort(next, items) === items.length) onPerfect?.()
+  }
   const score = scoreSort(answers, items)
   const done = isComplete(answers, items)
 
@@ -48,7 +55,7 @@ export function ScenarioSorter<B extends string>({ title, prompt, buckets, items
                     key={b.id}
                     type="button"
                     aria-pressed={chosen === b.id}
-                    onClick={() => setAnswers({ ...answers, [s.id]: b.id })}
+                    onClick={() => choose(s.id, b.id)}
                     className={`rounded px-2 py-1 text-xs font-medium ${
                       chosen === b.id
                         ? `${b.chip} ring-2 ring-indigo-500`

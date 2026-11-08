@@ -1,7 +1,9 @@
 import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Menu, Moon, Sun, X } from 'lucide-react'
 import { chapters } from './content/chapters'
-import type { Unit } from './content/types'
+import type { ConceptCard, Unit } from './content/types'
+import { ConceptCards } from './components/ConceptCards'
+import { ScenarioSorter } from './components/ScenarioSorter'
 import { Sidebar } from './components/Sidebar'
 import { SplitLayout } from './components/SplitLayout'
 import { HintBar } from './components/HintBar'
@@ -63,7 +65,7 @@ export default function App() {
             className="absolute inset-0 bg-black/40"
             onClick={() => setDrawerOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-72 max-w-[85%] overflow-y-auto bg-white dark:bg-slate-900">
+          <aside className="absolute inset-y-0 left-0 w-72 max-w-[85%] overflow-y-auto bg-white pt-8 dark:bg-slate-900">
             <button
               type="button"
               aria-label="Close menu"
@@ -108,13 +110,14 @@ export default function App() {
         </header>
 
         <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} />
-        <HintBar key={`hints-${unit.id}`} content={unit.hints} />
+        {unit.hints && <HintBar key={`hints-${unit.id}`} content={unit.hints} />}
       </div>
     </div>
   )
 }
 
 function UnitView({ unit, onPass }: { unit: Unit; onPass: () => void }) {
+  if (unit.cards) return <CardsUnitView unit={unit} cards={unit.cards} onPass={onPass} />
   const entry = unit.labId ? labs[unit.labId] : undefined
   if (!entry) {
     return <SplitLayout visualizer={<Placeholder title="Concept visualizer" />} lab={<Placeholder title="Lab" />} />
@@ -140,6 +143,35 @@ function UnitView({ unit, onPass }: { unit: Unit; onPass: () => void }) {
             <Lab />
           </Suspense>
           {unit.quiz && unit.quiz.length > 0 && <QuizConsole items={unit.quiz} onPass={onPass} />}
+        </div>
+      }
+    />
+  )
+}
+
+/** Data-driven unit: mind-map leaves as cards, then a "match it" practice. */
+function CardsUnitView({ unit, cards, onPass }: { unit: Unit; cards: ConceptCard[]; onPass: () => void }) {
+  const chip = 'bg-indigo-100 text-indigo-900 dark:bg-indigo-900/40 dark:text-indigo-100'
+  return (
+    <SplitLayout
+      visualizer={<ConceptCards title={unit.title} cards={cards} />}
+      lab={
+        <div className="space-y-5">
+          {unit.objective && (
+            <p className="rounded-md bg-indigo-50 p-2 text-sm text-indigo-900 dark:bg-indigo-900/30 dark:text-indigo-100">
+              {unit.objective}
+            </p>
+          )}
+          {unit.practice && unit.practice.length > 0 && (
+            <ScenarioSorter
+              title="Match it"
+              prompt="Which card does each example belong to?"
+              buckets={cards.map((c) => ({ id: c.id, label: c.short, chip }))}
+              items={unit.practice}
+              wrongHint="Not quite. Open the cards on the left and try again."
+              onPerfect={onPass}
+            />
+          )}
         </div>
       }
     />

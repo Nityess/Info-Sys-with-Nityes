@@ -33,10 +33,16 @@ export function Sidebar({ chapters, done, selectedId, onSelect }: Props) {
               <div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} />
             </div>
             <ul className="mt-2 space-y-0.5">
-              {ch.units.map((u) => {
+              {ch.units.map((u, i) => {
                 const active = u.id === selectedId
+                const heading = u.section && u.section !== ch.units[i - 1]?.section ? u.section : null
                 return (
                   <li key={u.id}>
+                    {heading && (
+                      <p className="mt-2 px-2 pb-0.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                        {heading}
+                      </p>
+                    )}
                     <button
                       type="button"
                       onClick={() => onSelect(u.id)}

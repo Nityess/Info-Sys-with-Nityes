@@ -19,7 +19,31 @@ export interface UnitHints {
   mcq?: string
 }
 
+/** One concept card (a mind-map leaf) with its textbook explanation */
+export interface ConceptCard {
+  id: string
+  /** Leaf label, as on the owner's mind map */
+  title: string
+  /** Short label used on practice buttons */
+  short: string
+  detail: string
+}
+
+/** A practice item: which card does this example belong to? */
+export interface PracticeItem {
+  id: string
+  text: string
+  /** ConceptCard id */
+  bucket: string
+  why: string
+}
+
 export interface Unit {
+  /** Section heading shown above this unit in the sidebar */
+  section?: string
+  /** Data-driven lab: concept cards (visualizer) + practice sorter (lab) */
+  cards?: ConceptCard[]
+  practice?: PracticeItem[]
   /** Stable id used for progress, e.g. "ch10-lo7a" */
   id: string
   /** Syllabus learning outcome sub-point, e.g. "LO7a" */
