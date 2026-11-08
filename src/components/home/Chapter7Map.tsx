@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Lock } from 'lucide-react'
-import { SECTIONS, TOPICS, displayTitle } from '../../content/chapters/ch07/topics'
+import { SECTIONS, TOPICS } from '../../content/chapters/ch07/topics'
 import { TOPIC_CARDS } from './homeData'
 
 interface Props {
@@ -63,7 +63,7 @@ export function Chapter7Map({ hrefFor }: Props) {
               <>
                 <span className="lp-num">{t.code}</span>
                 <div className="lp-tbody">
-                  <h3>{displayTitle(t)}</h3>
+                  <h3>{card.title}</h3>
                   <p>{card.key}</p>
                   {aid && (
                     <span className="lp-chip" style={{ background: card.sourceMnemonic ? 'var(--brand-soft)' : 'var(--s3-soft)', color: card.sourceMnemonic ? 'var(--brand-text)' : 'var(--s3-text)' }}>{aid}</span>

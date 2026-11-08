@@ -92,3 +92,15 @@ describe('topicHref', () => {
     expect(showsRebuiltChapter7(previewChapters)).toBe(true)
   })
 })
+
+describe('topic card titles', () => {
+  it('has a short card title for every topic, with no em dashes', async () => {
+    const { TOPIC_CARDS } = await import('./homeData')
+    const { TOPICS } = await import('../../content/chapters/ch07/topics')
+    for (const t of TOPICS) {
+      expect(TOPIC_CARDS[t.code]?.title, t.code).toBeTruthy()
+      expect(TOPIC_CARDS[t.code].title).not.toContain('\u2014')
+    }
+    expect(TOPIC_CARDS['1.9'].title).toBe('Information processing')
+  })
+})
