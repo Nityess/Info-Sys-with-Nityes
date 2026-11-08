@@ -10,8 +10,8 @@ export interface Settings {
   teacher: boolean
   /** Show the two questions taken from the study book */
   showSourceQuestions: boolean
-  /** Preview of the animated concept scenes (Concept step and #/scenes pages). Teacher mode only. */
-  showScenes: boolean
+  /** Preview of the new topic boards (Chapter 7 sections, Chapter 8, and the Concept step of each lesson). Teacher mode only. */
+  showBoards: boolean
 }
 
 export const TEXT_PX: Record<TextSize, number> = { s: 15, m: 16, l: 18 }
@@ -21,7 +21,7 @@ export const defaultSettings = (): Settings => ({
   textSize: 'm',
   teacher: false,
   showSourceQuestions: false,
-  showScenes: false,
+  showBoards: false,
 })
 
 /** Validate whatever came out of localStorage. */
@@ -35,11 +35,11 @@ export function parseSettings(raw: unknown): Settings {
     textSize: r.textSize === 's' || r.textSize === 'm' || r.textSize === 'l' ? r.textSize : d.textSize,
     teacher: bool(r.teacher, d.teacher),
     showSourceQuestions: bool(r.showSourceQuestions, d.showSourceQuestions),
-    showScenes: bool(r.showScenes, d.showScenes),
+    showBoards: bool(r.showBoards, d.showBoards),
   }
 }
 
 /** What the app actually uses: the teacher-only switch counts only while teacher mode is on. */
 export function effectiveSettings(s: Settings): Settings {
-  return s.teacher ? s : { ...s, showSourceQuestions: false, showScenes: false }
+  return s.teacher ? s : { ...s, showSourceQuestions: false, showBoards: false }
 }

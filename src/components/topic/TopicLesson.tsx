@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { ArrowRight, Menu, Moon, Sun } from 'lucide-react'
 import type { Chapter, Unit } from '../../content/types'
 import { SECTIONS } from '../../content/chapters/ch07/topics'
-import { sceneFor } from '../rail/visuals/registry'
+import { boardForTopic } from '../board/boardRoute'
 import { useSettings } from '../../state/useSettings'
 import { drawerRows } from './drawerRows'
 import { clampStep, continueLabel, lessonSteps, progressPercent } from './lessonSteps'
@@ -13,8 +13,8 @@ import { stepCopy } from './stepCopy'
 import { TopicDrawer } from './TopicDrawer'
 import { useParsedTopic } from './useParsedTopic'
 import { useRailContent } from './useRailContent'
-// Teacher preview only, so students never download the scenes
-const ConceptScene = lazy(() => import('../rail/visuals/ConceptScene').then((m) => ({ default: m.ConceptScene })))
+// Teacher preview only, so students never download the board animations
+const LessonVisual = lazy(() => import('../board/LessonVisual').then((m) => ({ default: m.LessonVisual })))
 
 import './lesson.css'
 import './lessonPanes.css'
@@ -44,7 +44,7 @@ export function TopicLesson({ unit, chapters, done, xp, claim, onComplete, dark,
   const code = unit.topic?.code ?? ''
   const topic = useParsedTopic(code)
   const { settings } = useSettings()
-  const scene = settings.showScenes && sceneFor(code) ? code : null
+  const scene = settings.showBoards && boardForTopic(code) ? code : null
   const rail = useRailContent({ unit, topic, claim, onComplete, scene: scene !== null })
   const hidden = (id: string) => rail.content !== null && rail.content[id as keyof typeof rail.content] === null
   const hiddenKey = lessonSteps(Boolean(unit.topic?.playground)).filter((s) => hidden(s.id)).map((s) => s.id).join()
@@ -117,7 +117,7 @@ export function TopicLesson({ unit, chapters, done, xp, claim, onComplete, dark,
           {current.id === 'concept' && scene && (
             <div className="ls-card ls-cardpad" style={{ marginBottom: '1.25rem' }}>
               <Suspense fallback={<p role="status">Loading the scene…</p>}>
-                <ConceptScene code={scene} />
+                <LessonVisual code={scene} />
               </Suspense>
             </div>
           )}

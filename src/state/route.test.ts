@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { HOME_HASH, parseHash, scenesHash, sectionHash, unitHash } from './route'
+import { HOME_HASH, parseHash, chapter8Hash, sectionHash, unitHash } from './route'
 
 describe('hash route', () => {
   it('treats empty and unknown hashes as home', () => {
@@ -17,11 +17,11 @@ describe('hash route', () => {
     expect(parseHash('#/section/s4')).toEqual({ view: 'home' })
     expect(parseHash('#/section/')).toEqual({ view: 'home' })
   })
-  it('parses the teacher scene pages for the three sections only', () => {
-    expect(parseHash(scenesHash('s1'))).toEqual({ view: 'scenes', id: 's1' })
-    expect(parseHash('#/scenes/s3')).toEqual({ view: 'scenes', id: 's3' })
-    expect(parseHash('#/scenes/s4')).toEqual({ view: 'home' })
-    expect(parseHash('#/scenes/')).toEqual({ view: 'home' })
+  it('parses the Chapter 8 board pages for the three sections only', () => {
+    expect(parseHash(chapter8Hash('s1'))).toEqual({ view: 'chapter8', id: 's1' })
+    expect(parseHash('#/chapter8/s3')).toEqual({ view: 'chapter8', id: 's3' })
+    expect(parseHash('#/chapter8/s4')).toEqual({ view: 'home' })
+    expect(parseHash('#/chapter8/')).toEqual({ view: 'home' })
   })
   it('rejects ids with odd characters', () => {
     expect(parseHash('#/unit/a/b')).toEqual({ view: 'home' })
