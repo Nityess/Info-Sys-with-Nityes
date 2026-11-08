@@ -8,16 +8,15 @@ describe('settings', () => {
       textSize: 'm',
       teacher: false,
       showSourceQuestions: false,
-      showBoards: false,
     })
   })
-  it('hides the teacher-only switches unless teacher mode is on', () => {
-    const s = { ...defaultSettings(), showSourceQuestions: true, showBoards: true }
-    expect(effectiveSettings(s)).toMatchObject({ showSourceQuestions: false, showBoards: false })
-    expect(effectiveSettings({ ...s, teacher: true })).toMatchObject({ showSourceQuestions: true, showBoards: true })
+  it('hides the teacher-only switch unless teacher mode is on', () => {
+    const s = { ...defaultSettings(), showSourceQuestions: true }
+    expect(effectiveSettings(s)).toMatchObject({ showSourceQuestions: false })
+    expect(effectiveSettings({ ...s, teacher: true })).toMatchObject({ showSourceQuestions: true })
   })
   it('ignores the old preview settings left in storage', () => {
-    expect(parseSettings({ teacher: true, previewNewCh7: true, previewOpensTopic: true })).toEqual({ ...defaultSettings(), teacher: true })
+    expect(parseSettings({ teacher: true, previewNewCh7: true, previewOpensTopic: true, showBoards: true, showScenes: true })).toEqual({ ...defaultSettings(), teacher: true })
   })
   it('repairs bad stored data field by field', () => {
     expect(parseSettings(null)).toEqual(defaultSettings())

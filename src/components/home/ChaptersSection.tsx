@@ -38,17 +38,20 @@ export function ChaptersSection({ cards, chapter7Href, chapter10Href }: Props) {
         {cards.map((c) => {
           if (c.status === 'soon') return <Soon key={c.number} card={c} />
           const isSeven = c.number === 7
-          const href = isSeven ? chapter7Href : chapter10Href
+          const href = c.href ?? (isSeven ? chapter7Href : chapter10Href)
           const partial = c.built < c.total
+          const boards = c.href !== undefined
           return (
             <article key={c.number} className="lp-card lp-chcard lp-reveal">
               <div className="lp-stack" style={{ gap: '.375rem' }}>
-                <span className="lp-chip" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)' }}>{partial && !isSeven ? 'Part open' : 'Open now'}</span>
+                <span className="lp-chip" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)' }}>{partial && !isSeven && !boards ? 'Part open' : 'Open now'}</span>
                 <h3 className="lp-serif">Chapter {c.number}</h3>
                 <p>{c.title}</p>
               </div>
               {isSeven ? (
                 <div className="lp-chrow"><span>Topics</span><b>{TOPICS.length} in {SECTIONS.length} sections</b></div>
+              ) : boards ? (
+                <div className="lp-chrow"><span>Topic boards</span><b>{c.total} sections</b></div>
               ) : (
                 <div className="lp-stack" style={{ gap: '.5rem' }}>
                   <div className="lp-chrow"><span>Lessons open</span><b>{c.built} of {c.total}</b></div>

@@ -24,7 +24,7 @@ interface Props {
 
 /**
  * The landing page, built to landing-handoff/design/Main.dc.html. All links are plain hash links.
- * Students still get the current Chapter 7; the rebuilt one appears only in the teacher preview.
+ * Chapter 7 sections and Chapter 8 open as topic boards; Chapter 7 topics with a built lesson open as lessons.
  */
 export function Landing({ chapters, done, dark, onToggleDark, settingsSlot }: Props) {
   const root = useRef<HTMLDivElement>(null)

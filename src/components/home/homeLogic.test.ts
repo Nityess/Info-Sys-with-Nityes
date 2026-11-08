@@ -58,10 +58,10 @@ describe('heroAction', () => {
 
 describe('chapterCards', () => {
   const cards = chapterCards(chapters, new Set())
-  it('lists chapters 7 to 10 in order, built ones open and the rest coming soon', () => {
+  it('lists chapters 7 to 10 in order: lessons and boards open, Chapter 9 coming soon', () => {
     expect(cards.map((c) => [c.number, c.status])).toEqual([
       [7, 'open'],
-      [8, 'soon'],
+      [8, 'open'],
       [9, 'soon'],
       [10, 'open'],
     ])
@@ -70,6 +70,7 @@ describe('chapterCards', () => {
     expect(cards[0]).toMatchObject({ built: 8, total: 18 })
     expect(cards[3]).toMatchObject({ built: 3, total: 5 })
     expect(cards[1].unitId).toBeUndefined()
+    expect(cards[1]).toMatchObject({ built: 3, total: 3, href: '#/chapter8/s1' })
   })
   it('points a chapter at its next unfinished lesson and tracks progress', () => {
     const c = chapterCards(chapters, new Set(['ch10-lo7a']))[3]

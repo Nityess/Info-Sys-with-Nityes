@@ -30,10 +30,10 @@ export function splitPercent(split: { objective: number; subjective: number } = 
 }
 
 /** Chapters whose lessons are not built yet. They show as coming soon, with no button. */
-export const COMING_SOON = [
-  { number: 8, title: 'Types of management information systems', lo: 'LO5', weight: 15 },
-  { number: 9, title: 'Financial technology', lo: 'LO6', weight: 15 },
-] as const
+export const COMING_SOON = [{ number: 9, title: 'Financial technology', lo: 'LO6', weight: 15 }] as const
+
+/** Chapters that open as topic boards (three sections each) rather than lessons. */
+export const BOARD_CHAPTERS = [{ number: 8, title: 'Types of management information systems', lo: 'LO5', weight: 15, sections: 3 }] as const
 
 /** The short card title (sentence case, as in the design), the one-line "what is in it" on each Chapter 7 topic card, and the one mnemonic that is not a teaching aid. */
 export const TOPIC_CARDS: Record<string, { title: string; key: string; sourceMnemonic?: string }> = {

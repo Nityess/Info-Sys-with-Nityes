@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { Settings as Gear } from 'lucide-react'
-import { chapter8Hash, sectionHash } from '../state/route'
 import type { Settings, TextSize } from '../state/settings'
 
 interface Props {
@@ -86,24 +85,6 @@ export function SettingsMenu({ raw, onChange, dark, onToggleDark, onDark }: Prop
             {raw.teacher && (
               <div className="pl-3">
                 <Switch label="Show study-book questions" hint="The two questions copied from the study book." checked={raw.showSourceQuestions} onChange={(v) => onChange({ showSourceQuestions: v })} />
-                <Switch label="Show the new topic boards" hint="Preview: animated boards for Chapter 7 and Chapter 8, and on each Concept step." checked={raw.showBoards} onChange={(v) => onChange({ showBoards: v })} />
-                {raw.showBoards && (
-                  <div className="space-y-1 py-1 text-sm">
-                    {[
-                      { label: 'Chapter 7', href: (s: string) => sectionHash(s) },
-                      { label: 'Chapter 8', href: (s: string) => chapter8Hash(s) },
-                    ].map((ch) => (
-                      <p key={ch.label} className="flex flex-wrap items-center gap-x-3">
-                        <span className="font-medium text-ink dark:text-slate-100">{ch.label}</span>
-                        {['s1', 's2', 's3'].map((s, i) => (
-                          <a key={s} href={ch.href(s)} className="font-semibold text-spruce underline dark:text-emerald-300" onClick={() => setOpen(false)}>
-                            Section {i + 1}
-                          </a>
-                        ))}
-                      </p>
-                    ))}
-                  </div>
-                )}
               </div>
             )}
           </div>

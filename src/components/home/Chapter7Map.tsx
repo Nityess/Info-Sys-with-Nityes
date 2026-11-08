@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Lock } from 'lucide-react'
 import { SECTIONS, TOPICS } from '../../content/chapters/ch07/topics'
+import { sectionHash } from '../../state/route'
 import { TOPIC_CARDS } from './homeData'
 
 interface Props {
@@ -91,6 +92,9 @@ export function Chapter7Map({ hrefFor }: Props) {
       </div>
 
       <div className="lp-after">
+        <a className="lp-btn lp-btn-ghost" href={sectionHash(section.id)}>
+          Open the Section {section.id.slice(1)} board
+        </a>
         <a className="lp-btn lp-btn-primary" href="#how" onClick={(e) => { e.preventDefault(); document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' }) }}>
           See how a topic works
         </a>

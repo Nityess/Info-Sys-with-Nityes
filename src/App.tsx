@@ -2,12 +2,10 @@ import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { Flame, House, Menu, Moon, Sun, X, Zap } from 'lucide-react'
 import { useGame } from './state/useGame'
 import { chapters } from './content/chapters'
-import { sectionById } from './content/chapters/ch07/topics'
 import { Sidebar } from './components/Sidebar'
 import { SettingsMenu } from './components/SettingsMenu'
 import { HintBar } from './components/HintBar'
 import { UnitView } from './components/UnitView'
-import { SectionPage } from './components/rail/SectionPage'
 import { BUILT_TOPICS, LESSON_SHELL_TOPICS } from './components/rail/builtTopics'
 import { useProgress } from './state/progress'
 import { boardIdForRoute, boardLabel } from './components/board/boardRoute'
@@ -35,7 +33,7 @@ function initialDark(): boolean {
 }
 
 export default function App() {
-  const { done, started, toggle, markDone, markStarted } = useProgress()
+  const { done, toggle, markDone, markStarted } = useProgress()
   const game = useGame()
   const { raw, settings, set } = useSettings()
   const route = useRoute()
@@ -69,15 +67,13 @@ export default function App() {
   // A topic that is not built yet has no page: its link goes back to the landing page
   const found = route.view === 'unit' ? allUnits.find((u) => u.id === route.id) : undefined
   const unit = found && (!found.topic || BUILT_TOPICS.has(found.topic.code)) ? found : undefined
-  const section = route.view === 'section' ? sectionById(route.id) : undefined
-  // Teacher preview of the new topic boards (Chapter 7 sections and Chapter 8): only while Teacher mode and its boards switch are on
-  const boardId = settings.showBoards ? boardIdForRoute(route) : null
-  const sectionTopics = useMemo(() => (section ? allUnits.filter((u) => u.sectionId === section.id) : []), [allUnits, section])
+  // Chapter 7 sections and Chapter 8 sections are the topic boards
+  const boardId = boardIdForRoute(route)
 
   useEffect(() => {
-    const what = unit ? unit.title : boardId ? boardLabel(boardId) : section ? section.title : null
+    const what = unit ? unit.title : boardId ? boardLabel(boardId) : null
     document.title = what ? `${what} | ${SITE}` : `${SITE} | ICAN Foundation Information Systems`
-  }, [unit, section, boardId])
+  }, [unit, boardId])
 
   const unitId = unit?.topic ? unit.id : null
   useEffect(() => {
@@ -99,7 +95,7 @@ export default function App() {
     )
   }
 
-  if (!unit && !(section && sectionTopics.length > 0)) {
+  if (!unit) {
     return (
       <Suspense fallback={<div className="h-full bg-mist dark:bg-slate-950" />}>
         <Landing
@@ -162,7 +158,7 @@ export default function App() {
             <span className="hidden sm:inline">Home</span>
             <span className="sr-only sm:hidden">Home</span>
           </a>
-          <h1 className="min-w-0 flex-1 truncate text-base font-semibold">{unit ? `${unit.lo} · ${unit.title}` : section?.title}</h1>
+          <h1 className="min-w-0 flex-1 truncate text-base font-semibold">{`${unit.lo} · ${unit.title}`}</h1>
           <span className="hidden items-center gap-3 text-sm font-semibold tabular-nums sm:flex" aria-label={`Level ${game.level}, ${game.xp} XP, ${game.streak} day streak`}>
             <span className="inline-flex items-center gap-1 text-amber-600" title="Daily streak">
               <Flame className="h-4 w-4" aria-hidden /> {game.streak}
@@ -191,14 +187,8 @@ export default function App() {
           {settingsMenu}
         </header>
 
-        {unit ? (
-          <>
-            <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} />
-            {unit.hints && <HintBar key={`hints-${unit.id}`} content={unit.hints} />}
-          </>
-        ) : (
-          section && <SectionPage section={section} topics={sectionTopics} done={done} started={started} onOpen={select} />
-        )}
+        <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} />
+        {unit.hints && <HintBar key={`hints-${unit.id}`} content={unit.hints} />}
       </div>
     </div>
   )

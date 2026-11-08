@@ -1,9 +1,9 @@
 import type { Chapter, Unit } from '../../content/types'
 import { completionPercent } from '../../state/progress'
-import { unitHash } from '../../state/route'
+import { chapter8Hash, unitHash } from '../../state/route'
 import { BUILT_TOPICS } from '../rail/builtTopics'
 import { topicId } from '../../content/chapters/ch07/topics'
-import { COMING_SOON } from './homeData'
+import { BOARD_CHAPTERS, COMING_SOON } from './homeData'
 
 /** A unit is playable once it has a lab, or it is a Chapter 7 topic whose lesson is built. */
 export const isBuilt = (u: Unit): boolean => Boolean(u.labId || (u.topic && BUILT_TOPICS.has(u.topic.code)))
@@ -40,6 +40,8 @@ export interface ChapterCard {
   started: boolean
   /** Where the chapter button leads: the next unfinished lesson, else the first one */
   unitId?: string
+  /** A chapter that opens as topic boards leads straight to its first board */
+  href?: string
 }
 
 /** Cards for chapters 7 to 10 in order: built chapters from content, the rest from the roadmap. */
@@ -60,6 +62,15 @@ export function chapterCards(chapters: readonly Chapter[], done: ReadonlySet<str
       unitId: next?.id,
     }
   })
+  const boards: ChapterCard[] = BOARD_CHAPTERS.map(({ sections, ...c }) => ({
+    ...c,
+    status: 'open',
+    built: sections,
+    total: sections,
+    percent: 0,
+    started: false,
+    href: chapter8Hash('s1'),
+  }))
   const soon: ChapterCard[] = COMING_SOON.map((c) => ({
     ...c,
     status: 'soon',
@@ -68,7 +79,7 @@ export function chapterCards(chapters: readonly Chapter[], done: ReadonlySet<str
     percent: 0,
     started: false,
   }))
-  return [...open, ...soon].sort((a, b) => a.number - b.number)
+  return [...open, ...boards, ...soon].sort((a, b) => a.number - b.number)
 }
 
 /** Link for a Chapter 7 topic card, or null while the topic is not built yet (it then shows "Soon"). */

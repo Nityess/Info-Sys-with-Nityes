@@ -4,7 +4,6 @@ import { ArrowRight, Menu, Moon, Sun } from 'lucide-react'
 import type { Chapter, Unit } from '../../content/types'
 import { SECTIONS } from '../../content/chapters/ch07/topics'
 import { boardForTopic } from '../board/boardRoute'
-import { useSettings } from '../../state/useSettings'
 import { drawerRows } from './drawerRows'
 import { clampStep, continueLabel, lessonSteps, progressPercent } from './lessonSteps'
 import { paneFor } from './panes/registry'
@@ -13,7 +12,7 @@ import { stepCopy } from './stepCopy'
 import { TopicDrawer } from './TopicDrawer'
 import { useParsedTopic } from './useParsedTopic'
 import { useRailContent } from './useRailContent'
-// Teacher preview only, so students never download the board animations
+// Lazy, so the board animations download only when a Concept step opens
 const LessonVisual = lazy(() => import('../board/LessonVisual').then((m) => ({ default: m.LessonVisual })))
 
 import './lesson.css'
@@ -43,8 +42,7 @@ interface Props {
 export function TopicLesson({ unit, chapters, done, xp, claim, onComplete, dark, onToggleDark, settingsSlot }: Props) {
   const code = unit.topic?.code ?? ''
   const topic = useParsedTopic(code)
-  const { settings } = useSettings()
-  const scene = settings.showBoards && boardForTopic(code) ? code : null
+  const scene = boardForTopic(code) ? code : null
   const rail = useRailContent({ unit, topic, claim, onComplete, scene: scene !== null })
   const hidden = (id: string) => rail.content !== null && rail.content[id as keyof typeof rail.content] === null
   const hiddenKey = lessonSteps(Boolean(unit.topic?.playground)).filter((s) => hidden(s.id)).map((s) => s.id).join()
