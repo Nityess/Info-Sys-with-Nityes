@@ -4,8 +4,10 @@ import { labs } from '../labs/registry'
 import { QuizConsole } from './QuizConsole'
 import { SplitLayout } from './SplitLayout'
 import { RailLayout } from './rail/RailLayout'
+import { BUILT_TOPICS } from './rail/builtTopics'
 
 // Lazy so the animation library only downloads when a lesson is opened
+const TopicRail = lazy(() => import('./rail/TopicRail').then((m) => ({ default: m.TopicRail })))
 const LessonView = lazy(() => import('./lesson/LessonView').then((m) => ({ default: m.LessonView })))
 
 interface Props {
@@ -23,7 +25,14 @@ export function UnitView({ unit, onPass, claim }: Props) {
       </Suspense>
     )
   }
-  if (unit.topic) return <RailLayout unit={unit} />
+  if (unit.topic) {
+    if (!BUILT_TOPICS.has(unit.topic.code)) return <RailLayout unit={unit} />
+    return (
+      <Suspense fallback={<p className="p-6 text-sm text-slate-500">Loading topic…</p>}>
+        <TopicRail unit={unit} claim={claim} onComplete={onPass} />
+      </Suspense>
+    )
+  }
 
   const entry = unit.labId ? labs[unit.labId] : undefined
   if (!entry) {

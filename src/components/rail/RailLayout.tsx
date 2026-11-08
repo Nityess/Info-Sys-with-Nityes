@@ -87,10 +87,16 @@ export function RailLayout({ unit, parts = {} }: Props) {
           >
             <h3 id={`rail-${s.id}`} className="font-display text-xl font-semibold text-ink dark:text-white">
               {s.label}
+              {s.id === 'try' && <span className="ml-2 text-sm font-normal text-slate-500 dark:text-slate-400">(about 60 to 90 seconds)</span>}
             </h3>
             <div className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
               {parts[s.id] ?? <p className="text-slate-500 dark:text-slate-400">This part is built in a later milestone.</p>}
             </div>
+            {s.id === 'try' && (
+              <button type="button" onClick={() => go('quiz')} className="mt-3 text-sm font-medium text-slate-600 underline underline-offset-4 hover:text-ink dark:text-slate-300 dark:hover:text-white">
+                Skip to the quiz
+              </button>
+            )}
           </section>
         ))}
       </div>
