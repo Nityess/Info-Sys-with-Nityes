@@ -1,5 +1,6 @@
-import { Suspense, useEffect, useMemo, useState } from 'react'
-import { Menu, Moon, Sun, X } from 'lucide-react'
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Flame, Menu, Moon, Sun, X, Zap } from 'lucide-react'
+import { useGame } from './state/useGame'
 import { chapters } from './content/chapters'
 import type { ConceptCard, Unit } from './content/types'
 import { MindMapView } from './components/MindMapView'
@@ -11,6 +12,9 @@ import { HintBar } from './components/HintBar'
 import { QuizConsole } from './components/QuizConsole'
 import { labs } from './labs/registry'
 import { useProgress } from './state/progress'
+
+// Lazy so the animation library only downloads when a lesson is opened
+const LessonView = lazy(() => import('./components/lesson/LessonView').then((m) => ({ default: m.LessonView })))
 
 const THEME_KEY = 'ican-is-lab:theme'
 
@@ -26,6 +30,7 @@ function initialDark(): boolean {
 
 export default function App() {
   const { done, toggle, markDone } = useProgress()
+  const game = useGame()
   const allUnits = useMemo(() => chapters.flatMap((c) => c.units), [])
   const [selectedId, setSelectedId] = useState(allUnits[0].id)
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -93,6 +98,17 @@ export default function App() {
           <h1 className="min-w-0 flex-1 truncate text-base font-semibold">
             {unit.lo} · {unit.title}
           </h1>
+          <span
+            className="hidden items-center gap-3 text-sm font-semibold tabular-nums sm:flex"
+            aria-label={`Level ${game.level}, ${game.xp} XP, ${game.streak} day streak`}
+          >
+            <span className="inline-flex items-center gap-1 text-amber-600" title="Daily streak">
+              <Flame className="h-4 w-4" aria-hidden /> {game.streak}
+            </span>
+            <span className="inline-flex items-center gap-1 text-spruce" title={`Level ${game.level}`}>
+              <Zap className="h-4 w-4" aria-hidden /> {game.xp} XP
+            </span>
+          </span>
           <button
             type="button"
             onClick={() => toggle(unit.id)}
@@ -110,14 +126,21 @@ export default function App() {
           </button>
         </header>
 
-        <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} />
+        <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} claim={game.claim} />
         {unit.hints && <HintBar key={`hints-${unit.id}`} content={unit.hints} />}
       </div>
     </div>
   )
 }
 
-function UnitView({ unit, onPass }: { unit: Unit; onPass: () => void }) {
+function UnitView({ unit, onPass, claim }: { unit: Unit; onPass: () => void; claim: (key: string, xp: number) => number }) {
+  if (unit.experience === 'lesson' && unit.cards && unit.practice) {
+    return (
+      <Suspense fallback={<p className="p-6 text-sm text-slate-500">Loading lesson…</p>}>
+        <LessonView unit={unit} claim={claim} onComplete={onPass} />
+      </Suspense>
+    )
+  }
   if (unit.cards) return <CardsUnitView unit={unit} cards={unit.cards} onPass={onPass} />
   const entry = unit.labId ? labs[unit.labId] : undefined
   if (!entry) {

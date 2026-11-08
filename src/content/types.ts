@@ -41,6 +41,10 @@ export interface PracticeItem {
 }
 
 export interface Unit {
+  /** Opt in to the guided Explore, Play, Recap lesson (needs cards and practice) */
+  experience?: 'lesson'
+  /** Text in the middle of the lesson's mind map */
+  hub?: string
   /** Section heading shown above this unit in the sidebar */
   section?: string
   /** Data-driven lab: concept cards (visualizer) + practice sorter (lab) */

@@ -51,6 +51,8 @@ export const typesOfInformation: Unit = {
 
 export const accurate: Unit = {
   id: 'ch07-accurate',
+  experience: 'lesson',
+  hub: 'ACCURATE',
   lo: '§1.2',
   section: SECTION_A,
   title: 'Qualities of Good Information (ACCURATE)',
