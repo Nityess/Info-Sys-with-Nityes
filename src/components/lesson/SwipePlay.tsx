@@ -43,7 +43,7 @@ function CardFace({ card, locked, onDecide }: { card: SwipeCard; locked: boolean
           {card.shown.icon}
         </span>
         <div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Is this the quality at fault?</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Does this fit?</p>
           <p className="font-semibold text-ink dark:text-white">{card.shown.short}</p>
         </div>
       </div>

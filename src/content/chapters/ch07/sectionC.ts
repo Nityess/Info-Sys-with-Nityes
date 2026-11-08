@@ -5,6 +5,7 @@ import { SECTION_C, card, item } from './helpers'
 
 export const software: Unit = {
   id: 'ch07-software',
+  hub: 'Software',
   lo: '§3.1',
   section: SECTION_C,
   title: 'IT Software Applications',
@@ -24,6 +25,7 @@ export const software: Unit = {
 
 export const networks: Unit = {
   id: 'ch07-networks',
+  hub: 'Networks',
   lo: '§3.2',
   section: SECTION_C,
   title: 'Computer Networks',

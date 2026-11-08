@@ -5,6 +5,7 @@ import { SECTION_A, card, item } from './helpers'
 
 export const infoRequirements: Unit = {
   id: 'ch07-info-requirements',
+  hub: 'Information needs',
   lo: '§1',
   section: SECTION_A,
   title: 'Information Requirements for Managers',
@@ -31,6 +32,7 @@ export const infoRequirements: Unit = {
 
 export const typesOfInformation: Unit = {
   id: 'ch07-types-of-information',
+  hub: 'Info types',
   lo: '§1.1',
   section: SECTION_A,
   title: 'Types of Information',
@@ -51,7 +53,6 @@ export const typesOfInformation: Unit = {
 
 export const accurate: Unit = {
   id: 'ch07-accurate',
-  experience: 'lesson',
   hub: 'ACCURATE',
   lo: '§1.2',
   section: SECTION_A,
@@ -79,6 +80,7 @@ export const accurate: Unit = {
 
 export const valueOfInformation: Unit = {
   id: 'ch07-value-of-information',
+  hub: 'Value',
   lo: '§1.3',
   section: SECTION_A,
   title: 'Value of Information',

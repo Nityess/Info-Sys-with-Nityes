@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { ch07 } from './ch07'
 import { SECTION_A, SECTION_B, SECTION_C } from './ch07/helpers'
+import { buildSwipeDeck } from '../../components/lesson/swipeLogic'
 
 // Leaf counts per branch, as on the owner's mind map
 const MIND_MAP: [string, number][] = [
@@ -36,6 +37,13 @@ describe('Ch7 follows the mind map', () => {
     for (const u of ch07.units) {
       const ids = u.cards!.map((c) => c.id)
       expect(new Set(ids).size).toBe(ids.length)
+    }
+  })
+  it('gives every unit a short hub label and a playable swipe deck', () => {
+    for (const u of ch07.units) {
+      expect(u.hub, u.id).toBeTruthy()
+      expect(u.hub!.length, u.id).toBeLessThanOrEqual(18)
+      expect(buildSwipeDeck(u.practice!, u.cards!), u.id).toHaveLength(u.practice!.length)
     }
   })
   it('points every practice item at an existing card', () => {

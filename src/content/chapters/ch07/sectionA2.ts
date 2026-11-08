@@ -5,6 +5,7 @@ import { SECTION_A, card, item } from './helpers'
 
 export const costAndValue: Unit = {
   id: 'ch07-cost-and-value',
+  hub: 'Worth it?',
   lo: '§1.4',
   section: SECTION_A,
   title: 'Cost and Value Assessment',
@@ -23,6 +24,7 @@ export const costAndValue: Unit = {
 
 export const itDeliverySupport: Unit = {
   id: 'ch07-it-delivery-support',
+  hub: 'IT function',
   lo: '§1.5–1.8',
   section: SECTION_A,
   title: 'IT Delivery and Support',
@@ -45,6 +47,7 @@ export const itDeliverySupport: Unit = {
 
 export const cativa: Unit = {
   id: 'ch07-cativa',
+  hub: 'CATIVA',
   lo: '§1.9',
   section: SECTION_A,
   title: 'Information Processing (CATIVA)',

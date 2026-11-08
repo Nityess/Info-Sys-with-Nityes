@@ -5,6 +5,7 @@ import { SECTION_B, card, item } from './helpers'
 
 export const users: Unit = {
   id: 'ch07-users',
+  hub: 'Users',
   lo: '§2',
   section: SECTION_B,
   title: 'Primary Users and Needs',
@@ -29,6 +30,7 @@ export const users: Unit = {
 
 export const assumptions: Unit = {
   id: 'ch07-assumptions',
+  hub: 'Assumptions',
   lo: '§2.1',
   section: SECTION_B,
   title: 'Underlying Assumptions',
@@ -46,6 +48,7 @@ export const assumptions: Unit = {
 
 export const statements: Unit = {
   id: 'ch07-statements',
+  hub: 'Statements',
   lo: '§2.2',
   section: SECTION_B,
   title: 'Financial Statements Content',
@@ -64,6 +67,7 @@ export const statements: Unit = {
 
 export const qualitative: Unit = {
   id: 'ch07-qualitative',
+  hub: 'Qualities',
   lo: '§2.3',
   section: SECTION_B,
   title: 'Qualitative Characteristics',
@@ -87,6 +91,7 @@ export const qualitative: Unit = {
 
 export const limitations: Unit = {
   id: 'ch07-limitations',
+  hub: 'Limits',
   lo: '§2.4',
   section: SECTION_B,
   title: 'Limitations of Financial Reporting',
@@ -109,6 +114,7 @@ export const limitations: Unit = {
 
 export const otherSources: Unit = {
   id: 'ch07-other-sources',
+  hub: 'Other sources',
   lo: '§2.5',
   section: SECTION_B,
   title: 'Other Sources of Information',

@@ -12,10 +12,13 @@ interface Props {
 }
 
 const RADIUS = 38
+/** Branches with many leaves get smaller nodes so they never touch. */
+const CROWDED = 8
 
 /** Radial mind map. Branches draw in on load, nodes light up once explored. */
 export function ExploreMap({ hub, cards, practice, seen, openId, onTap }: Props) {
   const n = cards.length
+  const compact = n > CROWDED
   const pos = cards.map((_, i) => {
     const a = -Math.PI / 2 + (i * 2 * Math.PI) / n
     return { x: 50 + RADIUS * Math.cos(a), y: 50 + RADIUS * Math.sin(a) }
@@ -62,7 +65,7 @@ export function ExploreMap({ hub, cards, practice, seen, openId, onTap }: Props)
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.25 + 0.06 * i, type: 'spring', stiffness: 380, damping: 24 }}
               style={{ left: `${pos[i].x}%`, top: `${pos[i].y}%` }}
-              className={`absolute flex h-16 w-[4.75rem] -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-0.5 rounded-2xl border px-1 text-ink shadow-sm transition-colors dark:text-slate-100 ${
+              className={`absolute flex ${compact ? 'h-14 w-[4rem]' : 'h-16 w-[4.75rem]'} -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-0.5 rounded-2xl border px-1 text-ink shadow-sm transition-colors dark:text-slate-100 ${
                 isOpen
                   ? 'border-spruce bg-emerald-50 dark:bg-emerald-950'
                   : wasSeen
@@ -70,10 +73,10 @@ export function ExploreMap({ hub, cards, practice, seen, openId, onTap }: Props)
                     : 'border-slate-200 bg-white hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900'
               }`}
             >
-              <span aria-hidden className="text-xl leading-none">
+              <span aria-hidden className={compact ? 'text-lg leading-none' : 'text-xl leading-none'}>
                 {c.icon}
               </span>
-              <span className="text-[10.5px] font-medium leading-tight">{c.short}</span>
+              <span className={`${compact ? 'text-[9.5px]' : 'text-[10.5px]'} font-medium leading-tight`}>{c.short}</span>
               {wasSeen && (
                 <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-spruce text-white">
                   <Check className="h-2.5 w-2.5" aria-label="Explored" />

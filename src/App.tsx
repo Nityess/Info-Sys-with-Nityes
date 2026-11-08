@@ -2,10 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { Flame, Menu, Moon, Sun, X, Zap } from 'lucide-react'
 import { useGame } from './state/useGame'
 import { chapters } from './content/chapters'
-import type { ConceptCard, Unit } from './content/types'
-import { MindMapView } from './components/MindMapView'
-import { QuickMatch } from './components/QuickMatch'
-import { themeFor } from './components/sectionTheme'
+import type { Unit } from './content/types'
 import { Sidebar } from './components/Sidebar'
 import { SplitLayout } from './components/SplitLayout'
 import { HintBar } from './components/HintBar'
@@ -134,14 +131,13 @@ export default function App() {
 }
 
 function UnitView({ unit, onPass, claim }: { unit: Unit; onPass: () => void; claim: (key: string, xp: number) => number }) {
-  if (unit.experience === 'lesson' && unit.cards && unit.practice) {
+  if (unit.cards && unit.practice) {
     return (
       <Suspense fallback={<p className="p-6 text-sm text-slate-500">Loading lesson…</p>}>
         <LessonView unit={unit} claim={claim} onComplete={onPass} />
       </Suspense>
     )
   }
-  if (unit.cards) return <CardsUnitView unit={unit} cards={unit.cards} onPass={onPass} />
   const entry = unit.labId ? labs[unit.labId] : undefined
   if (!entry) {
     return <SplitLayout visualizer={<Placeholder title="Concept visualizer" />} lab={<Placeholder title="Lab" />} />
@@ -167,26 +163,6 @@ function UnitView({ unit, onPass, claim }: { unit: Unit; onPass: () => void; cla
             <Lab />
           </Suspense>
           {unit.quiz && unit.quiz.length > 0 && <QuizConsole items={unit.quiz} onPass={onPass} />}
-        </div>
-      }
-    />
-  )
-}
-
-/** Data-driven unit: mind-map view of the branch, then the Quick Match game. */
-function CardsUnitView({ unit, cards, onPass }: { unit: Unit; cards: ConceptCard[]; onPass: () => void }) {
-  const theme = themeFor(unit.section)
-  return (
-    <SplitLayout
-      visualizer={<MindMapView section={unit.section} title={unit.title} cards={cards} theme={theme} />}
-      lab={
-        <div className="space-y-4">
-          {unit.objective && (
-            <p className={`text-xs font-medium ${theme.accentText}`}>{unit.objective}</p>
-          )}
-          {unit.practice && unit.practice.length > 0 && (
-            <QuickMatch cards={cards} items={unit.practice} theme={theme} onFinish={onPass} />
-          )}
         </div>
       }
     />
