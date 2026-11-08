@@ -34,6 +34,17 @@ export const REMEMBER: Readonly<Record<string, RememberLine>> = {
       'Digital Sound and Vision Media → Wider product distribution.',
     ],
   },
+  '2.1': { items: ['Investors → Equity investment, risk, return and dividends.', 'Lenders and other creditors → Debt, repayment, interest and creditworthiness.'] },
+  '2.2': { items: ['Accruals = Recognise when the transaction occurs, not when cash moves.', 'Going Concern = Business continues operating.'] },
+  '2.3': {
+    items: [
+      'Relevance = Makes a difference in decisions. Predictive Value + Confirmatory Value + Materiality.',
+      'Faithful Representation = Complete + Neutral + Free from Error.',
+      'Enhancing = U C V T',
+    ],
+  },
+  '2.4': { items: ['Cost Constraint = Benefits should justify the cost of providing information.', 'Highly Aggregated', 'Backward-Looking', 'Omits Non-Financial Data', 'Historical Cost Basis', 'Standardised Format'] },
+  '2.5': { items: ['Owner-managers', 'Banks', 'Potential investors', 'Suppliers', 'General public'] },
   '1.9': { lead: 'C A T I V A', items: ['Completeness', 'Accuracy', 'Timeliness', 'Inalterability', 'Verifiability', 'Assessability'] },
 }
 

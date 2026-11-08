@@ -13,3 +13,6 @@ export const SCENE_LABELS = {
   loading: 'Loading the scene...',
   tapToFlip: 'Tap a tile to flip it',
 } as const
+
+/** Topic 2.2: what the Cash basis button says. chapter7.md only describes the accruals treatment of the example. */
+export const CASH_BASIS_NOTE = 'Cash basis: the sale would be recognised in January, when the cash arrives. This is not the underlying assumption.'

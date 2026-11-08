@@ -13,6 +13,11 @@ export const SCENES: Readonly<Record<string, Scene>> = {
   '1.7': lazy(() => import('./Scene17').then((m) => ({ default: m.Scene17 }))),
   '1.8': lazy(() => import('./Scene18').then((m) => ({ default: m.Scene18 }))),
   '1.9': lazy(() => import('./Scene19').then((m) => ({ default: m.Scene19 }))),
+  '2.1': lazy(() => import('./Scene21').then((m) => ({ default: m.Scene21 }))),
+  '2.2': lazy(() => import('./Scene22').then((m) => ({ default: m.Scene22 }))),
+  '2.3': lazy(() => import('./Scene23').then((m) => ({ default: m.Scene23 }))),
+  '2.4': lazy(() => import('./Scene24').then((m) => ({ default: m.Scene24 }))),
+  '2.5': lazy(() => import('./Scene25').then((m) => ({ default: m.Scene25 }))),
 }
 
 export const sceneFor = (code: string): Scene | undefined => SCENES[code]
