@@ -11,6 +11,7 @@ import { SectionPage } from './components/rail/SectionPage'
 import { LESSON_SHELL_TOPICS } from './components/rail/builtTopics'
 import { useProgress } from './state/progress'
 import { HOME_HASH, unitHash } from './state/route'
+import { topicId } from './content/chapters/ch07/topics'
 import { TEXT_PX } from './state/settings'
 import { navigate, useRoute } from './state/useRoute'
 import { useSettings } from './state/useSettings'
@@ -83,7 +84,15 @@ export default function App() {
     setDrawerOpen(false)
   }
 
-  const settingsMenu = <SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} />
+  // Turning the preview on can jump straight to Topic 1.2 in the new lesson screen (teacher setting)
+  const firstTopic = unitHash(topicId('1.2'))
+  const change = (patch: Partial<typeof raw>) => {
+    set(patch)
+    if (patch.previewNewCh7 && raw.previewOpensTopic) navigate(firstTopic)
+  }
+  const previewStartHref = settings.previewOpensTopic ? firstTopic : undefined
+
+  const settingsMenu = <SettingsMenu raw={raw} onChange={change} dark={dark} onToggleDark={() => setDark((d) => !d)} />
 
   if (!unit && !(section && sectionTopics.length > 0)) {
     return (
@@ -91,9 +100,10 @@ export default function App() {
         <Landing
           chapters={shown}
           done={done}
+          previewStartHref={previewStartHref}
           dark={dark}
           onToggleDark={() => setDark((d) => !d)}
-          settingsSlot={<SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}
+          settingsSlot={<SettingsMenu raw={raw} onChange={change} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}
         />
       </Suspense>
     )

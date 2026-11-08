@@ -85,6 +85,9 @@ export function SettingsMenu({ raw, onChange, dark, onToggleDark, onDark }: Prop
             {raw.teacher && (
               <div className="pl-3">
                 <Switch label="Preview the new Chapter 7" hint="18 topics, built step by step." checked={raw.previewNewCh7} onChange={(v) => onChange({ previewNewCh7: v })} />
+                {raw.previewNewCh7 && (
+                  <Switch label="Open Topic 1.2 straight away" hint="Opens the new lesson screen when you turn the preview on, and from Start Chapter 7." checked={raw.previewOpensTopic} onChange={(v) => onChange({ previewOpensTopic: v })} />
+                )}
                 <Switch label="Show study-book questions" hint="The two questions copied from the study book." checked={raw.showSourceQuestions} onChange={(v) => onChange({ showSourceQuestions: v })} />
               </div>
             )}

@@ -12,6 +12,8 @@ export interface Settings {
   previewNewCh7: boolean
   /** Show the two questions taken from the study book */
   showSourceQuestions: boolean
+  /** With the preview on: open Topic 1.2 in the new lesson screen straight away, and from the landing page's Chapter 7 buttons */
+  previewOpensTopic: boolean
 }
 
 export const TEXT_PX: Record<TextSize, number> = { s: 15, m: 16, l: 18 }
@@ -22,6 +24,7 @@ export const defaultSettings = (): Settings => ({
   teacher: false,
   previewNewCh7: false,
   showSourceQuestions: false,
+  previewOpensTopic: true,
 })
 
 /** Validate whatever came out of localStorage. */
@@ -36,10 +39,12 @@ export function parseSettings(raw: unknown): Settings {
     teacher: bool(r.teacher, d.teacher),
     previewNewCh7: bool(r.previewNewCh7, d.previewNewCh7),
     showSourceQuestions: bool(r.showSourceQuestions, d.showSourceQuestions),
+    previewOpensTopic: bool(r.previewOpensTopic, d.previewOpensTopic),
   }
 }
 
 /** What the app actually uses: the teacher-only switches count only while teacher mode is on. */
 export function effectiveSettings(s: Settings): Settings {
-  return s.teacher ? s : { ...s, previewNewCh7: false, showSourceQuestions: false }
+  if (!s.teacher) return { ...s, previewNewCh7: false, showSourceQuestions: false, previewOpensTopic: false }
+  return s.previewNewCh7 ? s : { ...s, previewOpensTopic: false }
 }

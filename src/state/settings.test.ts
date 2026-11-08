@@ -9,12 +9,20 @@ describe('settings', () => {
       teacher: false,
       previewNewCh7: false,
       showSourceQuestions: false,
+      previewOpensTopic: true,
     })
   })
   it('hides teacher-only switches unless teacher mode is on', () => {
     const s = { ...defaultSettings(), previewNewCh7: true, showSourceQuestions: true }
-    expect(effectiveSettings(s)).toMatchObject({ previewNewCh7: false, showSourceQuestions: false })
-    expect(effectiveSettings({ ...s, teacher: true })).toMatchObject({ previewNewCh7: true, showSourceQuestions: true })
+    expect(effectiveSettings(s)).toMatchObject({ previewNewCh7: false, showSourceQuestions: false, previewOpensTopic: false })
+    expect(effectiveSettings({ ...s, teacher: true })).toMatchObject({ previewNewCh7: true, showSourceQuestions: true, previewOpensTopic: true })
+  })
+  it('opens Topic 1.2 straight away only for a teacher with the preview on', () => {
+    const base = { ...defaultSettings(), previewOpensTopic: true }
+    expect(effectiveSettings(base).previewOpensTopic).toBe(false)
+    expect(effectiveSettings({ ...base, teacher: true }).previewOpensTopic).toBe(false)
+    expect(effectiveSettings({ ...base, teacher: true, previewNewCh7: true }).previewOpensTopic).toBe(true)
+    expect(effectiveSettings({ ...base, teacher: true, previewNewCh7: true, previewOpensTopic: false }).previewOpensTopic).toBe(false)
   })
   it('repairs bad stored data field by field', () => {
     expect(parseSettings(null)).toEqual(defaultSettings())
