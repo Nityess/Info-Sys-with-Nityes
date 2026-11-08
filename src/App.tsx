@@ -103,7 +103,7 @@ export default function App() {
   if (unit?.topic && LESSON_SHELL_TOPICS.has(unit.topic.code)) {
     return (
       <Suspense fallback={<div className="h-full bg-mist dark:bg-slate-950" />}>
-        <TopicLesson key={unit.id} unit={unit} chapters={shown} done={done} xp={game.xp} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
+        <TopicLesson key={unit.id} unit={unit} chapters={shown} done={done} xp={game.xp} claim={game.claim} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
       </Suspense>
     )
   }

@@ -1,0 +1,26 @@
+/* Step content for the Chapter 7 topic lesson. Ported from landing-handoff/design/Lesson.dc.html. Scoped under .ls.
+   Four type colours: Strategic blue, Tactical teal, Operational amber, Planning coral. The type name is always
+   written too, never colour alone. */
+
+.ls{--st-c:#2F6FDE;--st-t:#1D4FB3;--st-s:#E3ECFC;--st-o:#fff;--ta-c:#0E7C66;--ta-t:#0B7360;--ta-s:#DDF1EC;--ta-o:#fff;--op-c:#F5B301;--op-t:#7A5200;--op-s:#FFF1CC;--op-o:#0F1B33;--pl-c:#E5484D;--pl-t:#B4232A;--pl-s:#FCE9EA;--pl-o:#fff}
+:root.dark .ls{--st-t:#8DB4FF;--st-s:#15294F;--ta-t:#4FD1B3;--ta-s:#0F3A36;--op-t:#FFD36B;--op-s:#3A2F0E;--pl-t:#FF9B9F;--pl-s:#3A1E27}
+.ls-ty-strategic{--tc:var(--st-c);--tt:var(--st-t);--ts:var(--st-s);--ton:var(--st-o)}
+.ls-ty-tactical{--tc:var(--ta-c);--tt:var(--ta-t);--ts:var(--ta-s);--ton:var(--ta-o)}
+.ls-ty-operational{--tc:var(--op-c);--tt:var(--op-t);--ts:var(--op-s);--ton:var(--op-o)}
+.ls-ty-planning{--tc:var(--pl-c);--tt:var(--pl-t);--ts:var(--pl-s);--ton:var(--pl-o)}
+
+.ls-stack{display:flex;flex-direction:column;gap:1.25rem}
+.ls-note{margin:0;font-weight:600;max-width:48ch}
+.ls-actions{display:flex;flex-wrap:wrap;align-items:center;gap:.875rem}
+.ls-chip-ty{background:var(--tc);color:var(--ton)}
+.ls-card{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:1.25rem}
+
+/* Hook */
+.ls-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(14.375rem,100%),1fr));gap:.875rem}
+.ls-hcard{display:flex;flex-direction:column;gap:.625rem;padding:1.125rem;border-radius:1.125rem;background:var(--surface);border:2px solid var(--line);transition:border-color .25s,background .25s}
+.ls-hcard-on{border-color:var(--tc);background:var(--ts)}
+.ls-hcard p{margin:0;font-size:1rem;line-height:1.4}
+.ls-who{display:flex;align-items:center;gap:.625rem}
+.ls-ava{width:2.5rem;height:2.5rem;border-radius:.75rem;background:var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Fraunces Variable',Georgia,serif;font-weight:600;flex:none}
+.ls-hcard .ls-chip{align-self:flex-start}
+.ls-hide{visibility:hidden}

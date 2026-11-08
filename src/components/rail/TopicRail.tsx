@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Unit } from '../../content/types'
-import type { ParsedTopic } from '../../content/chapter7/types'
 import { isComplete, toggleChecked, useMastery } from '../../state/mastery'
 import { useSettings } from '../../state/useSettings'
 import { Confetti } from '../lesson/Confetti'
+import { useParsedTopic } from '../topic/useParsedTopic'
 import { AnswerBuilder } from './AnswerBuilder'
 import { ConceptTabs } from './ConceptTabs'
 import { FlipPairs } from './FlipPairs'
@@ -27,21 +27,6 @@ interface Props {
 
 const XP_PER_FIRST_TRY = 10
 const XP_MASTERY = 30
-
-/** Loads the parsed topic on demand, so the content only downloads when a topic is opened. */
-function useParsedTopic(code: string): ParsedTopic | null {
-  const [data, setData] = useState<ParsedTopic | null>(null)
-  useEffect(() => {
-    let alive = true
-    import('virtual:chapter7').then((m) => {
-      if (alive) setData(m.topics[code] ?? null)
-    })
-    return () => {
-      alive = false
-    }
-  }, [code])
-  return data
-}
 
 function CompareView({ md }: { md: string }) {
   const blocks = parseBlocks(md)

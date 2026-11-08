@@ -5,10 +5,13 @@ import type { Chapter, Unit } from '../../content/types'
 import { SECTIONS } from '../../content/chapters/ch07/topics'
 import { drawerRows } from './drawerRows'
 import { clampStep, continueLabel, lessonSteps, progressPercent } from './lessonSteps'
+import { paneFor } from './panes/registry'
 import { StepRail } from './StepRail'
 import { stepCopy } from './stepCopy'
 import { TopicDrawer } from './TopicDrawer'
+import { useParsedTopic } from './useParsedTopic'
 import './lesson.css'
+import './lessonPanes.css'
 
 interface Props {
   unit: Unit
@@ -16,6 +19,8 @@ interface Props {
   chapters: readonly Chapter[]
   done: ReadonlySet<string>
   xp: number
+  /** Pays out XP once per key; returns what was granted now */
+  claim: (key: string, xp: number) => number
   dark: boolean
   onToggleDark: () => void
   /** The settings gear, shown in the topic list */
@@ -24,10 +29,11 @@ interface Props {
 
 /**
  * Chapter 7 topic lesson: top bar with the topic list, an 8-step bar, one step per screen, and a sticky
- * Back and Continue bar. This round builds the shell only; each pane shows a placeholder until its own round.
+ * Back and Continue bar. Each step pane is built in its own round; until then it shows a placeholder.
  */
-export function TopicLesson({ unit, chapters, done, xp, dark, onToggleDark, settingsSlot }: Props) {
+export function TopicLesson({ unit, chapters, done, xp, claim, dark, onToggleDark, settingsSlot }: Props) {
   const code = unit.topic?.code ?? ''
+  const topic = useParsedTopic(code)
   const steps = useMemo(() => lessonSteps(Boolean(unit.topic?.playground)), [unit.topic?.playground])
   const total = steps.length
   const [step, setStep] = useState(1)
@@ -39,6 +45,7 @@ export function TopicLesson({ unit, chapters, done, xp, dark, onToggleDark, sett
 
   const current = steps[clampStep(step, total) - 1]
   const copy = stepCopy(code, current.id)
+  const pane = paneFor(code, current.id)
   const section = SECTIONS.find((s) => s.id === unit.sectionId)
   const go = (n: number) => {
     moved.current = true
@@ -90,7 +97,11 @@ export function TopicLesson({ unit, chapters, done, xp, dark, onToggleDark, sett
           <p className="ls-sub">{copy.sub}</p>
         </div>
         <div key={current.id} className="ls-pane" data-step={current.id}>
-          <div className="ls-fb ls-fb-info" role="status">Placeholder: the {current.label} step is built in its own round.</div>
+          {pane ? (
+            topic ? pane({ unitId: unit.id, topic, claim }) : <p role="status">Loading this topic…</p>
+          ) : (
+            <div className="ls-fb ls-fb-info" role="status">Placeholder: the {current.label} step is built in its own round.</div>
+          )}
         </div>
       </main>
 
