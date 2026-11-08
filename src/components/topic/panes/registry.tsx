@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { ParsedTopic } from '../../../content/chapter7/types'
 import type { RailStepId } from '../../rail/railSteps'
+import { ComparePane } from './ComparePane'
 import { ConceptPane } from './ConceptPane'
 import { HookPane } from './HookPane'
 
@@ -18,6 +19,7 @@ const PANES: Record<string, Partial<Record<RailStepId, Pane>>> = {
   '1.2': {
     hook: (c) => <HookPane topic={c.topic} />,
     concept: (c) => <ConceptPane topic={c.topic} />,
+    compare: (c) => <ComparePane topic={c.topic} />,
   },
 }
 

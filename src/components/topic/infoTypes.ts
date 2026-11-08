@@ -113,3 +113,60 @@ export function parseTypes(t: ParsedTopic): TypeInfo[] {
     return key ? [parseTypeBlock(key, p.md)] : []
   })
 }
+
+// ---------- Compare and traps ----------
+
+export interface CompareRow {
+  key: TypeKey
+  name: string
+  who: string
+  chars: string
+}
+
+/** The comparison table: type, who uses it, main characteristics. */
+export function parseCompare(t: ParsedTopic): CompareRow[] {
+  const table = parseBlocks(sectionBy(t, 'compare all four')?.md ?? '').find((b) => b.t === 'table')
+  if (!table || table.t !== 'table') return []
+  return table.rows.flatMap((r): CompareRow[] => {
+    const key = typeKeyOf(r[0] ?? '')
+    return key ? [{ key, name: typeName(key), who: r[1] ?? '', chars: r[2] ?? '' }] : []
+  })
+}
+
+/** The paragraph under "Where does Planning fit?" in the management hierarchy part. */
+export function planningFit(t: ParsedTopic): { head: string; text: string } {
+  const blocks = parseBlocks(sectionBy(t, 'management hierarchy')?.md ?? '')
+  const at = blocks.findIndex((b) => b.t === 'p' && /^\*\*Where does Planning (Information )?fit\?\*\*$/.test(b.text))
+  const next = blocks[at + 1]
+  const head = at >= 0 && blocks[at].t === 'p' ? blocks[at].text.replace(/\*\*/g, '') : ''
+  return head && next?.t === 'p' ? { head, text: next.text } : { head: '', text: '' }
+}
+
+export interface Trap {
+  n: number
+  head: string
+  /** The teaching text's explanation under the heading */
+  note: string
+  /** What students wrongly say; empty when the text gives none */
+  wrong: string
+  right: string
+}
+
+/** "**Trap 1: ...**" blocks, each with a "Correct:" and sometimes an "Incorrect:" line, or a "Remember:" line. */
+export function parseTraps(t: ParsedTopic): Trap[] {
+  const md = sectionBy(t, 'common exam traps')?.md ?? ''
+  const heads = [...md.matchAll(/^\*\*Trap (\d+): (.+?)\*\*\s*$/gm)]
+  return heads.map((m, i) => {
+    const body = md.slice((m.index ?? 0) + m[0].length, heads[i + 1]?.index ?? md.length)
+    const lines = body.split('\n').map((l) => l.trim()).filter(Boolean)
+    const pick = (re: RegExp) => lines.map((l) => re.exec(l)?.[1]).find(Boolean) ?? ''
+    const correct = pick(/^-\s+Correct:\s*(.+)$/)
+    return {
+      n: Number(m[1]),
+      head: m[2],
+      note: lines.filter((l) => !l.startsWith('-') && !l.startsWith('**')).join(' '),
+      wrong: pick(/^-\s+Incorrect:\s*(.+)$/),
+      right: correct || pick(/^\*\*Remember:\*\*\s*(.+)$/),
+    }
+  })
+}

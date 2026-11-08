@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { topics } from 'virtual:chapter7'
-import { hookClosing, parseHookCards, parseTypes, typeKeyOf, typeName } from './infoTypes'
+import { hookClosing, parseCompare, parseHookCards, parseTraps, parseTypes, planningFit, typeKeyOf, typeName } from './infoTypes'
 
 const t12 = topics['1.2']
 
@@ -58,5 +58,28 @@ describe('Topic 1.2 concept', () => {
     expect(by('operational').exam).toMatch(/unauthorised overdrafts are operational/)
     expect(by('tactical').exam).toBe('')
     expect(by('planning').exam).toBe('')
+  })
+})
+
+describe('Topic 1.2 compare and traps', () => {
+  it('reads the four comparison rows', () => {
+    const rows = parseCompare(t12)
+    expect(rows.map((r) => r.name)).toEqual(['Strategic', 'Tactical', 'Operational', 'Planning'])
+    expect(rows[0]).toMatchObject({ who: 'Board / Senior Managers', chars: 'Long-term, often estimates, broad picture, major decisions' })
+    expect(rows[3].chars).toBe('Implementation steps, resources, time-scales')
+  })
+  it('reads where Planning fits, as a separate category', () => {
+    const f = planningFit(t12)
+    expect(f.head).toBe('Where does Planning Information fit?')
+    expect(f.text).toMatch(/Do not force it into the three-level hierarchy/)
+  })
+  it('reads the four traps', () => {
+    const traps = parseTraps(t12)
+    expect(traps.map((x) => x.n)).toEqual([1, 2, 3, 4])
+    expect(traps[0]).toMatchObject({ head: 'Strategic information is not necessarily highly accurate.', wrong: 'Always very detailed and highly accurate', right: 'Often based on estimates' })
+    expect(traps[1]).toMatchObject({ right: 'Operational', wrong: '' })
+    expect(traps[2]).toMatchObject({ right: 'Tactical', wrong: '' })
+    expect(traps[3].right).toBe('Planning teams · Implementation · Resources · Time-scales')
+    expect(traps[3].note).toMatch(/Do not confuse the general activity of planning/)
   })
 })
