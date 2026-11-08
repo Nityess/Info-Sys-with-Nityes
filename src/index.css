@@ -40,6 +40,16 @@ body,
 @media (prefers-reduced-motion: reduce) {
   .anim-shake, .anim-pop, .anim-rise { animation: none; }
 }
+/* The Reduce motion setting: same effect as the phone's own preference */
+html.reduce-motion .anim-shake,
+html.reduce-motion .anim-pop,
+html.reduce-motion .anim-rise { animation: none; }
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
 
 body {
   margin: 0;

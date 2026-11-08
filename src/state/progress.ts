@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
 import type { Chapter } from '../content/types'
 
-const KEY = 'ican-is-lab:completed'
+const DONE_KEY = 'ican-is-lab:completed'
+const STARTED_KEY = 'ican-is-lab:started'
 
 /** Percent (0-100, rounded) of a chapter's units that are completed. */
 export function completionPercent(chapter: Chapter, done: ReadonlySet<string>): number {
@@ -18,9 +19,17 @@ export function withDone(done: Set<string>, unitId: string): Set<string> {
   return next
 }
 
-function load(): Set<string> {
+export type TopicStatus = 'not-started' | 'in-progress' | 'done'
+
+/** Done wins over started, started wins over nothing. */
+export function topicStatus(id: string, done: ReadonlySet<string>, started: ReadonlySet<string>): TopicStatus {
+  if (done.has(id)) return 'done'
+  return started.has(id) ? 'in-progress' : 'not-started'
+}
+
+function load(key: string): Set<string> {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(key)
     const parsed: unknown = raw ? JSON.parse(raw) : []
     return new Set(Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [])
   } catch {
@@ -28,23 +37,24 @@ function load(): Set<string> {
   }
 }
 
-function save(done: Set<string>) {
+function save(key: string, ids: Set<string>) {
   try {
-    localStorage.setItem(KEY, JSON.stringify([...done]))
+    localStorage.setItem(key, JSON.stringify([...ids]))
   } catch {
     // storage unavailable (private mode etc.): progress just won't persist
   }
 }
 
 export function useProgress() {
-  const [done, setDone] = useState<Set<string>>(load)
+  const [done, setDone] = useState<Set<string>>(() => load(DONE_KEY))
+  const [started, setStarted] = useState<Set<string>>(() => load(STARTED_KEY))
 
   const toggle = useCallback((unitId: string) => {
     setDone((prev) => {
       const next = new Set(prev)
       if (next.has(unitId)) next.delete(unitId)
       else next.add(unitId)
-      save(next)
+      save(DONE_KEY, next)
       return next
     })
   }, [])
@@ -53,10 +63,19 @@ export function useProgress() {
   const markDone = useCallback((unitId: string) => {
     setDone((prev) => {
       const next = withDone(prev, unitId)
-      if (next !== prev) save(next)
+      if (next !== prev) save(DONE_KEY, next)
       return next
     })
   }, [])
 
-  return { done, toggle, markDone }
+  /** Add-only: remembers that a topic was opened, for the In progress status. */
+  const markStarted = useCallback((unitId: string) => {
+    setStarted((prev) => {
+      const next = withDone(prev, unitId)
+      if (next !== prev) save(STARTED_KEY, next)
+      return next
+    })
+  }, [])
+
+  return { done, started, toggle, markDone, markStarted }
 }

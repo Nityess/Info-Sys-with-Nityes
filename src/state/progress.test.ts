@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { completionPercent, withDone } from './progress'
+import { completionPercent, topicStatus, withDone } from './progress'
 import type { Chapter } from '../content/types'
 
 const chapter: Chapter = {
@@ -41,5 +41,14 @@ describe('withDone', () => {
   it('returns the same set when the id is already done', () => {
     const start = new Set(['a'])
     expect(withDone(start, 'a')).toBe(start)
+  })
+})
+
+describe('topicStatus', () => {
+  it('is not-started, in-progress or done, with done winning', () => {
+    expect(topicStatus('a', new Set(), new Set())).toBe('not-started')
+    expect(topicStatus('a', new Set(), new Set(['a']))).toBe('in-progress')
+    expect(topicStatus('a', new Set(['a']), new Set(['a']))).toBe('done')
+    expect(topicStatus('a', new Set(['a']), new Set())).toBe('done')
   })
 })

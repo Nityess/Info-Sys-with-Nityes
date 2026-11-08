@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import type { ReactNode } from 'react'
 import { Flame, Moon, Sun, Zap } from 'lucide-react'
 import { MotionConfig } from 'motion/react'
 import type { Chapter } from '../../content/types'
@@ -7,6 +8,7 @@ import { ExamSection } from './ExamSection'
 import { HomeHero } from './HomeHero'
 import { PromiseSection } from './PromiseSection'
 import { StepsSection } from './StepsSection'
+import { useSettings } from '../../state/useSettings'
 import { chapterCards, heroAction } from './homeLogic'
 
 interface Props {
@@ -17,6 +19,8 @@ interface Props {
   dark: boolean
   onToggleDark: () => void
   onOpenUnit: (unitId: string) => void
+  /** Settings button, built by the app so it shares state with the study screens */
+  settingsSlot?: ReactNode
 }
 
 export const BRAND = 'Info Sys with Nityes'
@@ -41,12 +45,13 @@ function BrandMark() {
   )
 }
 
-export function Landing({ chapters, done, xp, streak, dark, onToggleDark, onOpenUnit }: Props) {
+export function Landing({ chapters, done, xp, streak, dark, onToggleDark, onOpenUnit, settingsSlot }: Props) {
+  const { settings } = useSettings()
   const action = useMemo(() => heroAction(chapters, done), [chapters, done])
   const cards = useMemo(() => chapterCards(chapters, done), [chapters, done])
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={settings.reduceMotion ? 'always' : 'user'}>
       <div className="h-full overflow-y-auto bg-mist font-body text-ink dark:bg-slate-950 dark:text-slate-100">
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink">
           Skip to content
@@ -85,6 +90,7 @@ export function Landing({ chapters, done, xp, streak, dark, onToggleDark, onOpen
             >
               {dark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
+            {settingsSlot}
           </nav>
         </header>
 

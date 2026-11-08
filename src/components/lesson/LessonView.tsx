@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import type { ConceptCard, PracticeItem, Unit } from '../../content/types'
+import { useSettings } from '../../state/useSettings'
 import { Confetti } from './Confetti'
 import { ExploreMap } from './ExploreMap'
 import { FlashRecap } from './FlashRecap'
@@ -24,6 +25,7 @@ const XP = { explore: 10, perCard: 10, recap: 30 }
 
 /** Guided lesson: Explore the map, Play the swipe cards, Recap with flashcards. */
 export function LessonView({ unit, claim, onComplete }: Props) {
+  const { settings } = useSettings()
   const cards = unit.cards ?? NO_CARDS
   const practice = unit.practice ?? NO_PRACTICE
   const [step, setStep] = useState<Step>('explore')
@@ -62,7 +64,7 @@ export function LessonView({ unit, claim, onComplete }: Props) {
   }, [claim, onComplete, unit.id])
 
   return (
-    <MotionConfig reducedMotion="user">
+    <MotionConfig reducedMotion={settings.reduceMotion ? 'always' : 'user'}>
       <div className="min-h-0 flex-1 overflow-y-auto bg-mist font-body dark:bg-slate-950">
         {burst > 0 && <Confetti key={burst} />}
         <div className="mx-auto max-w-xl px-4 pb-16 pt-6">

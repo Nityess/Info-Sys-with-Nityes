@@ -40,7 +40,20 @@ export interface PracticeItem {
   why: string
 }
 
+/** Marks a unit as a topic of the rebuilt Chapter 7 (it renders the lesson rail). */
+export interface TopicInfo {
+  /** "1.5" */
+  code: string
+  teachingAid?: string
+  playground?: boolean
+  fromStudyText?: boolean
+}
+
 export interface Unit {
+  /** Set on the rebuilt Chapter 7 topics */
+  topic?: TopicInfo
+  /** "s1", "s2" or "s3" on the rebuilt Chapter 7 topics, for the section page link */
+  sectionId?: string
   /** Short text in the middle of the lesson's mind map */
   hub?: string
   /** Section heading shown above this unit in the sidebar */
