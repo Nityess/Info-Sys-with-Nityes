@@ -181,7 +181,7 @@ export default function App() {
 
         {unit ? (
           <>
-            <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} claim={game.claim} />
+            <UnitView key={unit.id} unit={unit} onPass={() => markDone(unit.id)} />
             {unit.hints && <HintBar key={`hints-${unit.id}`} content={unit.hints} />}
           </>
         ) : (

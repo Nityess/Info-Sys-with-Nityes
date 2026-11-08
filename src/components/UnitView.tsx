@@ -1,39 +1,16 @@
-import { Suspense, lazy } from 'react'
+import { Suspense } from 'react'
 import type { Unit } from '../content/types'
 import { labs } from '../labs/registry'
 import { QuizConsole } from './QuizConsole'
 import { SplitLayout } from './SplitLayout'
-import { RailLayout } from './rail/RailLayout'
-import { BUILT_TOPICS } from './rail/builtTopics'
-
-// Lazy so the animation library only downloads when a lesson is opened
-const TopicRail = lazy(() => import('./rail/TopicRail').then((m) => ({ default: m.TopicRail })))
-const LessonView = lazy(() => import('./lesson/LessonView').then((m) => ({ default: m.LessonView })))
 
 interface Props {
   unit: Unit
   onPass: () => void
-  claim: (key: string, xp: number) => number
 }
 
-/** Picks how a unit is shown: lesson, rebuilt Chapter 7 topic rail, lab, or a placeholder. */
-export function UnitView({ unit, onPass, claim }: Props) {
-  if (unit.cards && unit.practice) {
-    return (
-      <Suspense fallback={<p className="p-6 text-sm text-slate-500">Loading lesson…</p>}>
-        <LessonView unit={unit} claim={claim} onComplete={onPass} />
-      </Suspense>
-    )
-  }
-  if (unit.topic) {
-    if (!BUILT_TOPICS.has(unit.topic.code)) return <RailLayout unit={unit} />
-    return (
-      <Suspense fallback={<p className="p-6 text-sm text-slate-500">Loading topic…</p>}>
-        <TopicRail unit={unit} claim={claim} onComplete={onPass} />
-      </Suspense>
-    )
-  }
-
+/** Picks how a lab unit is shown: its visualizer and lab, or a placeholder. Chapter 7 topics use the lesson screen (see App). */
+export function UnitView({ unit, onPass }: Props) {
   const entry = unit.labId ? labs[unit.labId] : undefined
   if (!entry) {
     return <SplitLayout visualizer={<Placeholder title="Concept visualizer" />} lab={<Placeholder title="Lab" />} />
