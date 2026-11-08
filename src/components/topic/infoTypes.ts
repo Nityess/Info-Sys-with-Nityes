@@ -1,6 +1,7 @@
 import type { ParsedTopic } from '../../content/chapter7/types'
 import { parseBlocks } from '../rail/mdParse'
 import { splitSubsections } from '../rail/splitSubsections'
+import type { BinItem } from '../rail/topics/binSorterLogic'
 
 // Reads the Topic 1.2 (Types of information) lesson out of its parsed teaching text.
 // The page text comes from content/chapter7.md; nothing here is typed in by hand.
@@ -140,6 +141,16 @@ export function planningFit(t: ParsedTopic): { head: string; text: string } {
   const next = blocks[at + 1]
   const head = at >= 0 && blocks[at].t === 'p' ? blocks[at].text.replace(/\*\*/g, '') : ''
   return head && next?.t === 'p' ? { head, text: next.text } : { head: '', text: '' }
+}
+
+/** The playground memos: the "One business, four types" table gives each situation, its type and why. */
+export function parseMemos(t: ParsedTopic): BinItem[] {
+  const table = parseBlocks(sectionBy(t, 'one business')?.md ?? '').find((b) => b.t === 'table')
+  if (!table || table.t !== 'table') return []
+  return table.rows.flatMap((r, i): BinItem[] => {
+    const key = typeKeyOf(r[1] ?? '')
+    return key ? [{ id: `m${i + 1}`, text: r[0], bin: key, why: (r[2] ?? '').replace(/\.$/, '') }] : []
+  })
 }
 
 export interface Trap {

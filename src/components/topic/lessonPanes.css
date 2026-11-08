@@ -71,3 +71,20 @@
 .ls-fb-ok{background:var(--brand-soft);color:var(--brand-text)}
 .ls-fb-bad{background:var(--coral-soft);color:var(--coral-text)}
 .ls-trapnote{margin:0;font-size:.9375rem;color:var(--muted)}
+
+/* Playground */
+.ls-memos{display:flex;flex-direction:column;gap:.625rem}
+.ls-memo{display:block;width:100%;text-align:left;padding:.875rem 1rem;border-radius:.875rem;border:2px solid var(--line-strong);background:var(--surface);color:var(--ink);font-family:inherit;font-size:1rem;line-height:1.4;cursor:pointer}
+.ls-memo-on{border-color:var(--acc);background:var(--acc-soft);box-shadow:0 0 0 .25rem var(--acc-soft)}
+.ls-memo-done{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-text);cursor:default}
+.ls-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}
+.ls-bin{display:flex;flex-direction:column;gap:.375rem;min-height:6.5rem;padding:.75rem;border-radius:1rem;border:2px dashed var(--tc);background:var(--surface);color:var(--ink);font-family:inherit;text-align:left;cursor:pointer}
+.ls-bin:hover{background:var(--ts)}
+.ls-bin-h{display:flex;align-items:center;gap:.5rem;font-weight:700;color:var(--tt)}
+.ls-bin-h i{width:.75rem;height:.75rem;border-radius:.25rem;background:var(--tc);flex:none}
+.ls-bin-who{font-size:.875rem;color:var(--muted)}
+.ls-bin-n{font-size:.875rem;font-weight:600;color:var(--brand-text)}
+.ls-shake{animation:ls-shake .35s ease both}
+@keyframes ls-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.ls-shake{animation:none}}
+:root.reduce-motion .ls-shake{animation:none}

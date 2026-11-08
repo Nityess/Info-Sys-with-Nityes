@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { topics } from 'virtual:chapter7'
-import { hookClosing, parseCompare, parseHookCards, parseTraps, parseTypes, planningFit, typeKeyOf, typeName } from './infoTypes'
+import { hookClosing, parseCompare, parseHookCards, parseMemos, parseTraps, parseTypes, planningFit, typeKeyOf, typeName } from './infoTypes'
 
 const t12 = topics['1.2']
 
@@ -58,6 +58,16 @@ describe('Topic 1.2 concept', () => {
     expect(by('operational').exam).toMatch(/unauthorised overdrafts are operational/)
     expect(by('tactical').exam).toBe('')
     expect(by('planning').exam).toBe('')
+  })
+})
+
+describe('Topic 1.2 playground memos', () => {
+  it('reads the four bank situations with their type and reason', () => {
+    const memos = parseMemos(t12)
+    expect(memos.map((m) => m.bin)).toEqual(['strategic', 'tactical', 'operational', 'planning'])
+    expect(memos[0].text).toBe('Board considers opening branches across Nepal over the next five years.')
+    expect(memos[2].why).toBe('Routine day-to-day information')
+    expect(new Set(memos.map((m) => m.id)).size).toBe(4)
   })
 })
 
