@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { topics } from 'virtual:chapter7'
-import { hookClosing, parseHookCards, typeKeyOf, typeName } from './infoTypes'
+import { hookClosing, parseHookCards, parseTypes, typeKeyOf, typeName } from './infoTypes'
 
 const t12 = topics['1.2']
 
@@ -23,5 +23,40 @@ describe('Topic 1.2 hook', () => {
     expect(typeKeyOf('Strategic information')).toBe('strategic')
     expect(typeKeyOf('Nonsense')).toBeNull()
     expect(typeName('planning')).toBe('Planning')
+  })
+})
+
+describe('Topic 1.2 concept', () => {
+  const types = parseTypes(t12)
+  const by = (k: string) => types.find((x) => x.key === k)!
+  it('reads the four types in order', () => {
+    expect(types.map((x) => x.name)).toEqual(['Strategic', 'Tactical', 'Operational', 'Planning'])
+  })
+  it('reads who uses it and the focus', () => {
+    expect(by('strategic')).toMatchObject({ who: 'Board of Directors / Senior Managers', focus: 'Long-term focus' })
+    expect(by('tactical').who).toBe('Middle Managers')
+    expect(by('operational')).toMatchObject({ who: 'Front-line Staff', focus: 'Day-to-day focus' })
+    expect(by('planning')).toMatchObject({ who: 'Planning Teams', focus: 'Implementation focus' })
+  })
+  it('reads the characteristics', () => {
+    expect(by('strategic').chars).toEqual(['Long-term in nature.', 'Often based on estimates.', 'Provides a broad picture of the organisation.', 'Supports major business decisions.'])
+    expect(by('tactical').chars).toHaveLength(3)
+    expect(by('operational').chars).toEqual(['Day-to-day in nature.', 'Routine.', 'Very detailed.', 'Mostly accurate.'])
+    expect(by('planning').chars).toEqual(['Implementation steps.', 'Available resources.', 'Time-scales.'])
+  })
+  it('reads meaning, example and memory clue for every type', () => {
+    for (const x of types) {
+      expect(x.meaning, x.key).toBeTruthy()
+      expect(x.example, x.key).toBeTruthy()
+      expect(x.clue, x.key).toBeTruthy()
+    }
+    expect(by('strategic').clue).toBe('Strategic = Big picture + Long-term + Major decisions.')
+    expect(by('operational').example).toMatch(/operatives are needed on a particular shift.*unauthorised overdrafts/)
+  })
+  it('has an exam point only where the text gives one', () => {
+    expect(by('strategic').exam).toMatch(/often based on estimates/)
+    expect(by('operational').exam).toMatch(/unauthorised overdrafts are operational/)
+    expect(by('tactical').exam).toBe('')
+    expect(by('planning').exam).toBe('')
   })
 })
