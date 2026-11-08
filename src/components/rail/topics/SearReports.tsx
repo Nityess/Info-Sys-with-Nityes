@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
 import { Check, RotateCcw, X } from 'lucide-react'
+import { SEAR_ROWS } from '../visuals/s1Data'
 
 // Report A and Report B from the topic's real-life situation (section 1), against the four SEAR factors
-const ROWS = [
-  { factor: 'Source', a: 'Recognised research organisation', b: 'Unknown website' },
-  { factor: 'Ease of Assimilation', a: 'Clear charts', b: 'Confusing 100-page document' },
-  { factor: 'Accessibility', a: 'Available online', b: 'Difficult to access' },
-  { factor: 'Relevance', a: 'Focused on restaurant customers', b: 'Mainly about the software industry' },
-]
+const ROWS = SEAR_ROWS
 
 /** Two market reports side by side: the four SEAR factors tick off one by one on A and fail on B. */
 export function SearReports() {

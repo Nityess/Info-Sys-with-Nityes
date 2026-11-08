@@ -1,0 +1,26 @@
+/* Scene page (teacher preview): header, topic tabs, panel. Layout from landing-handoff/design/Section1.dc.html. */
+
+.sc-page{min-height:100%;height:100%;overflow-y:auto;overflow-x:hidden;background:var(--bg)}
+.sc-wrapx{max-width:70rem;margin:0 auto;padding-left:clamp(.875rem,4vw,2rem);padding-right:clamp(.875rem,4vw,2rem)}
+.sc-pagehead{display:flex;align-items:center;gap:.75rem;padding-top:.75rem;padding-bottom:.375rem;min-height:4rem}
+.sc-back{display:inline-flex;align-items:center;gap:.375rem;min-height:2.75rem;color:var(--ink);font-weight:700;text-decoration:none}
+.sc-iconbtn{display:inline-flex;align-items:center;justify-content:center;width:2.75rem;height:2.75rem;border-radius:.75rem;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);cursor:pointer}
+.sc-pagemain{padding-top:.625rem;padding-bottom:3.5rem;display:flex;flex-direction:column;gap:1.125rem}
+.sc-h1{margin:0;font-size:clamp(1.75rem,5.4vw,2.875rem);line-height:1.1;font-weight:600;text-wrap:balance}
+.sc-h2{margin:0;font-size:clamp(1.5rem,4vw,2.125rem);line-height:1.15;font-weight:600}
+.sc-titlerow{display:flex;align-items:center;gap:.75rem;margin-top:.25rem}
+
+.sc-tabs{display:flex;gap:.5rem;overflow-x:auto;padding:.25rem .125rem .625rem;scrollbar-width:thin}
+.sc-tb{flex:none;display:flex;flex-direction:column;align-items:flex-start;min-height:3.25rem;padding:.375rem .875rem;border-radius:.875rem;border:2px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;cursor:pointer;text-align:left;transition:transform .15s}
+.sc-tb:hover{transform:translateY(-2px)}
+.sc-tb b{font-size:.8125rem;color:var(--acc-text)}
+.sc-tb span{font-size:.875rem;font-weight:600;white-space:nowrap}
+.sc-tb-on{border-color:var(--acc);background:var(--acc-soft)}
+.sc-tb-lock{border-style:dashed;color:var(--muted)}
+.sc-tbi{display:flex;align-items:center;gap:.375rem;color:var(--acc-text)}
+.sc-tbi .sc-ic{width:1.125rem;height:1.125rem}
+
+.sc-panelcard{padding:clamp(1rem,3vw,1.75rem);display:flex;flex-direction:column;gap:1.125rem}
+.sc-locked{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;min-height:20rem;text-align:center;border:2px dashed var(--line-strong);border-radius:1.125rem;padding:1.5rem}
+.sc-lock{width:4rem;height:4rem;color:var(--muted);animation:sc-lock 2.4s ease-in-out infinite;transform-origin:50% 80%}
+@keyframes sc-lock{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}

@@ -17,6 +17,7 @@ import { useSettings } from './state/useSettings'
 
 // Lazy so the animation library only downloads when the landing page is opened
 const Landing = lazy(() => import('./components/home/Landing').then((m) => ({ default: m.Landing })))
+const SceneStage = lazy(() => import('./components/rail/visuals/SceneStage').then((m) => ({ default: m.SceneStage })))
 const TopicLesson = lazy(() => import('./components/topic/TopicLesson').then((m) => ({ default: m.TopicLesson })))
 
 const THEME_KEY = 'ican-is-lab:theme'
@@ -68,12 +69,14 @@ export default function App() {
   const found = route.view === 'unit' ? allUnits.find((u) => u.id === route.id) : undefined
   const unit = found && (!found.topic || BUILT_TOPICS.has(found.topic.code)) ? found : undefined
   const section = route.view === 'section' ? sectionById(route.id) : undefined
+  // Teacher preview of the animated concept scenes: only while Teacher mode and its scenes switch are on
+  const sceneSection = route.view === 'scenes' && settings.showScenes ? sectionById(route.id) : undefined
   const sectionTopics = useMemo(() => (section ? allUnits.filter((u) => u.sectionId === section.id) : []), [allUnits, section])
 
   useEffect(() => {
-    const what = unit ? unit.title : section ? section.title : null
+    const what = unit ? unit.title : section ? section.title : sceneSection ? `Concept scenes: ${sceneSection.title}` : null
     document.title = what ? `${what} | ${SITE}` : `${SITE} | ICAN Foundation Information Systems`
-  }, [unit, section])
+  }, [unit, section, sceneSection])
 
   const unitId = unit?.topic ? unit.id : null
   useEffect(() => {
@@ -86,6 +89,14 @@ export default function App() {
   }
 
   const settingsMenu = <SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} />
+
+  if (sceneSection) {
+    return (
+      <Suspense fallback={<div className="h-full bg-mist dark:bg-slate-950" />}>
+        <SceneStage sectionId={sceneSection.id} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
+      </Suspense>
+    )
+  }
 
   if (!unit && !(section && sectionTopics.length > 0)) {
     return (

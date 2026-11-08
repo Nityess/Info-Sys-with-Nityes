@@ -25,6 +25,8 @@ interface Args {
   topic: ParsedTopic | null
   claim: (key: string, xp: number) => number
   onComplete: () => void
+  /** The animated scene is shown above the concept step, so its generic concept visual is left out */
+  scene?: boolean
 }
 
 export interface RailContent {
@@ -39,7 +41,7 @@ export interface RailContent {
  * visuals, quiz, answer builder, revision card and mastery checklist. Topics with their own step panes
  * (see topic/panes) use those first and fall back to this.
  */
-export function useRailContent({ unit, topic, claim, onComplete }: Args): RailContent {
+export function useRailContent({ unit, topic, claim, onComplete, scene = false }: Args): RailContent {
   const code = unit.topic?.code ?? ''
   const marker = COMPARE_MARKERS[code]
   const { checked, toggle } = useMastery(unit.id)
@@ -89,7 +91,7 @@ export function useRailContent({ unit, topic, claim, onComplete }: Args): RailCo
     ),
     concept: (
       <div className="space-y-4">
-        <TopicVisual code={code} slot="concept" />
+        {!scene && <TopicVisual code={code} slot="concept" />}
         <ConceptTabs items={parts.concept.map(({ s, md }) => ({ section: s, md }))} />
       </div>
     ),

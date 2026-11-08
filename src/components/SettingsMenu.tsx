@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Settings as Gear } from 'lucide-react'
+import { scenesHash } from '../state/route'
 import type { Settings, TextSize } from '../state/settings'
 
 interface Props {
@@ -85,6 +86,16 @@ export function SettingsMenu({ raw, onChange, dark, onToggleDark, onDark }: Prop
             {raw.teacher && (
               <div className="pl-3">
                 <Switch label="Show study-book questions" hint="The two questions copied from the study book." checked={raw.showSourceQuestions} onChange={(v) => onChange({ showSourceQuestions: v })} />
+                <Switch label="Show animated concept scenes" hint="Preview: scenes on each Concept step and on their own pages." checked={raw.showScenes} onChange={(v) => onChange({ showScenes: v })} />
+                {raw.showScenes && (
+                  <p className="flex flex-wrap gap-x-3 py-1 text-sm">
+                    {['s1', 's2', 's3'].map((s, i) => (
+                      <a key={s} href={scenesHash(s)} className="font-semibold text-spruce underline dark:text-emerald-300" onClick={() => setOpen(false)}>
+                        Section {i + 1} scenes
+                      </a>
+                    ))}
+                  </p>
+                )}
               </div>
             )}
           </div>
