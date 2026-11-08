@@ -3,7 +3,7 @@ import type { ChapterCard } from './homeLogic'
 
 interface Props {
   cards: ChapterCard[]
-  /** Where "Open chapter 7" goes: the section page in the preview, else the current Chapter 7 */
+  /** Where "Open chapter 7" goes: the next unfinished topic */
   chapter7Href: string
   /** Where "Open chapter 10" goes */
   chapter10Href: string | null
@@ -43,7 +43,7 @@ export function ChaptersSection({ cards, chapter7Href, chapter10Href }: Props) {
           return (
             <article key={c.number} className="lp-card lp-chcard lp-reveal">
               <div className="lp-stack" style={{ gap: '.375rem' }}>
-                <span className="lp-chip" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)' }}>{partial ? 'Part open' : 'Open now'}</span>
+                <span className="lp-chip" style={{ background: 'var(--brand-soft)', color: 'var(--brand-text)' }}>{partial && !isSeven ? 'Part open' : 'Open now'}</span>
                 <h3 className="lp-serif">Chapter {c.number}</h3>
                 <p>{c.title}</p>
               </div>

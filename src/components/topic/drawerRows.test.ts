@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { chapters, previewChapters } from '../../content/chapters'
+import { chapters } from '../../content/chapters'
 import { drawerRows } from './drawerRows'
 
 describe('drawer rows', () => {
-  const rows = drawerRows(previewChapters, '1.2', new Set(['ch07-t1-3']))
+  const rows = drawerRows(chapters, '1.2', new Set(['ch07-t1-3']))
   const topics = rows.flatMap((r) => (r.kind === 'topic' ? [r] : []))
 
   it('lists all 18 topics under three section headings', () => {
@@ -20,9 +20,9 @@ describe('drawer rows', () => {
     expect(topics.find((t) => t.code === '2.1')).toMatchObject({ href: null, tag: 'Soon' })
     expect(topics.find((t) => t.code === '1.4')?.href).toBe('#/unit/ch07-t1-4')
   })
-  it('gives students (the current Chapter 7) no links into the rebuild', () => {
-    const student = drawerRows(chapters, '1.2', new Set()).flatMap((r) => (r.kind === 'topic' ? [r] : []))
-    expect(student.every((t) => t.href === null || t.current)).toBe(true)
+  it('links the eight built topics and says Soon for 1.1 (no teaching text yet) and Sections 2 and 3', () => {
+    expect(topics.filter((t) => t.href).map((t) => t.code)).toEqual(['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'])
+    expect(topics.find((t) => t.code === '1.1')).toMatchObject({ href: null, tag: 'Soon' })
   })
   it('uses no em dashes', () => {
     expect(JSON.stringify(rows)).not.toContain('—')

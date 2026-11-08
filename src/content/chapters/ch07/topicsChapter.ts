@@ -1,11 +1,9 @@
 import type { Chapter, Unit } from '../../types'
-import { infoRequirements } from './sectionA1'
 import { TOPICS, displayTitle, sectionById, topicId } from './topics'
 
 /**
- * The rebuilt Chapter 7: 18 topics from content/chapter7.md. Shown to students only once it is
- * complete; until then it appears in teacher mode as a preview.
- * Topic 1.1 is empty in the teaching file, so it reuses the textbook-based lesson for now.
+ * Chapter 7: 18 topics from content/chapter7.md, shown to everyone since the cutover.
+ * Topics whose lesson is not built yet (see BUILT_TOPICS) show as "Soon". Topic 1.1 has no teaching text yet.
  */
 export const ch07Topics: Chapter = {
   id: 'ch07',
@@ -15,21 +13,13 @@ export const ch07Topics: Chapter = {
   weight: 10,
   units: TOPICS.map((t): Unit => {
     const section = sectionById(t.section)!
-    const base: Unit = {
+    return {
       id: topicId(t.code),
       lo: t.code,
       title: displayTitle(t),
       section: section.title,
       sectionId: section.id,
       topic: { code: t.code, teachingAid: t.teachingAid, playground: t.playground, fromStudyText: t.fromStudyText },
-    }
-    if (t.code !== '1.1') return base
-    return {
-      ...base,
-      hub: infoRequirements.hub,
-      objective: infoRequirements.objective,
-      cards: infoRequirements.cards,
-      practice: infoRequirements.practice,
     }
   }),
 }

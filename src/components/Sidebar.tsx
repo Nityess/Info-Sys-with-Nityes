@@ -2,6 +2,7 @@ import { CheckCircle2, Circle } from 'lucide-react'
 import type { Chapter } from '../content/types'
 import { completionPercent } from '../state/progress'
 import { sectionHash } from '../state/route'
+import { isBuilt } from './home/homeLogic'
 import { themeFor } from './sectionTheme'
 
 interface Props {
@@ -53,12 +54,13 @@ export function Sidebar({ chapters, done, selectedId, onSelect }: Props) {
                     )}
                     <button
                       type="button"
+                      disabled={Boolean(u.topic) && !isBuilt(u)}
                       onClick={() => onSelect(u.id)}
                       aria-current={active ? 'page' : undefined}
                       className={`flex w-full items-start gap-2 rounded px-2 py-1.5 text-left text-sm ${
                         active
                           ? 'bg-indigo-100 text-indigo-900 dark:bg-indigo-900/40 dark:text-indigo-100'
-                          : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                          : 'text-slate-700 hover:bg-slate-100 disabled:opacity-60 disabled:hover:bg-transparent dark:text-slate-300 dark:hover:bg-slate-800'
                       }`}
                     >
                       {done.has(u.id) ? (
@@ -68,6 +70,7 @@ export function Sidebar({ chapters, done, selectedId, onSelect }: Props) {
                       )}
                       <span>
                         <span className="font-medium">{u.lo}</span> {u.title}
+                        {u.topic && !isBuilt(u) && <span className="ml-1 text-xs text-slate-500 dark:text-slate-400">(soon)</span>}
                       </span>
                     </button>
                   </li>

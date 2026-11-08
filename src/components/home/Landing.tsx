@@ -2,14 +2,14 @@ import { useMemo, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import type { Chapter } from '../../content/types'
-import { sectionHash, unitHash } from '../../state/route'
+import { unitHash } from '../../state/route'
 import { Chapter7Map } from './Chapter7Map'
 import { ChaptersSection } from './ChaptersSection'
 import { FreeSection } from './FreeSection'
 import { HeroSection } from './HeroSection'
 import { HowSection } from './HowSection'
 import { BRAND } from './homeData'
-import { chapterCards, heroAction, showsRebuiltChapter7, topicHref } from './homeLogic'
+import { chapterCards, heroAction, topicHref } from './homeLogic'
 import { scrollToId, useCalm, useReveal } from './useLandingMotion'
 import './landing.css'
 
@@ -20,26 +20,23 @@ interface Props {
   onToggleDark: () => void
   /** Settings button, built by the app so it shares state with the study screens */
   settingsSlot?: ReactNode
-  /** Teacher preview only: where the Chapter 7 buttons go instead of the section page (Topic 1.2 lesson) */
-  previewStartHref?: string
 }
 
 /**
  * The landing page, built to landing-handoff/design/Main.dc.html. All links are plain hash links.
  * Students still get the current Chapter 7; the rebuilt one appears only in the teacher preview.
  */
-export function Landing({ chapters, done, dark, onToggleDark, settingsSlot, previewStartHref }: Props) {
+export function Landing({ chapters, done, dark, onToggleDark, settingsSlot }: Props) {
   const root = useRef<HTMLDivElement>(null)
   const calm = useCalm()
   useReveal(root)
   const action = useMemo(() => heroAction(chapters, done), [chapters, done])
   const cards = useMemo(() => chapterCards(chapters, done), [chapters, done])
-  const rebuilt = showsRebuiltChapter7(chapters)
   const unitOf = (n: number) => cards.find((c) => c.number === n)?.unitId
-  const ch7 = rebuilt ? (previewStartHref ?? sectionHash('s1')) : unitOf(7) ? unitHash(unitOf(7)!) : '#chapter-7'
+  const ch7 = unitOf(7) ? unitHash(unitOf(7)!) : '#chapter-7'
   const ch10 = unitOf(10) ? unitHash(unitOf(10)!) : null
   const goto = (id: string) => scrollToId(id, calm)
-  const startHref = previewStartHref ?? (action ? unitHash(action.unit.id) : '#chapter-7')
+  const startHref = action ? unitHash(action.unit.id) : '#chapter-7'
 
   return (
     <div className="lp" id="top" ref={root}>

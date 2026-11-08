@@ -2,6 +2,7 @@ import { Check, Circle, CircleDot } from 'lucide-react'
 import type { Unit } from '../../content/types'
 import type { SectionInfo } from '../../content/chapters/ch07/topics'
 import { topicStatus } from '../../state/progress'
+import { isBuilt } from '../home/homeLogic'
 import type { TopicStatus } from '../../state/progress'
 
 interface Props {
@@ -56,6 +57,7 @@ export function SectionPage({ section, topics, done, started, onOpen }: Props) {
       <ol className="relative mx-auto max-w-2xl px-4 py-8 pb-20">
         {topics.map((t, i) => {
           const status = topicStatus(t.id, done, started)
+          const soon = !isBuilt(t)
           return (
             <li key={t.id} className="relative mb-3">
               {i < topics.length - 1 && (
@@ -63,8 +65,13 @@ export function SectionPage({ section, topics, done, started, onOpen }: Props) {
               )}
               <button
                 type="button"
+                disabled={soon}
                 onClick={() => onOpen(t.id)}
-                className="relative flex w-full items-center gap-4 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-slate-200 transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] dark:bg-slate-900 dark:ring-slate-800"
+                className={`relative flex w-full items-center gap-4 rounded-2xl p-3 text-left ring-1 transition ${
+                  soon
+                    ? 'bg-transparent opacity-70 ring-dashed ring-slate-300 dark:ring-slate-700'
+                    : 'bg-white shadow-sm ring-slate-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99] dark:bg-slate-900 dark:ring-slate-800'
+                }`}
               >
                 <span className={`relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${section.dot} text-sm font-bold text-white`}>{t.topic?.code}</span>
                 <span className="min-w-0 flex-1">
@@ -72,13 +79,18 @@ export function SectionPage({ section, topics, done, started, onOpen }: Props) {
                   <span className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-600 dark:text-slate-400">
                     {t.topic?.teachingAid && <span>{t.topic.teachingAid}: teaching aid</span>}
                     {t.topic?.playground && <span>Includes a playground</span>}
-                    {t.topic?.fromStudyText && <span>From the study text</span>}
                   </span>
                 </span>
                 <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400">
-                  <StatusIcon status={status} />
-                  <span className="hidden sm:inline">{STATUS_TEXT[status]}</span>
-                  <span className="sr-only sm:hidden">{STATUS_TEXT[status]}</span>
+                  {soon ? (
+                    <span className="rounded-full bg-slate-200 px-2 py-0.5 font-semibold text-ink dark:bg-slate-700 dark:text-white">Coming soon</span>
+                  ) : (
+                    <>
+                      <StatusIcon status={status} />
+                      <span className="hidden sm:inline">{STATUS_TEXT[status]}</span>
+                      <span className="sr-only sm:hidden">{STATUS_TEXT[status]}</span>
+                    </>
+                  )}
                 </span>
               </button>
             </li>

@@ -5,8 +5,8 @@ import { BUILT_TOPICS } from '../rail/builtTopics'
 import { topicId } from '../../content/chapters/ch07/topics'
 import { COMING_SOON } from './homeData'
 
-/** A unit is playable once it has a lesson (cards + practice) or a lab. */
-export const isBuilt = (u: Unit): boolean => Boolean((u.cards && u.practice) || u.labId)
+/** A unit is playable once it has a lab, or it is a Chapter 7 topic whose lesson is built. */
+export const isBuilt = (u: Unit): boolean => Boolean(u.labId || (u.topic && BUILT_TOPICS.has(u.topic.code)))
 
 const builtUnits = (chapters: readonly Chapter[]): Unit[] => chapters.flatMap((c) => c.units).filter(isBuilt)
 
@@ -71,16 +71,8 @@ export function chapterCards(chapters: readonly Chapter[], done: ReadonlySet<str
   return [...open, ...soon].sort((a, b) => a.number - b.number)
 }
 
-/**
- * Link for a Chapter 7 topic card, or null while the topic is not playable. A topic is playable when its
- * rail is built (BUILT_TOPICS) or it carries a lesson, and only in the chapters being shown, so
- * students (who still get the current Chapter 7) never see links to the unfinished rebuild.
- */
+/** Link for a Chapter 7 topic card, or null while the topic is not built yet (it then shows "Soon"). */
 export function topicHref(chapters: readonly Chapter[], code: string): string | null {
   const unit = chapters.flatMap((c) => c.units).find((u) => u.id === topicId(code))
-  if (!unit) return null
-  return isBuilt(unit) || BUILT_TOPICS.has(code) ? unitHash(unit.id) : null
+  return unit && isBuilt(unit) ? unitHash(unit.id) : null
 }
-
-/** Whether the chapters being shown include the rebuilt Chapter 7 (teacher preview). */
-export const showsRebuiltChapter7 = (chapters: readonly Chapter[]): boolean => chapters.some((c) => c.units.some((u) => u.sectionId))

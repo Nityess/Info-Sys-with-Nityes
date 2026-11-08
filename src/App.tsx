@@ -1,17 +1,16 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import { Flame, House, Menu, Moon, Sun, X, Zap } from 'lucide-react'
 import { useGame } from './state/useGame'
-import { chapters, previewChapters } from './content/chapters'
+import { chapters } from './content/chapters'
 import { sectionById } from './content/chapters/ch07/topics'
 import { Sidebar } from './components/Sidebar'
 import { SettingsMenu } from './components/SettingsMenu'
 import { HintBar } from './components/HintBar'
 import { UnitView } from './components/UnitView'
 import { SectionPage } from './components/rail/SectionPage'
-import { LESSON_SHELL_TOPICS } from './components/rail/builtTopics'
+import { BUILT_TOPICS, LESSON_SHELL_TOPICS } from './components/rail/builtTopics'
 import { useProgress } from './state/progress'
 import { HOME_HASH, unitHash } from './state/route'
-import { topicId } from './content/chapters/ch07/topics'
 import { TEXT_PX } from './state/settings'
 import { navigate, useRoute } from './state/useRoute'
 import { useSettings } from './state/useSettings'
@@ -45,7 +44,7 @@ export default function App() {
   const setDrawerOpen = (open: boolean) => setDrawerFor(open ? routeKey : null)
   const [dark, setDark] = useState(initialDark)
 
-  const shown = settings.previewNewCh7 ? previewChapters : chapters
+  const shown = chapters
   const allUnits = useMemo(() => shown.flatMap((c) => c.units), [shown])
 
   useEffect(() => {
@@ -65,7 +64,9 @@ export default function App() {
     document.documentElement.classList.toggle('reduce-motion', settings.reduceMotion)
   }, [settings.reduceMotion])
 
-  const unit = route.view === 'unit' ? allUnits.find((u) => u.id === route.id) : undefined
+  // A topic that is not built yet has no page: its link goes back to the landing page
+  const found = route.view === 'unit' ? allUnits.find((u) => u.id === route.id) : undefined
+  const unit = found && (!found.topic || BUILT_TOPICS.has(found.topic.code)) ? found : undefined
   const section = route.view === 'section' ? sectionById(route.id) : undefined
   const sectionTopics = useMemo(() => (section ? allUnits.filter((u) => u.sectionId === section.id) : []), [allUnits, section])
 
@@ -84,15 +85,7 @@ export default function App() {
     setDrawerOpen(false)
   }
 
-  // Turning the preview on can jump straight to Topic 1.2 in the new lesson screen (teacher setting)
-  const firstTopic = unitHash(topicId('1.2'))
-  const change = (patch: Partial<typeof raw>) => {
-    set(patch)
-    if (patch.previewNewCh7 && raw.previewOpensTopic) navigate(firstTopic)
-  }
-  const previewStartHref = settings.previewOpensTopic ? firstTopic : undefined
-
-  const settingsMenu = <SettingsMenu raw={raw} onChange={change} dark={dark} onToggleDark={() => setDark((d) => !d)} />
+  const settingsMenu = <SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} />
 
   if (!unit && !(section && sectionTopics.length > 0)) {
     return (
@@ -100,10 +93,9 @@ export default function App() {
         <Landing
           chapters={shown}
           done={done}
-          previewStartHref={previewStartHref}
           dark={dark}
           onToggleDark={() => setDark((d) => !d)}
-          settingsSlot={<SettingsMenu raw={raw} onChange={change} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}
+          settingsSlot={<SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}
         />
       </Suspense>
     )
