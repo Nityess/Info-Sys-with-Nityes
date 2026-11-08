@@ -1,0 +1,68 @@
+import { CheckCircle2, Circle } from 'lucide-react'
+import type { Chapter } from '../content/types'
+import { completionPercent } from '../state/progress'
+
+interface Props {
+  chapters: Chapter[]
+  done: ReadonlySet<string>
+  selectedId: string
+  onSelect: (unitId: string) => void
+}
+
+export function Sidebar({ chapters, done, selectedId, onSelect }: Props) {
+  return (
+    <nav aria-label="Chapters" className="p-3">
+      {chapters.map((ch) => {
+        const pct = completionPercent(ch, done)
+        return (
+          <section key={ch.id} className="mb-4">
+            <h2 className="flex items-baseline justify-between text-sm font-semibold text-slate-900 dark:text-slate-100">
+              <span>
+                Ch {ch.number} · {ch.title}
+              </span>
+              <span className="text-xs font-normal text-slate-500 dark:text-slate-400">{pct}%</span>
+            </h2>
+            <div
+              className="mt-1 h-1.5 overflow-hidden rounded bg-slate-200 dark:bg-slate-700"
+              role="progressbar"
+              aria-valuenow={pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${ch.title} completion`}
+            >
+              <div className="h-full bg-emerald-500" style={{ width: `${pct}%` }} />
+            </div>
+            <ul className="mt-2 space-y-0.5">
+              {ch.units.map((u) => {
+                const active = u.id === selectedId
+                return (
+                  <li key={u.id}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(u.id)}
+                      aria-current={active ? 'page' : undefined}
+                      className={`flex w-full items-start gap-2 rounded px-2 py-1.5 text-left text-sm ${
+                        active
+                          ? 'bg-indigo-100 text-indigo-900 dark:bg-indigo-900/40 dark:text-indigo-100'
+                          : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                      }`}
+                    >
+                      {done.has(u.id) ? (
+                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" aria-label="Completed" />
+                      ) : (
+                        <Circle className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" aria-hidden />
+                      )}
+                      <span>
+                        <span className="font-medium">{u.lo}</span> {u.title}
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        )
+      })}
+    </nav>
+  )
+}
