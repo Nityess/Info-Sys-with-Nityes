@@ -20,7 +20,7 @@ export const SECTIONS: SectionInfo[] = [
   {
     id: 's1',
     title: 'IT in the Business Environment',
-    summary: 'What information is, what makes it good, and how the IT function delivers it.',
+    summary: 'How businesses use information, what makes it good, and how IT delivers it.',
     band: 'bg-gradient-to-br from-blue-700 to-blue-900',
     dot: 'bg-blue-600',
     text: 'text-blue-700 dark:text-blue-300',
@@ -29,7 +29,7 @@ export const SECTIONS: SectionInfo[] = [
   {
     id: 's2',
     title: 'Role of Financial Information in Business',
-    summary: 'Who uses financial information, when it is useful, and where it falls short.',
+    summary: 'Who uses financial information and what makes it useful, shown through a Nepalese manufacturing company.',
     band: 'bg-gradient-to-br from-emerald-700 to-teal-900',
     dot: 'bg-spruce',
     text: 'text-emerald-700 dark:text-emerald-300',
@@ -38,7 +38,7 @@ export const SECTIONS: SectionInfo[] = [
   {
     id: 's3',
     title: 'Information Systems & IT',
-    summary: 'Spreadsheets, databases, accounting software and computer networks.',
+    summary: 'Spreadsheets, databases, accounting software and networks: how a business manages its information.',
     band: 'bg-gradient-to-br from-amber-600 to-orange-800',
     dot: 'bg-amber-500',
     text: 'text-amber-700 dark:text-amber-300',

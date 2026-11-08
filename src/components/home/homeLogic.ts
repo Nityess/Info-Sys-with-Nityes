@@ -1,5 +1,8 @@
 import type { Chapter, Unit } from '../../content/types'
 import { completionPercent } from '../../state/progress'
+import { unitHash } from '../../state/route'
+import { BUILT_TOPICS } from '../rail/builtTopics'
+import { topicId } from '../../content/chapters/ch07/topics'
 import { COMING_SOON } from './homeData'
 
 /** A unit is playable once it has a lesson (cards + practice) or a lab. */
@@ -19,7 +22,7 @@ export function heroAction(chapters: readonly Chapter[], done: ReadonlySet<strin
   const units = builtUnits(chapters)
   if (units.length === 0) return undefined
   const anyDone = units.some((u) => done.has(u.id))
-  if (!anyDone) return { label: 'Start the first lesson', unit: units[0], returning: false }
+  if (!anyDone) return { label: 'Start Chapter 7', unit: units[0], returning: false }
   const next = units.find((u) => !done.has(u.id))
   if (next) return { label: 'Continue your lesson', unit: next, returning: true }
   return { label: 'Review a lesson', unit: units[0], returning: true }
@@ -67,3 +70,17 @@ export function chapterCards(chapters: readonly Chapter[], done: ReadonlySet<str
   }))
   return [...open, ...soon].sort((a, b) => a.number - b.number)
 }
+
+/**
+ * Link for a Chapter 7 topic card, or null while the topic is not playable. A topic is playable when its
+ * rail is built (BUILT_TOPICS) or it carries a lesson, and only in the chapters being shown, so
+ * students (who still get the current Chapter 7) never see links to the unfinished rebuild.
+ */
+export function topicHref(chapters: readonly Chapter[], code: string): string | null {
+  const unit = chapters.flatMap((c) => c.units).find((u) => u.id === topicId(code))
+  if (!unit) return null
+  return isBuilt(unit) || BUILT_TOPICS.has(code) ? unitHash(unit.id) : null
+}
+
+/** Whether the chapters being shown include the rebuilt Chapter 7 (teacher preview). */
+export const showsRebuiltChapter7 = (chapters: readonly Chapter[]): boolean => chapters.some((c) => c.units.some((u) => u.sectionId))

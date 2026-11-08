@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { chapters } from '../../content/chapters'
-import { EXAM } from './homeData'
-import { chapterCards, heroAction, isBuilt } from './homeLogic'
+import { chapters, previewChapters } from '../../content/chapters'
+import { EXAM, HOW_STEPS, PAPER_SPLIT, TOPIC_CARDS, splitPercent } from './homeData'
+import { SECTIONS, TOPICS } from '../../content/chapters/ch07/topics'
+import { chapterCards, heroAction, isBuilt, showsRebuiltChapter7, topicHref } from './homeLogic'
 
 describe('landing facts', () => {
   it('learning outcome marks add up to Part B', () => {
@@ -17,10 +18,29 @@ describe('landing facts', () => {
   })
 })
 
+describe('landing page facts', () => {
+  it('splits Part B marks 30 and 20, which is 60 and 40 percent', () => {
+    expect(PAPER_SPLIT.objective + PAPER_SPLIT.subjective).toBe(EXAM.partBMarks)
+    expect(splitPercent()).toEqual({ objective: 60, subjective: 40 })
+  })
+  it('has one key line for every Chapter 7 topic, and only CATIVA is a source mnemonic', () => {
+    expect(Object.keys(TOPIC_CARDS).sort()).toEqual(TOPICS.map((t) => t.code).sort())
+    expect(Object.entries(TOPIC_CARDS).filter(([, c]) => c.sourceMnemonic).map(([k, c]) => [k, c.sourceMnemonic])).toEqual([['1.9', 'CATIVA']])
+  })
+  it('describes the eight parts of a topic and flags only the playground step', () => {
+    expect(HOW_STEPS).toHaveLength(8)
+    expect(HOW_STEPS.filter((s) => 'gold' in s).map((s) => s.title)).toEqual(['Playground'])
+  })
+  it('counts 18 topics in 3 sections, 9 plus 5 plus 4', () => {
+    expect(TOPICS).toHaveLength(18)
+    expect(SECTIONS.map((s) => TOPICS.filter((t) => t.section === s.id).length)).toEqual([9, 5, 4])
+  })
+})
+
 describe('heroAction', () => {
   it('starts at the first built unit for a new student', () => {
     const a = heroAction(chapters, new Set())!
-    expect(a.label).toBe('Start the first lesson')
+    expect(a.label).toBe('Start Chapter 7')
     expect(a.unit.id).toBe(chapters[0].units[0].id)
     expect(a.returning).toBe(false)
   })
@@ -57,5 +77,18 @@ describe('chapterCards', () => {
     expect(c.unitId).toBe('ch10-lo7b')
     expect(c.started).toBe(true)
     expect(c.percent).toBe(20)
+  })
+})
+
+describe('topicHref', () => {
+  it('gives students no topic links, because they still get the current Chapter 7', () => {
+    for (const t of TOPICS) expect(topicHref(chapters, t.code), t.code).toBeNull()
+    expect(showsRebuiltChapter7(chapters)).toBe(false)
+  })
+  it('links only the playable topics in the teacher preview: 1.1 (study text lesson) and 1.5 (full rail)', () => {
+    const linked = TOPICS.filter((t) => topicHref(previewChapters, t.code)).map((t) => t.code)
+    expect(linked).toEqual(['1.1', '1.5'])
+    expect(topicHref(previewChapters, '1.5')).toBe('#/unit/ch07-t1-5')
+    expect(showsRebuiltChapter7(previewChapters)).toBe(true)
   })
 })

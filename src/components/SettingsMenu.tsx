@@ -7,6 +7,8 @@ interface Props {
   onChange: (patch: Partial<Settings>) => void
   dark: boolean
   onToggleDark: () => void
+  /** Icon button styled for the navy landing hero */
+  onDark?: boolean
 }
 
 const SIZES: { id: TextSize; label: string }[] = [
@@ -28,7 +30,7 @@ function Switch({ label, hint, checked, onChange }: { label: string; hint?: stri
 }
 
 /** Gear button with a small settings panel. Closes on Escape or an outside click. */
-export function SettingsMenu({ raw, onChange, dark, onToggleDark }: Props) {
+export function SettingsMenu({ raw, onChange, dark, onToggleDark, onDark }: Props) {
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
 
@@ -53,7 +55,7 @@ export function SettingsMenu({ raw, onChange, dark, onToggleDark }: Props) {
         aria-label="Settings"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="rounded-lg p-2 transition hover:bg-white dark:hover:bg-slate-900"
+        className={onDark ? 'lp-iconbtn' : 'rounded-lg p-2 transition hover:bg-white dark:hover:bg-slate-900'}
       >
         <Gear className="h-5 w-5" aria-hidden />
       </button>

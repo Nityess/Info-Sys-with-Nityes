@@ -18,7 +18,7 @@ import { useSettings } from './state/useSettings'
 const Landing = lazy(() => import('./components/home/Landing').then((m) => ({ default: m.Landing })))
 
 const THEME_KEY = 'ican-is-lab:theme'
-const SITE = 'Info Sys with Nityes'
+const SITE = 'Info System with ca.nityes'
 
 function initialDark(): boolean {
   try {
@@ -89,12 +89,9 @@ export default function App() {
         <Landing
           chapters={shown}
           done={done}
-          xp={game.xp}
-          streak={game.streak}
           dark={dark}
           onToggleDark={() => setDark((d) => !d)}
-          onOpenUnit={select}
-          settingsSlot={settingsMenu}
+          settingsSlot={<SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}
         />
       </Suspense>
     )
