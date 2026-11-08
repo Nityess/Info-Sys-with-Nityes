@@ -8,7 +8,7 @@ import { HintBar } from './components/HintBar'
 import { UnitView } from './components/UnitView'
 import { BUILT_TOPICS, LESSON_SHELL_TOPICS } from './components/rail/builtTopics'
 import { useProgress } from './state/progress'
-import { boardIdForRoute, boardLabel } from './components/board/boardRoute'
+import { boardIdForRoute, boardLabel, topicForRoute } from './components/board/boardRoute'
 import { HOME_HASH, unitHash } from './state/route'
 import { TEXT_PX } from './state/settings'
 import { navigate, useRoute } from './state/useRoute'
@@ -90,7 +90,7 @@ export default function App() {
   if (boardId) {
     return (
       <Suspense fallback={<div className="h-full bg-mist dark:bg-slate-950" />}>
-        <BoardPage key={boardId} boardId={boardId} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
+        <BoardPage key={boardId} boardId={boardId} initialTopic={topicForRoute(route)} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
       </Suspense>
     )
   }

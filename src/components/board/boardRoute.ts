@@ -8,6 +8,9 @@ export function boardIdForRoute(route: Route): BoardId | null {
   return null
 }
 
+/** The topic a route asks for, if any. */
+export const topicForRoute = (route: Route): string | undefined => (route.view === 'section' || route.view === 'chapter8' ? route.topic : undefined)
+
 export const boardLabel = (id: BoardId): string => `Chapter ${id[1]} section ${id[3]} topic board`
 
 /** Lesson topics whose Concept step can show the board's animation: Chapter 7 topic codes map to their section's board. */

@@ -13,13 +13,19 @@ describe('hash route', () => {
     expect(parseHash(unitHash('ch10-lo7a'))).toEqual({ view: 'unit', id: 'ch10-lo7a' })
   })
   it('parses section links, and only the three real sections', () => {
-    expect(parseHash(sectionHash('s2'))).toEqual({ view: 'section', id: 's2' })
+    expect(parseHash(sectionHash('s2'))).toEqual({ view: 'section', id: 's2', topic: undefined })
     expect(parseHash('#/section/s4')).toEqual({ view: 'home' })
     expect(parseHash('#/section/')).toEqual({ view: 'home' })
   })
+  it('opens a board at one topic', () => {
+    expect(parseHash(sectionHash('s1', '1.3'))).toEqual({ view: 'section', id: 's1', topic: '1.3' })
+    expect(parseHash(chapter8Hash('s3', '3.6'))).toEqual({ view: 'chapter8', id: 's3', topic: '3.6' })
+    expect(parseHash('#/section/s3/0')).toMatchObject({ topic: '0' })
+    expect(parseHash('#/section/s1/<x>')).toEqual({ view: 'home' })
+  })
   it('parses the Chapter 8 board pages for the three sections only', () => {
-    expect(parseHash(chapter8Hash('s1'))).toEqual({ view: 'chapter8', id: 's1' })
-    expect(parseHash('#/chapter8/s3')).toEqual({ view: 'chapter8', id: 's3' })
+    expect(parseHash(chapter8Hash('s1'))).toMatchObject({ view: 'chapter8', id: 's1' })
+    expect(parseHash('#/chapter8/s3')).toMatchObject({ view: 'chapter8', id: 's3' })
     expect(parseHash('#/chapter8/s4')).toEqual({ view: 'home' })
     expect(parseHash('#/chapter8/')).toEqual({ view: 'home' })
   })
