@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Section } from '../../content/chapter7/types'
+import { parseConceptCard, isRichCard } from './conceptCard'
+import { ConceptCardView } from './ConceptCardView'
 import { Markdown } from './Markdown'
 import { splitSubsections } from './splitSubsections'
 import { plain, tabLabel } from './tabLabel'
@@ -13,8 +15,11 @@ interface Item {
 function SubParts({ md }: { md: string }) {
   const { lead, parts } = splitSubsections(md)
   const [sub, setSub] = useState(0)
+  const cards = useMemo(() => parts.map((p) => parseConceptCard(p.label, p.md)), [parts])
   if (parts.length === 0) return <Markdown md={md} />
-  const part = parts[Math.min(sub, parts.length - 1)]
+  const at = Math.min(sub, parts.length - 1)
+  const part = parts[at]
+  const card = cards[at]
   return (
     <div className="space-y-3">
       {lead && <Markdown md={lead} />}
@@ -32,8 +37,14 @@ function SubParts({ md }: { md: string }) {
         ))}
       </div>
       <div className="rounded-2xl bg-mist p-4 dark:bg-slate-800/50">
-        <h5 className="mb-2 font-display text-base font-semibold text-ink dark:text-white">{part.label}</h5>
-        <Markdown md={part.md} />
+        {isRichCard(card) ? (
+          <ConceptCardView card={card} index={at + 1} total={parts.length} />
+        ) : (
+          <>
+            <h5 className="mb-2 font-display text-base font-semibold text-ink dark:text-white">{part.label}</h5>
+            <Markdown md={part.md} />
+          </>
+        )}
       </div>
     </div>
   )
