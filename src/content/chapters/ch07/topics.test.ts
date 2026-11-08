@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import md from '../../../../../content/chapter7.md?raw'
+import md from '../../../../content/chapter7.md?raw'
 import { SECTIONS, TOPICS, displayTitle, topicId } from './topics'
 
 const sectionHeadings = [...md.matchAll(/^# SECTION (\d) - (.+?)\s*$/gm)].map((m) => m[2])
