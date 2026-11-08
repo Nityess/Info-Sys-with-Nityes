@@ -19,7 +19,7 @@ export const EXAM = {
 /**
  * Part B marks by question type. Counted from the practice papers: IS Pre-Test Sets 1 and 2 each have
  * ten 1-mark and ten 2-mark MCQs (30 marks) and 20 marks of written questions. The syllabus does not
- * state this split, so the page says "in the practice papers".
+ * state this split. The page shows it as the design does, without a caveat (owner decision, 2026-11-08).
  */
 export const PAPER_SPLIT = { objective: 30, subjective: 20 } as const
 

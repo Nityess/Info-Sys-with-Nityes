@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { ArrowRight, Moon, Sun } from 'lucide-react'
 import { Wordmark } from './Wordmark'
-import { EXAM, PAPER_SPLIT, splitPercent } from './homeData'
+import { EXAM, splitPercent } from './homeData'
 import type { HeroAction } from './homeLogic'
 
 interface Props {
@@ -21,18 +21,17 @@ function Pie() {
   const { objective, subjective } = splitPercent()
   return (
     <div className="lp-card lp-lift lp-card-pad lp-rise lp-stack" style={{ marginTop: '.75rem', gap: '1rem', animationDelay: '.4s' }}>
-      <h3 className="lp-serif lp-card-title">How Part B marks are split</h3>
+      <h3 className="lp-serif lp-card-title">How the questions are split</h3>
       <div className="lp-pie-row">
-        <svg className="lp-pie" width="168" height="168" viewBox="0 0 42 42" role="img" aria-label={`Pie chart: ${objective} percent MCQs, ${subjective} percent written questions`}>
+        <svg className="lp-pie" width="168" height="168" viewBox="0 0 42 42" role="img" aria-label={`Pie chart: ${objective} percent objective questions, ${subjective} percent subjective questions`}>
           <circle className="lp-pie1" style={pieVars(objective, subjective)} cx="21" cy="21" r="10.5" fill="none" stroke="var(--brand)" strokeWidth="21" pathLength={100} strokeDasharray={`${objective} ${subjective}`} />
           <circle className="lp-pie2" style={pieVars(subjective, objective)} cx="21" cy="21" r="10.5" fill="none" stroke="var(--gold)" strokeWidth="21" pathLength={100} strokeDasharray={`${subjective} ${objective}`} strokeDashoffset={-objective} />
         </svg>
         <ul className="lp-legend">
           <li><span className="lp-swatch" style={{ background: 'var(--brand)' }} /><span><b className="lp-serif">{objective}%</b><span>Objective (MCQs)</span></span></li>
-          <li><span className="lp-swatch" style={{ background: 'var(--gold)' }} /><span><b className="lp-serif">{subjective}%</b><span>Written questions</span></span></li>
+          <li><span className="lp-swatch" style={{ background: 'var(--gold)' }} /><span><b className="lp-serif">{subjective}%</b><span>Subjective</span></span></li>
         </ul>
       </div>
-      <p className="lp-small">As in the practice papers: {PAPER_SPLIT.objective} marks of MCQs, {PAPER_SPLIT.subjective} marks of written questions.</p>
     </div>
   )
 }
@@ -91,7 +90,7 @@ export function HeroSection({ action, actionHref, dark, onToggleDark, settingsSl
             Interactive study site for ICAN Foundation <span className="lp-mark">Information Systems</span>
           </h1>
           <p className="lp-sub lp-rise" style={{ animationDelay: '.15s' }}>
-            Part B is {EXAM.partBMarks} of Paper 2’s {EXAM.paperMarks} marks. Four chapters, free, on your phone.
+            Part B is {EXAM.partBMarks} of Paper 2’s {EXAM.paperMarks} marks. Four topics, free, on your phone.
           </p>
           <div className="lp-actions lp-rise" style={{ animationDelay: '.25s' }}>
             {action && (
