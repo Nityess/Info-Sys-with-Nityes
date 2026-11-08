@@ -3,9 +3,9 @@ export const BUILT_TOPICS: ReadonlySet<string> = new Set(['1.2', '1.3', '1.4', '
 
 /**
  * Topics shown in the new lesson screen (top bar, 8-step bar, one step per screen) instead of the scrolling rail.
- * Topic 1.2 goes first; the others move over one round at a time.
+ * Every built topic uses it. Topic 1.2 has its own step panes; the others use the generic content for now.
  */
-export const LESSON_SHELL_TOPICS: ReadonlySet<string> = new Set(['1.2'])
+export const LESSON_SHELL_TOPICS: ReadonlySet<string> = new Set(['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'])
 
 /**
  * Where "Compare and traps" starts inside a concept section, for topics where it is not its own heading.

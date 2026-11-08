@@ -109,3 +109,7 @@
 .ls-result{padding:1.75rem;display:flex;flex-direction:column;gap:.75rem;align-items:flex-start;max-width:47.5rem}
 .ls-chip-ok{background:var(--brand-soft);color:var(--brand-text)}
 .ls-bigscore{font-size:2.5rem;font-weight:600;line-height:1.1}
+
+/* Generic step content (from the teaching text) inside the lesson screen */
+.ls-generic{padding:clamp(1rem,3vw,1.5rem);font-size:.9375rem;line-height:1.6;color:var(--ink)}
+.ls-generic p,.ls-generic li{color:inherit}

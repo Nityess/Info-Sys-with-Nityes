@@ -10,6 +10,7 @@ import { StepRail } from './StepRail'
 import { stepCopy } from './stepCopy'
 import { TopicDrawer } from './TopicDrawer'
 import { useParsedTopic } from './useParsedTopic'
+import { useRailContent } from './useRailContent'
 import './lesson.css'
 import './lessonPanes.css'
 
@@ -21,6 +22,8 @@ interface Props {
   xp: number
   /** Pays out XP once per key; returns what was granted now */
   claim: (key: string, xp: number) => number
+  /** Called when the mastery checklist is completed, to mark the topic done */
+  onComplete: () => void
   dark: boolean
   onToggleDark: () => void
   /** The settings gear, shown in the topic list */
@@ -29,12 +32,19 @@ interface Props {
 
 /**
  * Chapter 7 topic lesson: top bar with the topic list, an 8-step bar, one step per screen, and a sticky
- * Back and Continue bar. Each step pane is built in its own round; until then it shows a placeholder.
+ * Back and Continue bar. A step uses its own pane (topic/panes) when it has one, else the generic content built
+ * from the teaching text (useRailContent). A step with nothing to show, such as a topic with no written answers, is left out.
  */
-export function TopicLesson({ unit, chapters, done, xp, claim, dark, onToggleDark, settingsSlot }: Props) {
+export function TopicLesson({ unit, chapters, done, xp, claim, onComplete, dark, onToggleDark, settingsSlot }: Props) {
   const code = unit.topic?.code ?? ''
   const topic = useParsedTopic(code)
-  const steps = useMemo(() => lessonSteps(Boolean(unit.topic?.playground)), [unit.topic?.playground])
+  const rail = useRailContent({ unit, topic, claim, onComplete })
+  const hidden = (id: string) => rail.content !== null && rail.content[id as keyof typeof rail.content] === null
+  const hiddenKey = lessonSteps(Boolean(unit.topic?.playground)).filter((s) => hidden(s.id)).map((s) => s.id).join()
+  const steps = useMemo(
+    () => lessonSteps(Boolean(unit.topic?.playground)).filter((s) => !hiddenKey.split(',').includes(s.id)),
+    [unit.topic?.playground, hiddenKey],
+  )
   const total = steps.length
   const [step, setStep] = useState(1)
   const [drawer, setDrawer] = useState(false)
@@ -97,11 +107,14 @@ export function TopicLesson({ unit, chapters, done, xp, claim, dark, onToggleDar
           <p className="ls-sub">{copy.sub}</p>
         </div>
         <div key={current.id} className="ls-pane" data-step={current.id}>
-          {pane ? (
-            topic ? pane({ unitId: unit.id, topic, claim }) : <p role="status">Loading this topic…</p>
+          {pane && topic ? (
+            pane({ unitId: unit.id, topic, claim })
+          ) : rail.content ? (
+            <div className="ls-card ls-generic">{rail.content[current.id]}</div>
           ) : (
-            <div className="ls-fb ls-fb-info" role="status">Placeholder: the {current.label} step is built in its own round.</div>
+            <p role="status">Loading this topic…</p>
           )}
+          {rail.confetti}
         </div>
       </main>
 
