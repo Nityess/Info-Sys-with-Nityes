@@ -8,6 +8,7 @@ import { SettingsMenu } from './components/SettingsMenu'
 import { HintBar } from './components/HintBar'
 import { UnitView } from './components/UnitView'
 import { SectionPage } from './components/rail/SectionPage'
+import { LESSON_SHELL_TOPICS } from './components/rail/builtTopics'
 import { useProgress } from './state/progress'
 import { HOME_HASH, unitHash } from './state/route'
 import { TEXT_PX } from './state/settings'
@@ -16,6 +17,7 @@ import { useSettings } from './state/useSettings'
 
 // Lazy so the animation library only downloads when the landing page is opened
 const Landing = lazy(() => import('./components/home/Landing').then((m) => ({ default: m.Landing })))
+const TopicLesson = lazy(() => import('./components/topic/TopicLesson').then((m) => ({ default: m.TopicLesson })))
 
 const THEME_KEY = 'ican-is-lab:theme'
 const SITE = 'Info System with ca.nityes'
@@ -93,6 +95,15 @@ export default function App() {
           onToggleDark={() => setDark((d) => !d)}
           settingsSlot={<SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}
         />
+      </Suspense>
+    )
+  }
+
+  // Topics on the new lesson screen use the whole window: no sidebar, no old header
+  if (unit?.topic && LESSON_SHELL_TOPICS.has(unit.topic.code)) {
+    return (
+      <Suspense fallback={<div className="h-full bg-mist dark:bg-slate-950" />}>
+        <TopicLesson key={unit.id} unit={unit} chapters={shown} done={done} xp={game.xp} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
       </Suspense>
     )
   }

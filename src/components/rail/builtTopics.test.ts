@@ -14,3 +14,11 @@ describe('built topics', () => {
     expect(TOPICS.find((t) => t.code === '1.5')?.playground).toBe(true)
   })
 })
+
+describe('lesson shell topics', () => {
+  it('only lists real, built topics', async () => {
+    const { LESSON_SHELL_TOPICS } = await import('./builtTopics')
+    for (const c of LESSON_SHELL_TOPICS) expect(BUILT_TOPICS.has(c), c).toBe(true)
+    expect(LESSON_SHELL_TOPICS.has('1.2')).toBe(true)
+  })
+})
