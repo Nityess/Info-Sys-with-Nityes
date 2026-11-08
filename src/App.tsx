@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
-import { Flame, Menu, Moon, Sun, X, Zap } from 'lucide-react'
+import { Flame, House, Menu, Moon, Sun, X, Zap } from 'lucide-react'
 import { useGame } from './state/useGame'
 import { chapters } from './content/chapters'
 import type { Unit } from './content/types'
@@ -9,8 +9,11 @@ import { HintBar } from './components/HintBar'
 import { QuizConsole } from './components/QuizConsole'
 import { labs } from './labs/registry'
 import { useProgress } from './state/progress'
+import { HOME_HASH, unitHash } from './state/route'
+import { navigate, useRoute } from './state/useRoute'
 
-// Lazy so the animation library only downloads when a lesson is opened
+// Lazy so the animation library only downloads when a lesson or the landing page is opened
+const Landing = lazy(() => import('./components/home/Landing').then((m) => ({ default: m.Landing })))
 const LessonView = lazy(() => import('./components/lesson/LessonView').then((m) => ({ default: m.LessonView })))
 
 const THEME_KEY = 'ican-is-lab:theme'
@@ -29,7 +32,7 @@ export default function App() {
   const { done, toggle, markDone } = useProgress()
   const game = useGame()
   const allUnits = useMemo(() => chapters.flatMap((c) => c.units), [])
-  const [selectedId, setSelectedId] = useState(allUnits[0].id)
+  const route = useRoute()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [dark, setDark] = useState(initialDark)
 
@@ -42,15 +45,36 @@ export default function App() {
     }
   }, [dark])
 
-  const unit = allUnits.find((u) => u.id === selectedId) ?? allUnits[0]
-  const isDone = done.has(unit.id)
+  const unit = route.view === 'unit' ? allUnits.find((u) => u.id === route.id) : undefined
+
+  useEffect(() => {
+    document.title = unit ? `${unit.title} | Info Sys with Nityes` : 'Info Sys with Nityes | ICAN Foundation Information Systems'
+  }, [unit])
 
   const select = (id: string) => {
-    setSelectedId(id)
+    navigate(unitHash(id))
     setDrawerOpen(false)
   }
 
-  const sidebar = <Sidebar chapters={chapters} done={done} selectedId={selectedId} onSelect={select} />
+  if (!unit) {
+    return (
+      <Suspense fallback={<div className="h-full bg-mist dark:bg-slate-950" />}>
+        <Landing
+          chapters={chapters}
+          done={done}
+          xp={game.xp}
+          streak={game.streak}
+          dark={dark}
+          onToggleDark={() => setDark((d) => !d)}
+          onOpenUnit={select}
+        />
+      </Suspense>
+    )
+  }
+
+  const isDone = done.has(unit.id)
+
+  const sidebar = <Sidebar chapters={chapters} done={done} selectedId={unit.id} onSelect={select} />
 
   return (
     <div className="flex h-full bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
@@ -92,6 +116,14 @@ export default function App() {
           >
             <Menu className="h-5 w-5" />
           </button>
+          <a
+            href={HOME_HASH}
+            className="inline-flex items-center gap-1.5 rounded px-2 py-1 text-sm font-semibold hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <House className="h-4 w-4" aria-hidden />
+            <span className="hidden sm:inline">Home</span>
+            <span className="sr-only sm:hidden">Home</span>
+          </a>
           <h1 className="min-w-0 flex-1 truncate text-base font-semibold">
             {unit.lo} · {unit.title}
           </h1>
