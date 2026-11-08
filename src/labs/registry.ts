@@ -12,4 +12,8 @@ export const labs: Record<string, LabEntry> = {
     Visualizer: lazy(() => import('./Lo7aImportance').then((m) => ({ default: m.Lo7aVisualizer }))),
     Lab: lazy(() => import('./Lo7aSorter').then((m) => ({ default: m.Lo7aSorter }))),
   },
+  lo7b: {
+    Visualizer: lazy(() => import('./Lo7bImpact').then((m) => ({ default: m.Lo7bVisualizer }))),
+    Lab: lazy(() => import('./Lo7bSorter').then((m) => ({ default: m.Lo7bSorter }))),
+  },
 }

@@ -1,4 +1,6 @@
-// LO7a data and pure logic. Reasons follow Ch10 §1.1 "Security of computer systems";
+import type { SortItem } from '../components/sorterLogic'
+
+// LO7a data. Reasons follow Ch10 §1.1 "Security of computer systems";
 // examples are ported from `Data Security First topic .html` (slide 3).
 
 export type Bucket = 'legal' | 'commercial'
@@ -37,12 +39,7 @@ export const REASONS: Reason[] = [
     example: 'Strong passwords, two-factor authentication and patching stop many common attacks.' },
 ]
 
-export interface Scenario {
-  id: string
-  text: string
-  bucket: Bucket
-  why: string
-}
+export type Scenario = SortItem<Bucket>
 
 /** Illustrative practice scenarios (not exam questions). */
 export const SCENARIOS: Scenario[] = [
@@ -59,18 +56,3 @@ export const SCENARIOS: Scenario[] = [
   { id: 's6', text: 'A manufacturer protects product designs before launch.', bucket: 'commercial',
     why: 'Secret designs give a market advantage.' },
 ]
-
-/** Chosen bucket per scenario id. */
-export type SortAnswers = Readonly<Record<string, Bucket>>
-
-export function scoreSort(answers: SortAnswers, scenarios: readonly Scenario[] = SCENARIOS): number {
-  return scenarios.filter((s) => answers[s.id] === s.bucket).length
-}
-
-export function answeredCount(answers: SortAnswers, scenarios: readonly Scenario[] = SCENARIOS): number {
-  return scenarios.filter((s) => answers[s.id] !== undefined).length
-}
-
-export function isComplete(answers: SortAnswers, scenarios: readonly Scenario[] = SCENARIOS): boolean {
-  return scenarios.length > 0 && answeredCount(answers, scenarios) === scenarios.length
-}
