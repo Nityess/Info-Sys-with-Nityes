@@ -45,6 +45,11 @@ export const REMEMBER: Readonly<Record<string, RememberLine>> = {
   },
   '2.4': { items: ['Cost Constraint = Benefits should justify the cost of providing information.', 'Highly Aggregated', 'Backward-Looking', 'Omits Non-Financial Data', 'Historical Cost Basis', 'Standardised Format'] },
   '2.5': { items: ['Owner-managers', 'Banks', 'Potential investors', 'Suppliers', 'General public'] },
+  start: { items: ['Collection → Storage → Production → Distribution'] },
+  '3.1': { items: ['Formula = You write the calculation.', 'Function = The application provides a ready-made calculation.', 'Cells, Text, Values, Formulae, Functions, Workbook'] },
+  '3.2': { items: ['Structured = Organised table.', 'Unstructured = Text, audio, video files.', 'Small databases = Local file system.'] },
+  '3.3': { items: ['Calculations, Audit, Tax Authorities, Reports, Non-accountants'] },
+  '3.4': { items: ['WLAN = Wireless local network.', 'WAN = Wide geographical network.', 'VPN = Secure, encrypted connection.', 'Productivity · Communication · Remote Working · Resource Management · Flexibility'] },
   '1.9': { lead: 'C A T I V A', items: ['Completeness', 'Accuracy', 'Timeliness', 'Inalterability', 'Verifiability', 'Assessability'] },
 }
 

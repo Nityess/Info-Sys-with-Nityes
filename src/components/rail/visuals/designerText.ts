@@ -16,3 +16,16 @@ export const SCENE_LABELS = {
 
 /** Topic 2.2: what the Cash basis button says. chapter7.md only describes the accruals treatment of the example. */
 export const CASH_BASIS_NOTE = 'Cash basis: the sale would be recognised in January, when the cash arrives. This is not the underlying assumption.'
+
+/** Topic 3.1: the sample sheet in the mini spreadsheet. chapter7.md gives the formulae (=B4+B5, =SUM(B4:B10)) but not these labels or numbers. */
+export const SAMPLE_SHEET = { A4: 'Cash sales', A5: 'Credit sales', B4: 1200, B5: 800 } as const
+
+/** Topic 3.4: picture labels inside the network diagrams (not teaching text). */
+export const DIAGRAM_LABELS = {
+  building: 'One building',
+  internet: 'Public internet',
+  router: 'Router',
+  home: 'Home',
+  office: 'Office',
+  tunnel: 'Encrypted tunnel: hackers denied',
+} as const

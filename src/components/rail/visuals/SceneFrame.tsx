@@ -4,6 +4,7 @@ import { RotateCcw } from 'lucide-react'
 import './scenes.css'
 import './scenes-s1.css'
 import './scenes-s2.css'
+import './scenes-s3.css'
 
 interface Props {
   /** Teaching-aid chip, e.g. "ACCURATE · teaching aid" */
