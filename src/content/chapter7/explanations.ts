@@ -2,7 +2,10 @@
 // so these are written from the topic's own text and wording, for the owner to review.
 // Key: "<topic code>/<mcq or chip>/<question id>".
 
+import { MORE_EXPLANATIONS } from './explanationsMore'
+
 export const EXPLANATIONS: Record<string, string> = {
+  ...MORE_EXPLANATIONS,
   // Topic 1.5, numerical scenarios (net value = extra benefits − extra costs)
   '1.5/chip/A': '80,000 − 50,000 = 30,000. The extra benefits are more than the extra costs, so net value is positive.',
   '1.5/chip/B': '45,000 − 70,000 = −25,000. The extra costs are more than the extra benefits, so net value is negative.',
@@ -15,6 +18,7 @@ export const EXPLANATIONS: Record<string, string> = {
   '1.5/mcq/Q5': 'Whether more information is worth having depends on the extra benefits expected and the extra costs of obtaining it.',
 }
 
-export function explanationFor(code: string, kind: 'mcq' | 'chip', id: string): string | undefined {
+/** `kind` is mcq or chip, with a 2 on the second set of that kind in a topic (mcq2). */
+export function explanationFor(code: string, kind: string, id: string): string | undefined {
   return EXPLANATIONS[`${code}/${kind}/${id}`]
 }

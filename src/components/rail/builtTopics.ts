@@ -1,5 +1,5 @@
 /** Topics whose rail is fully built. The rest show the placeholder rail in the teacher preview. */
-export const BUILT_TOPICS: ReadonlySet<string> = new Set(['1.5'])
+export const BUILT_TOPICS: ReadonlySet<string> = new Set(['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'])
 
 /**
  * Where "Compare and traps" starts inside a concept section, for topics where it is not its own heading.

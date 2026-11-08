@@ -1,9 +1,10 @@
-import type { AnswerPair, ParsedTopic, QuizItem, QuizSet, Role, Section } from './types.ts'
+import type { AnswerPair, ParsedTopic, Role, Section } from './types.ts'
+import { buildQuizzes, parseKeys } from './quizParse.ts'
+
+export { parseKeys }
 
 // Pure parser for content/chapter7.md. It runs at build time (see scripts/chapter7Plugin.ts)
 // and in tests. Nothing here touches the file system or the DOM.
-
-const LETTERS = 'ABCD'
 
 /** Which part of the lesson rail a heading belongs to. Anything unmatched is concept. */
 export function roleOf(heading: string, index: number): Role {
@@ -18,10 +19,23 @@ export function roleOf(heading: string, index: number): Role {
   return index === 0 ? 'hook' : 'concept'
 }
 
+/**
+ * Headings the keyword rules above get wrong, keyed by topic code and section number.
+ * Examples: "Challenges of Outsourcing" is a concept (not a challenge quiz); "Innovation in Practice" is a concept.
+ */
+const ROLE_OVERRIDES: Readonly<Record<string, Readonly<Record<number, Role>>>> = {
+  '1.2': { 3: 'compare', 4: 'concept', 7: 'source' },
+  '1.3': { 6: 'concept' },
+  '1.4': { 5: 'quiz' },
+  '1.6': { 4: 'compare', 6: 'quiz' },
+  '1.7': { 3: 'concept', 5: 'concept', 6: 'quiz' },
+  '1.8': { 3: 'concept' },
+}
+
 /** Drops banner lines such as "**Next learning topic | Concept + numerical application**". */
 const isBanner = (line: string) => /^\*\*[^*]*\|[^*]*\*\*\s*$/.test(line.trim())
 
-function splitSections(body: string): { intro: string; sections: Section[] } {
+function splitSections(code: string, body: string): { intro: string; sections: Section[] } {
   const lines = body.split('\n')
   const level = lines.some((l) => /^### /.test(l)) ? '### ' : '#### '
   const intro: string[] = []
@@ -31,106 +45,20 @@ function splitSections(body: string): { intro: string; sections: Section[] } {
     else if (raw.length) raw[raw.length - 1].lines.push(line)
     else if (!isBanner(line)) intro.push(line)
   }
-  const sections = raw.map((r, i): Section => ({ heading: r.heading, role: roleOf(r.heading, i), md: r.lines.join('\n').trim() }))
-  return { intro: intro.join('\n').trim(), sections }
-}
-
-// ---------- quizzes ----------
-
-function parseMcqs(md: string): QuizItem[] {
-  const lines = md.split('\n')
-  const items: QuizItem[] = []
-  for (let i = 0; i < lines.length; i++) {
-    const m = /^\*\*Q(\d+)\.\s*(.+?)\*\*\s*$/.exec(lines[i].trim())
-    if (!m) continue
-    const options: string[] = []
-    for (let j = i + 1; j < lines.length; j++) {
-      const o = /^-\s+([A-D])\.\s*(.+)$/.exec(lines[j].trim())
-      if (o) options.push(o[2].trim())
-      else if (lines[j].trim() !== '' || options.length) break
-    }
-    items.push({ id: `Q${m[1]}`, text: m[2].trim(), options, answer: -1 })
-  }
-  return items
-}
-
-/** "- **Scenario A:** text" bullets plus "(options for each: X / Y / Z)". */
-function parseChips(md: string): QuizItem[] {
-  const opt = /options for each:\s*([^)]+)\)/i.exec(md)
-  if (!opt) return []
-  const options = opt[1].split('/').map((s) => s.trim())
-  const items: QuizItem[] = []
-  for (const line of md.split('\n')) {
-    const m = /^-\s+\*\*Scenario ([A-Z]):\*\*\s*(.+)$/.exec(line.trim())
-    if (m) items.push({ id: m[1], text: m[2].trim(), options, answer: -1 })
-  }
-  return items
-}
-
-function boldTitle(md: string, fallback: string): string {
-  const m = /^\*\*([^*]+?)\s*(?:\(\d+\/\d+\))?\*\*\s*$/m.exec(md)
-  return m && !/^Q\d+\./.test(m[1]) ? m[1].trim() : fallback
-}
-
-interface Keys {
-  mcq: string[][]
-  chip: string[][]
-}
-
-/** Reads answer keys from the App Spec text. Only the keys are kept, never the spec itself. */
-export function parseKeys(specMd: string): Keys {
-  const keys: Keys = { mcq: [], chip: [] }
-  for (const line of specMd.split('\n')) {
-    const body = /^-\s+[^:]+:\s*(.+?)\.?\s*$/.exec(line.trim())?.[1]
-    if (!body) continue
-    const q = [...body.matchAll(/Q(\d+)\s+([A-D])\b/g)]
-    if (q.length >= 2) {
-      keys.mcq.push(q.map((m) => m[2]))
-      continue
-    }
-    const chips = body.split(',').map((s) => /^([A-Z])\s+(\S.*)$/.exec(s.trim()))
-    if (chips.length >= 2 && chips.every(Boolean)) keys.chip.push(chips.map((m) => `${m![1]}=${m![2]}`))
-  }
-  return keys
-}
-
-function applyMcqKey(items: QuizItem[], letters: string[]): void {
-  items.forEach((it, i) => {
-    it.answer = letters[i] ? LETTERS.indexOf(letters[i]) : -1
+  // A leading "Learning objectives" block belongs to the "What you will learn" text, not to a lesson part
+  if (raw[0] && /learning objectives/i.test(raw[0].heading)) intro.push(...raw.shift()!.lines)
+  const sections = raw.map((r, i): Section => {
+    const n = Number(/^(\d+)\./.exec(r.heading)?.[1])
+    return { heading: r.heading, role: ROLE_OVERRIDES[code]?.[n] ?? roleOf(r.heading, i), md: r.lines.join('\n').trim() }
   })
-}
-
-function applyChipKey(items: QuizItem[], pairs: string[]): void {
-  const byId = new Map(pairs.map((p) => p.split('=') as [string, string]))
-  for (const it of items) {
-    const want = (byId.get(it.id) ?? '').toLowerCase()
-    it.answer = it.options.findIndex((o) => o.toLowerCase().startsWith(want))
-  }
-}
-
-function buildQuizzes(sections: Section[], keys: Keys): QuizSet[] {
-  const sets: QuizSet[] = []
-  for (const s of sections.filter((x) => x.role === 'quiz')) {
-    const mcq = parseMcqs(s.md)
-    const chips = parseChips(s.md)
-    const title = boldTitle(s.md, s.heading.replace(/^\d+\.\s*/, ''))
-    if (chips.length) sets.push({ title: s.heading.replace(/^\d+\.\s*/, ''), kind: 'chip', items: chips })
-    if (mcq.length) sets.push({ title, kind: 'mcq', items: mcq })
-  }
-  let m = 0
-  let c = 0
-  for (const set of sets) {
-    if (set.kind === 'mcq') applyMcqKey(set.items, keys.mcq[m++] ?? [])
-    else applyChipKey(set.items, keys.chip[c++] ?? [])
-  }
-  return sets
+  return { intro: intro.join('\n').trim(), sections }
 }
 
 // ---------- exam answers ----------
 
 export function parseAnswers(md: string): AnswerPair[] {
   const pairs: AnswerPair[] = []
-  const parts = md.split(/^\*\*(?:Another )?[Pp]ossible question:\*\*\s*/m).slice(1)
+  const parts = md.split(/^\*\*(?:Another )?(?:[Pp]ossible )?[Qq]uestion:\*\*\s*/m).slice(1)
   for (const part of parts) {
     const [q, ...rest] = part.split(/^\*\*Suggested answer:\*\*\s*$/m)
     if (!rest.length) continue
@@ -148,8 +76,20 @@ function parseMastery(md: string): string[] {
     .filter((x): x is string => Boolean(x))
 }
 
+/** Some topics put "**Mastery checklist**" at the end of the revision card. Moves it out of the card. */
+function liftMastery(sections: Section[]): string[] {
+  const own = sections.find((s) => s.role === 'mastery')
+  if (own) return parseMastery(own.md)
+  const marker = /^\*\*Mastery checklist\*\*/m
+  const card = sections.find((s) => s.role === 'revise' && marker.test(s.md))
+  if (!card) return []
+  const items = parseMastery(card.md.slice(card.md.search(marker)))
+  card.md = card.md.slice(0, card.md.search(marker)).trim()
+  return items
+}
+
 export function parseTopic(code: string, title: string, body: string): ParsedTopic {
-  const { intro, sections } = splitSections(body)
+  const { intro, sections } = splitSections(code, body)
   const spec = sections.filter((s) => s.role === 'spec').map((s) => s.md).join('\n')
   const keys = parseKeys(spec)
   const visible = sections.filter((s) => s.role !== 'spec' && s.role !== 'delivery')
@@ -160,7 +100,7 @@ export function parseTopic(code: string, title: string, body: string): ParsedTop
     sections: visible,
     quizzes: buildQuizzes(visible, keys),
     answers: visible.filter((s) => s.role === 'answer').flatMap((s) => parseAnswers(s.md)),
-    mastery: parseMastery(visible.find((s) => s.role === 'mastery')?.md ?? ''),
+    mastery: liftMastery(visible),
   }
 }
 

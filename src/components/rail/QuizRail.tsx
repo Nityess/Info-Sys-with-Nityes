@@ -53,7 +53,9 @@ export function QuizRail({ code, sets, onFinish }: Props) {
   const { set, item } = flat[s.index]
   const revealed = showsExplanation(s)
   const last = s.index + 1 === flat.length
-  const text = explanationFor(code, set.kind, item.id) ?? `The answer is: ${item.options[item.answer]}.`
+  // A topic can have two MCQ sets whose questions are both Q1, Q2...: the second set's keys carry a "2"
+  const nth = sets.slice(0, sets.indexOf(set)).filter((x) => x.kind === set.kind && !x.source).length
+  const text = item.explanation ?? explanationFor(code, `${set.kind}${nth ? nth + 1 : ''}`, item.id) ?? `The answer is: ${item.options[item.answer]}.`
 
   const advance = () => {
     if (last) {

@@ -9,6 +9,7 @@ interface Props {
   unit: Unit
   /** Content for each step. Steps with nothing yet show a short placeholder. */
   parts?: Partial<Record<RailStepId, React.ReactNode>>
+  // A part set to null is left out (a topic with no written-answer practice, for example)
 }
 
 /**
@@ -16,7 +17,8 @@ interface Props {
  * Parts are filled in milestone by milestone; until then they say so (this page is teacher-preview only).
  */
 export function RailLayout({ unit, parts = {} }: Props) {
-  const steps = useMemo(() => stepsFor(Boolean(unit.topic?.playground)), [unit.topic?.playground])
+  const stepKey = stepsFor(Boolean(unit.topic?.playground)).filter((s) => parts[s.id] !== null).map((s) => s.id).join()
+  const steps = useMemo(() => stepsFor(Boolean(unit.topic?.playground)).filter((s) => stepKey.split(',').includes(s.id)), [unit.topic?.playground, stepKey])
   const section = sectionById(unit.sectionId ?? '')
   const [seen, setSeen] = useState<ReadonlySet<string>>(new Set())
   const refs = useRef<Record<string, HTMLElement | null>>({})

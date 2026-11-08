@@ -83,3 +83,69 @@ describe('small parsers', () => {
     ])
   })
 })
+
+describe('Section 1 topics beyond 1.5', () => {
+  const answers = (code: string, set = 0) => {
+    const q = topics[code].quizzes[set]
+    return q.items.map((i) => (q.kind === 'mcq' ? 'ABCD'[i.answer] : i.options[i.answer]))
+  }
+  it('1.2: hides the two study-book questions behind the source flag and reads their keys', () => {
+    const [src, quick] = topics['1.2'].quizzes
+    expect(src.source).toBe(true)
+    expect(answers('1.2', 0)).toEqual(['B', 'A'])
+    expect(src.items[0].explanation).toMatch(/routine, detailed/)
+    expect(quick.source).toBeUndefined()
+    expect(answers('1.2', 1)).toEqual(['C', 'B', 'B', 'B', 'D', 'C', 'B', 'A'])
+  })
+  it('1.2: lifts the mastery checklist out of the revision card', () => {
+    expect(topics['1.2'].mastery).toHaveLength(6)
+    expect(JSON.stringify(topics['1.2'].sections)).not.toMatch(/Mastery checklist/)
+  })
+  it('1.2: keeps the learning objectives in the intro, not as a lesson part', () => {
+    expect(topics['1.2'].intro).toMatch(/Identify the four types of information/)
+    expect(topics['1.2'].sections[0].role).toBe('hook')
+  })
+  it('1.3 and 1.4 keys', () => {
+    expect(answers('1.3')).toEqual(['B', 'A', 'C', 'B', 'A', 'B', 'B', 'C'])
+    expect(answers('1.4', 0)).toEqual(['Source', 'Ease of Assimilation', 'Accessibility', 'Relevance'])
+    expect(answers('1.4', 1)).toEqual(['B', 'C', 'A', 'C', 'B', 'C'])
+    expect(topics['1.4'].quizzes[0].items[0].text).not.toMatch(/Factor:/)
+  })
+  it('1.6: chips carry their own options and the key by number', () => {
+    expect(answers('1.6', 0)).toEqual(['IT Delivery', 'IT Support', 'IT Support', 'Monitoring', 'Planning', 'IT Support', 'Structure', 'Staffing & Skills'])
+    expect(answers('1.6', 1)).toEqual(['C', 'C', 'B', 'C', 'A'])
+  })
+  it('1.7: numbered benefit or challenge items; challenges are a concept, not a quiz', () => {
+    expect(answers('1.7', 0)).toEqual(['Benefit', 'Challenge', 'Benefit', 'Challenge', 'Challenge'])
+    expect(answers('1.7', 1)).toEqual(['B', 'C', 'C', 'B'])
+    expect(topics['1.7'].sections.find((s) => s.heading.includes('Challenges of Outsourcing'))?.role).toBe('concept')
+    expect(topics['1.7'].answers).toHaveLength(1)
+  })
+  it('1.8 and 1.9 keys', () => {
+    expect(answers('1.8')).toEqual(['B', 'C', 'A', 'C'])
+    expect(answers('1.9', 0)).toEqual(['B', 'A', 'C', 'C', 'B', 'A'])
+    expect(answers('1.9', 1)).toEqual(['B', 'D', 'C', 'C'])
+    expect(topics['1.8'].sections.find((s) => s.heading.includes('Innovation in Practice'))?.role).toBe('concept')
+  })
+  it('every question in Section 1 has a key inside its option range', () => {
+    for (const code of ['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9']) {
+      for (const set of topics[code].quizzes) {
+        for (const i of set.items) expect(i.answer >= 0 && i.answer < i.options.length, `${code} ${set.title} ${i.id}`).toBe(true)
+      }
+    }
+  })
+})
+
+describe('explanations for Section 1 quizzes', () => {
+  it('has an explanation for every question except the two study-book ones, and none for missing questions', async () => {
+    const { explanationFor } = await import('./explanations')
+    for (const code of ['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9']) {
+      const seen: Record<string, number> = {}
+      for (const set of topics[code].quizzes) {
+        if (set.source) continue
+        const n = (seen[set.kind] = (seen[set.kind] ?? 0) + 1)
+        for (const i of set.items) expect(explanationFor(code, `${set.kind}${n > 1 ? n : ''}`, i.id), `${code} ${set.kind}${n} ${i.id}`).toBeTruthy()
+      }
+    }
+  })
+})

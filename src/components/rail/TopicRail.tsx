@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import type { Unit } from '../../content/types'
 import type { ParsedTopic } from '../../content/chapter7/types'
 import { isComplete, toggleChecked, useMastery } from '../../state/mastery'
+import { useSettings } from '../../state/useSettings'
 import { Confetti } from '../lesson/Confetti'
 import { AnswerBuilder } from './AnswerBuilder'
 import { ConceptTabs } from './ConceptTabs'
@@ -45,7 +46,9 @@ function useParsedTopic(code: string): ParsedTopic | null {
 function CompareView({ md }: { md: string }) {
   const blocks = parseBlocks(md)
   const at = blocks.findIndex((b) => b.t === 'table')
-  if (at < 0) return <Blocks blocks={blocks} />
+  // Several "A vs B" sub-sections each carry their own table: show them in full, in order
+  const subheads = blocks.filter((b) => b.t === 'h' && b.level === 4).length
+  if (at < 0 || subheads >= 2) return <Blocks blocks={blocks} />
   const table = blocks[at]
   const rest = blocks.filter((_, i) => i !== at)
   // A lone bold line such as "Important distinction" only labels the table, which the cards replace
@@ -64,6 +67,7 @@ export function TopicRail({ unit, claim, onComplete }: Props) {
   const topic = useParsedTopic(code)
   const marker = COMPARE_MARKERS[code]
   const { checked, toggle } = useMastery(unit.id)
+  const { settings } = useSettings()
   const [burst, setBurst] = useState(0)
   const [masteryXp, setMasteryXp] = useState<number | null>(null)
 
@@ -114,8 +118,8 @@ export function TopicRail({ unit, claim, onComplete }: Props) {
     ),
     compare: parts.compareMd ? <CompareView md={parts.compareMd} /> : <p>No confusable pairs in this topic.</p>,
     try: <TopicVisual code={code} slot="playground" />,
-    quiz: <QuizRail code={code} sets={topic.quizzes} onFinish={(firstTry) => claim(`${unit.id}:quiz`, firstTry * XP_PER_FIRST_TRY)} />,
-    answer: <AnswerBuilder pairs={topic.answers} />,
+    quiz: <QuizRail code={code} sets={topic.quizzes.filter((q) => !q.source || settings.showSourceQuestions)} onFinish={(firstTry) => claim(`${unit.id}:quiz`, firstTry * XP_PER_FIRST_TRY)} />,
+    answer: topic.answers.length ? <AnswerBuilder pairs={topic.answers} /> : null,
     revise: <RevisionCard section={parts.revise} code={code} title={unit.title} />,
     mastery: (
       <div className="space-y-3">

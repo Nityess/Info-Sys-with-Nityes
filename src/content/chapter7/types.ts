@@ -1,7 +1,7 @@
 // Shape of Chapter 7 content after content/chapter7.md has been parsed at build time.
 // App Spec blocks never appear here: only the answer keys read out of them do.
 
-export type Role = 'hook' | 'concept' | 'compare' | 'quiz' | 'answer' | 'revise' | 'mastery' | 'delivery' | 'spec'
+export type Role = 'hook' | 'concept' | 'compare' | 'quiz' | 'answer' | 'revise' | 'mastery' | 'delivery' | 'spec' | 'source'
 
 export interface Section {
   heading: string
@@ -17,12 +17,16 @@ export interface QuizItem {
   options: string[]
   /** Index of the correct option */
   answer: number
+  /** The file's own reason, when it gives one under the question */
+  explanation?: string
 }
 
 export interface QuizSet {
   title: string
   kind: 'mcq' | 'chip'
   items: QuizItem[]
+  /** Copied from the study book. Hidden unless the teacher turns on study-book questions. */
+  source?: boolean
 }
 
 export interface AnswerPair {

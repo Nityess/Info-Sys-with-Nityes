@@ -1,11 +1,42 @@
 import { useState } from 'react'
 import type { Section } from '../../content/chapter7/types'
 import { Markdown } from './Markdown'
+import { splitSubsections } from './splitSubsections'
 import { plain, tabLabel } from './tabLabel'
 
 interface Item {
   section: Section
   md: string
+}
+
+/** A section with several "####" parts (the eight ACCURATE letters, the four types) shows them one pill at a time. */
+function SubParts({ md }: { md: string }) {
+  const { lead, parts } = splitSubsections(md)
+  const [sub, setSub] = useState(0)
+  if (parts.length === 0) return <Markdown md={md} />
+  const part = parts[Math.min(sub, parts.length - 1)]
+  return (
+    <div className="space-y-3">
+      {lead && <Markdown md={lead} />}
+      <div role="group" aria-label="Pick one to read" className="flex flex-wrap gap-1.5">
+        {parts.map((p, i) => (
+          <button
+            key={p.label}
+            type="button"
+            aria-pressed={i === sub}
+            onClick={() => setSub(i)}
+            className={`rounded-lg px-2.5 py-1 text-xs font-semibold ring-1 transition ${i === sub ? 'bg-spruce text-white ring-spruce' : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-600'}`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div className="rounded-2xl bg-mist p-4 dark:bg-slate-800/50">
+        <h5 className="mb-2 font-display text-base font-semibold text-ink dark:text-white">{part.label}</h5>
+        <Markdown md={part.md} />
+      </div>
+    </div>
+  )
 }
 
 /** Concept parts shown one at a time, so a long topic never becomes a wall of text. */
@@ -37,7 +68,7 @@ export function ConceptTabs({ items }: { items: Item[] }) {
       )}
       <div role="tabpanel" id="concept-panel" aria-labelledby={`concept-tab-${active}`} className="space-y-2">
         <h4 className="font-display text-base font-semibold text-ink dark:text-white">{plain(item.section.heading)}</h4>
-        <Markdown md={item.md} />
+        <SubParts key={item.section.heading} md={item.md} />
         {shown.length > 1 && (
           <div className="flex justify-between pt-2 text-sm font-medium">
             <button type="button" disabled={active === 0} onClick={() => setActive(active - 1)} className="rounded-lg px-3 py-1.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:text-slate-300 dark:hover:bg-slate-800">

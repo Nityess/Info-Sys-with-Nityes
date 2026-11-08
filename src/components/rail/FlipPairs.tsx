@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Inline } from './Markdown'
 
 interface Props {
-  /** Table rows: [front, back] */
+  /** Table rows: [front, back...]. Extra columns are joined onto the back. */
   rows: string[][]
 }
 
@@ -32,7 +32,7 @@ export function FlipPairs({ rows }: Props) {
               }`}
             >
               <span className="font-display text-base font-semibold"><Inline text={r[0]} /></span>
-              <span className="mt-1 text-sm">{flipped ? <Inline text={r[1]} /> : <span className="text-slate-500 dark:text-slate-400">Tap to see the meaning</span>}</span>
+              <span className="mt-1 text-sm">{flipped ? <Inline text={r.slice(1).filter(Boolean).join(' · ')} /> : <span className="text-slate-500 dark:text-slate-400">Tap to see the meaning</span>}</span>
             </button>
           </li>
         )

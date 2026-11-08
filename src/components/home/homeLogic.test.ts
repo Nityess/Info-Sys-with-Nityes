@@ -87,7 +87,7 @@ describe('topicHref', () => {
   })
   it('links only the playable topics in the teacher preview: 1.1 (study text lesson) and 1.5 (full rail)', () => {
     const linked = TOPICS.filter((t) => topicHref(previewChapters, t.code)).map((t) => t.code)
-    expect(linked).toEqual(['1.1', '1.5'])
+    expect(linked).toEqual(['1.1', '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'])
     expect(topicHref(previewChapters, '1.5')).toBe('#/unit/ch07-t1-5')
     expect(showsRebuiltChapter7(previewChapters)).toBe(true)
   })
