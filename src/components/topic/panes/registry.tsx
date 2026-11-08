@@ -5,6 +5,7 @@ import { ComparePane } from './ComparePane'
 import { ConceptPane } from './ConceptPane'
 import { HookPane } from './HookPane'
 import { PlaygroundPane } from './PlaygroundPane'
+import { QuizPane } from './QuizPane'
 
 export interface PaneContext {
   unitId: string
@@ -22,6 +23,7 @@ const PANES: Record<string, Partial<Record<RailStepId, Pane>>> = {
     concept: (c) => <ConceptPane topic={c.topic} />,
     compare: (c) => <ComparePane topic={c.topic} />,
     try: (c) => <PlaygroundPane topic={c.topic} unitId={c.unitId} claim={c.claim} />,
+    quiz: (c) => <QuizPane topic={c.topic} unitId={c.unitId} claim={c.claim} />,
   },
 }
 
