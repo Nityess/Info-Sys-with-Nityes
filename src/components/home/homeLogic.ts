@@ -1,12 +1,12 @@
 import type { Chapter, Unit } from '../../content/types'
 import { completionPercent } from '../../state/progress'
-import { chapter8Hash, unitHash } from '../../state/route'
+import { unitHash } from '../../state/route'
 import { BUILT_TOPICS } from '../rail/builtTopics'
 import { topicId } from '../../content/chapters/ch07/topics'
 import { BOARD_CHAPTERS, COMING_SOON } from './homeData'
 
-/** A unit is playable once it has a lab, or it is a Chapter 7 topic whose lesson is built. */
-export const isBuilt = (u: Unit): boolean => Boolean(u.labId || (u.topic && BUILT_TOPICS.has(u.topic.code)))
+/** A unit is playable once it is a Chapter 7 topic whose lesson is built. */
+export const isBuilt = (u: Unit): boolean => Boolean(u.topic && BUILT_TOPICS.has(u.topic.code))
 
 const builtUnits = (chapters: readonly Chapter[]): Unit[] => chapters.flatMap((c) => c.units).filter(isBuilt)
 
@@ -40,8 +40,10 @@ export interface ChapterCard {
   started: boolean
   /** Where the chapter button leads: the next unfinished lesson, else the first one */
   unitId?: string
-  /** A chapter that opens as topic boards leads straight to its first board */
+  /** A chapter that opens as topic boards or a page leads straight there */
   href?: string
+  /** The one fact line on a board or page chapter card: label and value */
+  row?: readonly [string, string]
 }
 
 /** Cards for chapters 7 to 10 in order: built chapters from content, the rest from the roadmap. */
@@ -62,14 +64,13 @@ export function chapterCards(chapters: readonly Chapter[], done: ReadonlySet<str
       unitId: next?.id,
     }
   })
-  const boards: ChapterCard[] = BOARD_CHAPTERS.map(({ sections, ...c }) => ({
+  const boards: ChapterCard[] = BOARD_CHAPTERS.map((c) => ({
     ...c,
     status: 'open',
-    built: sections,
-    total: sections,
+    built: 1,
+    total: 1,
     percent: 0,
     started: false,
-    href: chapter8Hash('s1'),
   }))
   const soon: ChapterCard[] = COMING_SOON.map((c) => ({
     ...c,

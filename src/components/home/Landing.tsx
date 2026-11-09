@@ -2,7 +2,7 @@ import { useMemo, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import type { Chapter } from '../../content/types'
-import { chapter10Hash, sectionHash, unitHash } from '../../state/route'
+import { sectionHash } from '../../state/route'
 import { Chapter7Map } from './Chapter7Map'
 import { ChaptersSection } from './ChaptersSection'
 import { FreeSection } from './FreeSection'
@@ -36,10 +36,7 @@ export function Landing({ chapters, done, dark, onToggleDark, settingsSlot }: Pr
     return a && { ...a, label: 'Start Chapter 7', returning: false }
   }, [chapters, done])
   const cards = useMemo(() => chapterCards(chapters, done), [chapters, done])
-  const unitOf = (n: number) => cards.find((c) => c.number === n)?.unitId
   const ch7 = sectionHash('s1')
-  const ch10 = chapter10Hash()
-  const labs = unitOf(10) ? unitHash(unitOf(10)!) : null
   const goto = (id: string) => scrollToId(id, calm)
   const startHref = sectionHash('s1')
 
@@ -61,7 +58,7 @@ export function Landing({ chapters, done, dark, onToggleDark, settingsSlot }: Pr
       <main id="main" tabIndex={-1} style={{ outline: 'none' }}>
         <Chapter7Map hrefFor={(code) => sectionHash(`s${code[0]}`, code)} />
         <HowSection />
-        <ChaptersSection cards={cards} chapter7Href={ch7} chapter10Href={ch10} labsHref={labs} />
+        <ChaptersSection cards={cards} chapter7Href={ch7} />
         <FreeSection />
 
         <section className="lp-band">

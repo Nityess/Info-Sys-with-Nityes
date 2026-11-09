@@ -1,24 +1,3 @@
-/** One multiple-choice item. Every item must come from the question bank, mock or pre-test files. */
-export interface QuizItem {
-  id: string
-  question: string
-  /** Optional numbered statements shown between the question and the options */
-  statements?: string[]
-  options: string[]
-  /** Index into options of the correct answer */
-  answer: number
-  explanation: string
-  /** Where the item comes from, e.g. "ICAN Ch10 question bank Q11 (1 mark)" */
-  source: string
-}
-
-/** Text for the HintBar tabs */
-export interface UnitHints {
-  hint?: string
-  insight?: string
-  mcq?: string
-}
-
 /** One concept card (a mind-map leaf) with its textbook explanation */
 export interface ConceptCard {
   id: string
@@ -61,17 +40,11 @@ export interface Unit {
   /** Data-driven lab: concept cards (visualizer) + practice sorter (lab) */
   cards?: ConceptCard[]
   practice?: PracticeItem[]
-  /** Stable id used for progress, e.g. "ch10-lo7a" */
+  /** Stable id used for progress, e.g. "ch07-t1-2" */
   id: string
-  /** Syllabus learning outcome sub-point, e.g. "LO7a" */
+  /** Syllabus learning outcome sub-point, e.g. "LO4a" */
   lo: string
   title: string
-  /** Key into the lab registry. Not built yet when undefined. */
-  labId?: string
-  /** Learning objective shown at the top of the lab */
-  objective?: string
-  hints?: UnitHints
-  quiz?: QuizItem[]
 }
 
 export interface Chapter {

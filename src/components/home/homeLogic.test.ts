@@ -68,15 +68,17 @@ describe('chapterCards', () => {
   })
   it('counts built lessons honestly', () => {
     expect(cards[0]).toMatchObject({ built: 8, total: 18 })
-    expect(cards[3]).toMatchObject({ built: 3, total: 5 })
     expect(cards[1].unitId).toBeUndefined()
-    expect(cards[1]).toMatchObject({ built: 3, total: 3, href: '#/chapter8/s1' })
+    expect(cards[1]).toMatchObject({ href: '#/chapter8/s1', row: ['Topic boards', '3 sections'] })
   })
-  it('points a chapter at its next unfinished lesson and tracks progress', () => {
-    const c = chapterCards(chapters, new Set(['ch10-lo7a']))[3]
-    expect(c.unitId).toBe('ch10-lo7b')
+  it('opens Chapter 10 as its own page', () => {
+    expect(cards[3]).toMatchObject({ number: 10, href: '#/chapter10', row: ['Topics', '8 in 2 sections'] })
+    expect(cards[3].unitId).toBeUndefined()
+  })
+  it('points Chapter 7 at its next unfinished lesson and tracks progress', () => {
+    const c = chapterCards(chapters, new Set(['ch07-t1-2']))[0]
+    expect(c.unitId).toBe('ch07-t1-3')
     expect(c.started).toBe(true)
-    expect(c.percent).toBe(20)
   })
 })
 
