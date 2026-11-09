@@ -1,0 +1,1467 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body style="margin:0">
+<title>Data Security Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: sticky chapter bar, topic rail (left on desktop, chip row on phone), one topic at a time. Each topic = a live "stage" first, short words beside it. */
+:root{
+  --bg:#F1F4F8; --surface:#FFFFFF; --surface2:#E8EDF4; --line:#D2D9E3; --line2:#9AA8BC;
+  --ink:#12202F; --muted:#526075;
+  --accent:#1E5DBD; --accent-soft:#DCE7FA; --on-accent:#FFFFFF;
+  --safe:#11804A; --safe-soft:#DBF3E5;
+  --s2:#0B7360; --s2-soft:#DDF1EC;
+  --threat:#C22F2A; --threat-soft:#FBE1DF;
+  --warn:#8E5B00; --warn-soft:#FCEFCF;
+  --screen:#0E1A2A; --screen-ink:#CFE2FF;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",Consolas,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C131D; --surface:#131D2B; --surface2:#1A2637; --line:#283649; --line2:#4E6280;
+  --ink:#E6EDF7; --muted:#9DABBF;
+  --accent:#73A8FF; --accent-soft:#18294A; --on-accent:#0B1424;
+  --safe:#4CD08C; --safe-soft:#12301F;
+  --s2:#4FD1B3; --s2-soft:#0F3A36;
+  --threat:#FF6E68; --threat-soft:#3A1717;
+  --warn:#F0B74A; --warn-soft:#352A10;
+  --screen:#060C15; --screen-ink:#BFD6FA; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C131D; --surface:#131D2B; --surface2:#1A2637; --line:#283649; --line2:#4E6280;
+  --ink:#E6EDF7; --muted:#9DABBF;
+  --accent:#73A8FF; --accent-soft:#18294A; --on-accent:#0B1424;
+  --safe:#4CD08C; --safe-soft:#12301F;
+  --s2:#4FD1B3; --s2-soft:#0F3A36;
+  --threat:#FF6E68; --threat-soft:#3A1717;
+  --warn:#F0B74A; --warn-soft:#352A10;
+  --screen:#060C15; --screen-ink:#BFD6FA; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.12;text-wrap:balance}
+p{margin:0}
+.mono{font-family:var(--mono)}
+
+/* chapter bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar-in{max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.mark{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;flex:none}
+.mark svg{width:20px;height:20px}
+.bar h1{font-size:1.15rem;font-weight:800}
+.bar small{display:block;color:var(--muted);font-size:.8rem;font-family:var(--body)}
+.bar .sp{flex:1}
+.tbtn{white-space:nowrap;border:1px solid var(--line2);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:700;font-size:.88rem;min-height:40px}
+
+/* shell */
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px;
+  padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rail{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:14px}
+.rail h4{margin:0 0 4px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rail .grp{display:flex;flex-direction:column;gap:2px}
+.tl{display:flex;gap:10px;align-items:baseline;text-align:left;border:0;background:none;padding:8px 10px;border-radius:9px;color:var(--muted);font-weight:700;min-height:40px}
+.tl b{font-family:var(--mono);font-size:.78rem;color:var(--muted);min-width:26px}
+.tl:hover{background:var(--surface2);color:var(--ink)}
+.tl[aria-current="true"]{background:var(--accent-soft);color:var(--ink)}
+.tl[aria-current="true"] b{color:var(--accent)}
+
+main{min-width:0}
+.topic{display:flex;flex-direction:column;gap:22px}
+.thead{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.thead h2{font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:800}
+.thead p{color:var(--muted);max-width:62ch;font-size:1.05rem}
+
+/* topic banner, parts, separators */
+.sec1{--sec:var(--accent);--sec-soft:var(--accent-soft)}
+.sec2{--sec:var(--s2);--sec-soft:var(--s2-soft)}
+.topic{counter-reset:part}
+.thead{background:var(--sec-soft);border-radius:18px;padding:18px 20px;border-left:8px solid var(--sec);gap:10px!important}
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.85rem;font-weight:700;color:var(--muted)}
+.secpill{background:var(--sec);color:var(--on-accent);border-radius:999px;padding:3px 11px;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+.crumbsep{color:var(--line2)}
+.tt{display:flex;align-items:center;gap:14px}
+.tnum{flex:none;font-family:var(--display);font-weight:800;font-size:clamp(1.3rem,2.6vw,1.8rem);background:var(--sec);color:var(--on-accent);border-radius:14px;padding:6px 14px;font-variant-numeric:tabular-nums}
+.topic>.blk{border-top:2px solid var(--line);padding-top:22px}
+.topic>.blk>h3{counter-increment:part;display:flex;align-items:center;gap:10px;font-size:1.3rem}
+.topic>.blk>h3::before{content:"Part " counter(part);flex:none;font-family:var(--body);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sec);border:1.5px solid var(--sec);border-radius:999px;padding:2px 9px}
+.topic>.def{background:var(--surface);border-radius:0 12px 12px 0;padding:10px 14px;border-left-color:var(--sec)}
+.sep{display:flex;align-items:center;gap:12px;margin-top:8px;color:var(--sec);font-size:.78rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.sep::before,.sep::after{content:"";flex:1;height:2px;background:var(--line)}
+.where{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.where b{color:var(--ink)}
+
+/* blocks */
+.blk{display:flex;flex-direction:column;gap:12px}
+.blk>h3{font-size:1.2rem;font-weight:700}
+.blk>.sub{color:var(--muted);max-width:65ch}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{border:1px solid var(--line2);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:700;min-height:44px}
+.btn:hover{border-color:var(--accent)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.bad{background:var(--threat);border-color:var(--threat);color:#fff}
+.btn.good{background:var(--safe);border-color:var(--safe);color:#fff}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;background:var(--surface2);border-radius:12px}
+.seg button{border:0;background:none;padding:8px 12px;border-radius:9px;font-weight:700;color:var(--muted);min-height:40px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.say{font-weight:700;min-height:1.5em}
+.say.ok{color:var(--safe)}.say.no{color:var(--threat)}
+
+.simple{border-radius:14px;padding:14px 16px;background:var(--accent-soft);display:flex;flex-direction:column;gap:4px;max-width:78ch}
+.simple b.k{font-family:var(--display);font-size:1.05rem}
+.def{border-left:4px solid var(--accent);padding:6px 0 6px 14px;max-width:78ch}
+.def .lab{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.alerts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:10px}
+.alert{border-radius:12px;padding:12px 14px;background:var(--warn-soft);color:var(--ink);font-size:.95rem}
+.alert .lab{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--warn);margin-bottom:2px}
+.extra{border:1.5px dashed var(--line2);border-radius:14px;padding:14px 16px}
+.extra .lab{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+
+/* true / false */
+.tf{display:flex;flex-direction:column;gap:8px;max-width:78ch}
+.tfq{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--surface2)}
+.tfq span{flex:1 1 280px;min-width:0}
+.tfq button{border:1.5px solid var(--line2);background:var(--surface);border-radius:9px;padding:6px 12px;font-weight:700;min-height:40px}
+.tfq .why{flex-basis:100%;font-size:.93rem}
+.tfq.ok{background:var(--safe-soft)}.tfq.no{background:var(--threat-soft)}
+
+/* generic visual pieces */
+.node{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;border:2px solid var(--line2);background:var(--surface);border-radius:12px;padding:8px;font-weight:700;font-size:.9rem;transition:border-color .3s,background .3s,opacity .3s,transform .3s}
+.node .ic{font-size:1.5rem;line-height:1}
+.node small{font-weight:400;color:var(--muted);font-size:.78rem}
+.node.on{border-color:var(--accent);background:var(--accent-soft)}
+.node.good{border-color:var(--safe);background:var(--safe-soft)}
+.node.bad{border-color:var(--threat);background:var(--threat-soft)}
+.node.dim{opacity:.35}
+.arrow{color:var(--line2);font-weight:700;font-size:1.3rem;align-self:center}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface2);font-weight:700;font-size:.85rem;transition:background .3s,color .3s}
+.chip.on{background:var(--accent);color:var(--on-accent)}
+.chip.good{background:var(--safe);color:#fff}
+.chip.bad{background:var(--threat);color:#fff}
+.pulse{animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.shake{animation:shake .4s ease}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.pop{animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+
+/* glance + key terms */
+.glance{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:8px}
+.gl{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line);text-align:left;font-size:.95rem}
+.gl .ic{font-size:1.3rem;line-height:1.2;flex:none}
+.gl .go{margin-left:auto;flex:none;font-size:.8rem;font-weight:700;color:var(--accent);white-space:nowrap}
+button.gl:hover{border-color:var(--accent)}
+.kts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:12px}
+.kt{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.kt .lab{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.kt h3{font-size:1.35rem;font-weight:800}
+.kt p.d{border-left:4px solid var(--accent);padding-left:12px}
+.shield{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:16px;border-radius:999px;border:4px solid var(--accent);background:var(--accent-soft);transition:border-color .3s}
+.shield.hit{animation:shake .4s ease}
+.atk{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.bars{display:flex;flex-direction:column;gap:6px}
+.barx{display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:700}
+.barx span{min-width:150px}
+.barx i{flex:1;height:14px;border-radius:7px;background:var(--safe);transform-origin:left;transition:transform .6s,background .6s}
+.barx.down i{transform:scaleX(.08);background:var(--threat)}
+.jewel{display:flex;align-items:center;gap:10px;font-weight:700}
+.jewel .gem{font-size:2rem;transition:opacity .4s,transform .4s}
+.jewel .gem.gone{opacity:.15;transform:scale(.7)}
+
+/* 1.1 story */
+.story{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.story .node{min-height:96px}
+.storycap{padding:12px 14px;border-radius:12px;background:var(--surface2);min-height:72px}
+.mail{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);max-width:560px}
+.mail .mh{padding:8px 12px;background:var(--surface2);font-size:.85rem;color:var(--muted)}
+.mail .mb{padding:12px;font-size:.95rem}
+.lookalike{background:var(--threat-soft);color:var(--threat);font-weight:700;border-radius:4px;padding:0 3px}
+
+/* 1.1 layers */
+.layers{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:8px;align-items:center}
+.wire{height:6px;min-width:30px;border-radius:3px;background:var(--line);position:relative;overflow:hidden;transition:background .3s}
+.wire.on{background:var(--accent-soft)}
+.wire i{position:absolute;top:-2px;width:10px;height:10px;border-radius:50%;background:var(--line2);animation:pk 2s linear infinite}
+.wire.on i{background:var(--accent)}
+.wire.data i{background:var(--warn);width:14px;height:14px;top:-4px}
+@keyframes pk{from{left:-10px}to{left:100%}}
+.dlist{display:flex;flex-wrap:wrap;gap:6px}
+
+/* 1.1 asset checker */
+.assets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:8px}
+.asset{text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-height:88px}
+.asset b{font-size:.98rem}
+.asset small{color:var(--muted)}
+.asset.ok{border-color:var(--safe);background:var(--safe-soft)}
+.asset.no{border-color:var(--line2);background:var(--surface2)}
+
+/* reasons strip + mindset */
+.reasons{display:flex;flex-wrap:wrap;gap:6px}
+.reasons button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-weight:700;min-height:40px}
+.reasons button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.mind{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.mind .node{min-height:92px}
+
+/* 1.2 network control panel */
+.cp{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;text-align:left;font-weight:700;min-height:48px}
+.sw .t{width:42px;height:24px;border-radius:99px;background:var(--threat);position:relative;flex:none;transition:background .2s}
+.sw .t::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s}
+.sw[aria-checked="true"] .t{background:var(--safe)}
+.sw[aria-checked="true"] .t::after{left:21px}
+.swl{display:flex;flex-direction:column;gap:6px}
+.net{position:relative;background:var(--surface2);border-radius:14px;padding:14px;display:grid;grid-template-columns:110px 70px minmax(0,1fr);gap:10px;align-items:stretch;min-height:250px}
+.cloud{align-self:center}
+.gate{border-radius:10px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-weight:700;font-size:.85rem;letter-spacing:.06em;transition:background .3s;background:var(--safe);color:#fff}
+.gate.off{background:var(--threat)}
+.office{border:2px dashed var(--line2);border-radius:12px;padding:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-content:start}
+.office .lab{grid-column:1/-1;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.issues{display:flex;flex-direction:column;gap:6px}
+.issue{padding:8px 12px;border-radius:10px;background:var(--threat-soft);color:var(--ink);font-size:.93rem}
+.issue b{color:var(--threat)}
+.allgood{padding:8px 12px;border-radius:10px;background:var(--safe-soft);font-weight:700;color:var(--safe)}
+
+/* firewall lanes */
+.lanes{display:grid;grid-template-columns:110px minmax(0,1fr) 110px;gap:10px;align-items:center}
+.lane{position:relative;height:150px;background:var(--surface2);border-radius:12px;overflow:hidden}
+.fwwall{position:absolute;left:50%;top:0;bottom:0;width:14px;margin-left:-7px;background:var(--safe);border-radius:4px;transition:background .3s}
+.fwwall.off{background:repeating-linear-gradient(180deg,var(--threat) 0 8px,transparent 8px 14px)}
+.pkt{position:absolute;left:0;padding:3px 8px;border-radius:7px;font-size:.75rem;font-weight:700;white-space:nowrap;transition:left 1.6s linear,opacity .3s;background:var(--surface);border:1.5px solid var(--line2)}
+.pkt.g{border-color:var(--safe)}.pkt.r{border-color:var(--threat);color:var(--threat)}
+.pkt.out{left:auto;right:0;transition:right 1.6s linear,opacity .3s}
+.fwlog{font-family:var(--mono);font-size:.82rem;background:var(--screen);color:var(--screen-ink);border-radius:10px;padding:10px 12px;min-height:110px;max-height:160px;overflow:auto}
+.fwlog div{padding:1px 0}
+.fwlog .a{color:#6EE7A8}.fwlog .b{color:#FF8A84}
+
+/* router / config */
+.cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:8px}
+.cfgi{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--threat);background:var(--threat-soft);font-size:.93rem;transition:all .4s}
+.cfgi .v{font-family:var(--mono);font-weight:700}
+.cfgi.ok{border-color:var(--safe);background:var(--safe-soft)}
+
+/* access control */
+.staff{display:flex;flex-wrap:wrap;gap:8px}
+.staff button{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 12px;min-width:96px;font-weight:700}
+.staff button span{font-size:1.5rem}
+.staff button small{font-weight:400;color:var(--muted);font-size:.75rem}
+.staff button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.folders{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:8px}
+.fold{border-radius:12px;padding:12px;border:2px solid var(--line);background:var(--surface);display:flex;flex-direction:column;gap:4px;transition:all .35s}
+.fold .ic{font-size:1.6rem}
+.fold small{font-weight:700}
+.fold.open{border-color:var(--safe);background:var(--safe-soft)}.fold.open small{color:var(--safe)}
+.fold.shut{border-color:var(--line);background:var(--surface2);opacity:.75}.fold.shut small{color:var(--threat)}
+
+/* malware */
+.scanbar{height:12px;border-radius:6px;background:var(--surface2);overflow:hidden}
+.scanbar i{display:block;height:100%;width:0;background:var(--accent);transition:width 1.4s linear}
+.pcs{display:flex;flex-wrap:wrap;gap:8px}
+.pcs .node{width:96px}
+
+/* patch */
+.wall{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;max-width:420px;position:relative}
+.brick{height:28px;border-radius:4px;background:var(--line2);opacity:.6}
+.brick.hole{background:transparent;border:2px dashed var(--threat);opacity:1}
+.brick.fixed{background:var(--safe);opacity:1}
+
+/* encryption */
+.cipher{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center}
+.cbox{border-radius:12px;padding:12px;background:var(--surface2);min-height:84px;font-family:var(--mono);word-break:break-all}
+.cbox .lab{display:block;font-family:var(--body);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:4px}
+.cbox.lock{background:var(--screen);color:var(--screen-ink)}
+input.txt{width:100%;border:1.5px solid var(--line2);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;min-height:44px}
+
+/* resilience / backup */
+.files{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.file{border-radius:12px;padding:12px 8px;text-align:center;border:2px solid var(--safe);background:var(--safe-soft);font-weight:700;font-size:.88rem;transition:all .4s;position:relative}
+.file .ic{display:block;font-size:1.7rem}
+.file.gone{border-color:var(--threat);background:var(--threat-soft);color:var(--threat)}
+.file.rest{border-color:var(--accent);background:var(--accent-soft)}
+.bkp{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface2);font-weight:700}
+.prog{flex:1;height:10px;border-radius:5px;background:var(--surface);overflow:hidden;min-width:80px}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width 1.6s linear}
+.raip{display:flex;flex-wrap:wrap;gap:6px}
+.house{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.threats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:8px}
+.thr{text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:120px}
+.thr .ic{font-size:1.8rem;transition:transform .5s,opacity .5s}
+.thr b{font-size:.98rem}
+.thr small{color:var(--muted);display:none}
+.thr[aria-pressed="true"]{border-color:var(--threat);background:var(--threat-soft)}
+.thr[aria-pressed="true"] small{display:block;color:var(--ink)}
+.thr[aria-pressed="true"] .ic{transform:translateY(6px) rotate(-12deg)}
+.plan{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:center}
+.ring{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--safe) calc(var(--p)*1%),var(--surface2) 0);transition:--p .4s}
+.ring div{width:112px;height:112px;border-radius:50%;background:var(--surface);display:grid;place-items:center;text-align:center;font-weight:800;font-family:var(--display);font-size:1.4rem}
+.ring div small{display:block;font-family:var(--body);font-weight:400;font-size:.75rem;color:var(--muted)}
+.ticks{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:6px}
+.tick{display:flex;gap:8px;align-items:center;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;text-align:left;font-weight:700;font-size:.92rem;min-height:44px}
+.tick i{width:20px;height:20px;border-radius:6px;border:2px solid var(--line2);flex:none;display:grid;place-items:center;font-style:normal;font-size:.75rem;color:transparent}
+.tick[aria-pressed="true"]{border-color:var(--safe)}
+.tick[aria-pressed="true"] i{background:var(--safe);border-color:var(--safe);color:#fff}
+
+/* 2.1 risk */
+.cause{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center}
+.col{display:flex;flex-direction:column;gap:6px}
+.riskgrid{display:flex;flex-wrap:wrap;gap:6px}
+.riskgrid button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-weight:700;min-height:40px}
+.riskgrid button[aria-pressed="true"]{border-color:var(--threat);background:var(--threat-soft)}
+.scene{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:14px;background:var(--surface2);border-radius:12px;min-height:130px}
+.scene .node{min-width:96px}
+
+/* 2.2 attack map */
+.amap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.door{text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-height:78px}
+.door b{font-size:.98rem}
+.door small{color:var(--muted);font-size:.8rem}
+.door .k{font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.door[aria-pressed="true"]{border-color:var(--threat);background:var(--threat-soft)}
+.inbox{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;color:#1b2433}
+.inbox .ih{background:#e9edf3;padding:8px 12px;font-size:.82rem;color:#3c4659;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.inbox .ib{padding:14px 16px;font-size:.95rem;display:flex;flex-direction:column;gap:8px}
+.clue{border-radius:4px;padding:0 2px;cursor:pointer;border-bottom:1.5px dotted #8a96a8}
+.clue:hover{background:#fff1b8}
+.clue.found{background:#ffd9d9;border-bottom-color:#c62828}
+.clue.found::after{content:attr(data-n);margin-left:4px;font-size:.7rem;font-weight:700;color:#fff;background:#c62828;border-radius:99px;padding:0 6px}
+.fakebtn{display:inline-block;background:#0b5bd3;color:#fff;font-weight:700;padding:7px 12px;border-radius:8px}
+.cluelist{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:6px}
+.cluelist div{padding:7px 10px;border-radius:9px;background:var(--surface2);font-size:.9rem;color:var(--muted)}
+.cluelist div.f{background:var(--threat-soft);color:var(--ink)}
+.ransom{border-radius:12px;padding:16px;background:#1a0509;color:#ffd7db;text-align:center;font-family:var(--mono)}
+.ransom h4{margin:0 0 4px;color:#ff6b6b;font-size:1.2rem}
+.spy{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.term{background:var(--screen);color:var(--screen-ink);border-radius:12px;padding:12px;font-family:var(--mono);font-size:.85rem;min-height:120px;word-break:break-all}
+.term .lab{display:block;color:#FF8A84;font-weight:700;margin-bottom:6px;font-size:.75rem;letter-spacing:.08em}
+.desk{position:relative;background:var(--screen);border-radius:12px;padding:12px;min-height:150px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:hidden}
+.win{background:var(--surface);color:var(--ink);border-radius:8px;padding:8px;font-size:.78rem}
+.win b{display:block;font-size:.8rem}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:fl .5s ease}
+@keyframes fl{20%{opacity:.9}100%{opacity:0}}
+.shots{display:flex;flex-wrap:wrap;gap:6px}
+.shots span{width:62px;height:40px;border-radius:6px;background:var(--surface);border:2px solid #FF8A84;display:grid;place-items:center;font-size:.6rem;color:var(--ink)}
+.lap{background:var(--screen);border-radius:12px;padding:12px;min-height:150px;display:grid;place-items:center;position:relative;color:var(--screen-ink)}
+.camdot{position:absolute;top:8px;left:50%;width:9px;height:9px;margin-left:-4px;border-radius:50%;background:#3a4a62}
+.lap.on .camdot{background:#ff3b3b;box-shadow:0 0 10px #ff3b3b}
+.browser{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.browser .url{background:var(--surface2);padding:6px 10px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.browser .pg{padding:12px;display:flex;flex-direction:column;gap:8px;position:relative;min-height:150px}
+.adlink{align-self:flex-start;border:2px solid var(--accent);border-radius:8px;padding:6px 10px;font-weight:700;color:var(--accent)}
+.adlink.hit{animation:hit .35s ease}
+@keyframes hit{40%{transform:scale(1.06);border-color:var(--threat);color:var(--threat)}}
+.cursor{position:absolute;left:80%;top:80%;font-size:1.3rem;transition:left .6s ease,top .6s ease;pointer-events:none}
+.compare{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+
+/* 2.3 hacking */
+.hk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.recs{width:100%;border-collapse:collapse;font-size:.9rem}
+.recs td,.recs th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+.recs th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.recs tr.del td{text-decoration:line-through;color:var(--threat)}
+.recs td.chg{color:var(--threat);font-weight:700}
+.netstat{padding:8px 12px;border-radius:10px;font-weight:700;background:var(--safe-soft);color:var(--safe)}
+.netstat.down{background:var(--threat-soft);color:var(--threat)}
+.steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.steps4 span{padding:6px 8px;border-radius:8px;background:var(--surface2);font-size:.8rem;font-weight:700;color:var(--muted);text-align:center}
+.steps4 span.on{background:var(--threat);color:#fff}
+.steps4 span.done{color:var(--threat)}
+.board{background:var(--screen);color:#FFD27A;font-family:var(--mono);border-radius:12px;padding:12px;font-size:.85rem}
+.board div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+
+/* 2.4 ddos */
+.dd{display:grid;grid-template-columns:minmax(0,1.2fr) 70px minmax(0,1fr);gap:10px;align-items:center}
+.bots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.bot{border-radius:8px;padding:6px 2px;text-align:center;background:var(--surface2);border:1.5px solid var(--line);font-size:1.1rem;transition:all .3s}
+.bot.live{background:var(--threat-soft);border-color:var(--threat)}
+.flow{position:relative;height:120px;overflow:hidden}
+.flow i{position:absolute;left:0;width:8px;height:8px;border-radius:50%;background:var(--threat);opacity:0}
+.flow.go i{animation:fly .9s linear infinite}
+@keyframes fly{0%{left:0;opacity:1}100%{left:100%;opacity:1}}
+.srv{display:flex;flex-direction:column;gap:8px}
+.meter{height:14px;border-radius:7px;background:var(--surface2);overflow:hidden}
+.meter i{display:block;height:100%;width:15%;background:var(--safe);transition:width .6s,background .6s}
+.users{display:flex;flex-direction:column;gap:4px}
+.users div{font-size:.85rem;padding:4px 8px;border-radius:8px;background:var(--safe-soft)}
+.users div.x{background:var(--threat-soft)}
+
+/* 2.5 prevent */
+.pw{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.checks{display:flex;flex-direction:column;gap:4px;font-size:.92rem}
+.checks div::before{content:"\2715  ";color:var(--threat);font-weight:700}
+.checks div.y::before{content:"\2713  ";color:var(--safe)}
+.tfa{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.phone{border-radius:18px;border:3px solid var(--line2);padding:12px 8px;text-align:center;background:var(--surface)}
+.code{font-family:var(--mono);font-size:1.4rem;font-weight:700;letter-spacing:.15em}
+
+/* traps */
+.traps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:8px}
+.trap{text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-height:96px}
+.trap .q{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.trap .w{color:var(--threat);font-weight:700}
+.trap .r{display:none;color:var(--ink)}
+.trap[aria-pressed="true"]{border-color:var(--safe);background:var(--safe-soft)}
+.trap[aria-pressed="true"] .w{text-decoration:line-through;opacity:.6}
+.trap[aria-pressed="true"] .r{display:block}
+
+.tnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static;flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .rail h4{display:none}
+  .rail .grp{flex-direction:row;gap:6px}
+  .tl{white-space:nowrap;border:1px solid var(--line);background:var(--surface)}
+  .cp,.hk,.pw,.spy,.dd,.plan{grid-template-columns:minmax(0,1fr)}
+  .amap,.compare{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .story,.mind,.steps4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .files{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .layers,.cause{grid-template-columns:minmax(0,1fr)}
+  .layers .wire,.cause .arrow{display:none}
+  .lanes{grid-template-columns:70px minmax(0,1fr) 70px}
+  .cipher{grid-template-columns:minmax(0,1fr)}
+  .tfa{grid-template-columns:minmax(0,1fr)}
+  .ring{margin:0 auto}
+}
+@media (max-width:640px){.where{display:none}}
+@media (max-width:480px){
+  .bar small{display:none}
+  .pkt{font-size:.68rem}
+  .net{grid-template-columns:minmax(0,1fr);min-height:0}
+  .gate{writing-mode:horizontal-tb;padding:8px}
+  .office{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<header class="bar">
+  <div class="bar-in">
+    <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+    <div><h1>Data Security</h1><small>Chapter 10 · Assurance and Information Systems · ICAN</small></div>
+    <span class="sp"></span>
+    <span class="where" id="where"></span>
+    <button class="tbtn" id="themeBtn" type="button">Dark mode</button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Chapter 10 topics" id="rail">
+    <div class="grp"><h4>Section 1 · Importance of security</h4>
+      <button class="tl" data-t="t11" type="button"><b>1.1</b>Why security matters</button>
+      <button class="tl" data-t="t12" type="button"><b>1.2</b>Five technical controls</button>
+      <button class="tl" data-t="t13" type="button"><b>1.3</b>Cyber-resilience</button>
+    </div>
+    <div class="grp"><h4>Section 2 · Cyber risk and fraud</h4>
+      <button class="tl" data-t="t21" type="button"><b>2.1</b>Cyber security risks</button>
+      <button class="tl" data-t="t22" type="button"><b>2.2</b>Cyberattacks</button>
+      <button class="tl" data-t="t23" type="button"><b>2.3</b>Hacking</button>
+      <button class="tl" data-t="t24" type="button"><b>2.4</b>DDoS attacks</button>
+      <button class="tl" data-t="t25" type="button"><b>2.5</b>Preventing attacks</button>
+    </div>
+  </nav>
+
+  <main id="main">
+
+<!-- ============ 1.1 ============ -->
+<section class="topic sec1" id="t11" data-title="1.1 Why security matters">
+  <div class="thead"><div class="crumb"><span class="secpill">Section 1</span><span>Importance of Security</span><span class="crumbsep">›</span><span>Topic 1.1</span></div><div class="tt"><span class="tnum">1.1</span><h2>Security of computer systems</h2></div>
+    <p>One weak email, one missing check, and the money is gone. Security protects the systems, networks and data a business runs on.</p></div>
+
+  <div class="blk"><h3>Section 1 at a glance</h3>
+    <div class="glance">
+      <div class="gl"><span class="ic">📌</span><span>Cyber security is a major issue for most organisations.</span></div>
+      <div class="gl"><span class="ic">🛡️</span><span>Cybersecurity relates to the protection of systems, networks and data in cyberspace.</span></div>
+      <div class="gl"><span class="ic">💎</span><span>Critical information assets are fundamental to an organisation's core activities and viability.</span></div>
+      <button class="gl" type="button" data-go="t12"><span class="ic">🧰</span><span>Five minimum technical controls: boundary firewalls, secure configuration, access control, malware protection, patch management.</span><span class="go">1.2 →</span></button>
+      <button class="gl" type="button" data-go="t13"><span class="ic">🛟</span><span>Cyber-resilience: data is reliable, available, has integrity and is adequately protected.</span><span class="go">1.3 →</span></button>
+      <button class="gl" type="button" data-go="t13"><span class="ic">📋</span><span>An information security plan covers network security, user privileges, incident management, user education and mobile working.</span><span class="go">1.3 →</span></button>
+    </div>
+  </div>
+
+  <div class="blk"><h3>Key terms</h3>
+    <div class="kts">
+      <div class="kt"><span class="lab">Key term</span><h3>Cybersecurity</h3>
+        <p class="d">The protection of systems, networks and data in cyberspace; the procedures used by a business to protect its information system (hardware, software and information) from damage, disruption, theft or other loss.</p>
+        <div class="shield" id="ksh"><span class="chip on">💻 Hardware</span><span class="chip on">🧩 Software</span><span class="chip on">📄 Information</span></div>
+        <div class="atk" id="katk"><span class="chip">Damage</span><span class="chip">Disruption</span><span class="chip">Theft</span><span class="chip">Other loss</span></div>
+        <div class="row"><button class="btn pri" type="button" id="kshGo">Test the shield</button><span class="say" id="kshSay"></span></div>
+      </div>
+      <div class="kt"><span class="lab">Key term</span><h3>Critical information assets</h3>
+        <p class="d">Assets which are fundamental to an organisation's core activities and their performance, as well as its overall capability and viability.</p>
+        <div class="jewel"><span class="gem" id="kgem">💎</span><span>Core banking database (example)</span></div>
+        <div class="bars" id="kbars"><div class="barx"><span>Core activities</span><i></i></div><div class="barx"><span>Performance</span><i></i></div><div class="barx"><span>Capability and viability</span><i></i></div></div>
+        <div class="row"><button class="btn bad" type="button" id="kgemGo">Lose the asset</button><span class="say" id="kgemSay"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>A story: the fake MD email</h3>
+    <div class="stage">
+      <div class="story" id="story"></div>
+      <div class="storycap" id="storyCap"></div>
+      <div class="row"><button class="btn" id="stPrev" type="button">Back</button><button class="btn pri" id="stNext" type="button">Next part</button><span class="muted" style="color:var(--muted);font-size:.85rem">Illustrative story, not from the study book</span></div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>What does cybersecurity protect?</h3>
+    <p class="sub">Tap each layer. Then press the attack button to see the four kinds of harm cybersecurity defends against.</p>
+    <div class="stage">
+      <div class="seg" role="group" aria-label="Choose a layer" id="laySeg">
+        <button type="button" data-l="sys" aria-pressed="false">Systems</button><button type="button" data-l="net" aria-pressed="false">Networks</button><button type="button" data-l="dat" aria-pressed="false">Data</button>
+      </div>
+      <div class="layers" id="layers">
+        <div class="node" data-k="sys"><span class="ic">💻</span>Accounts PC<small>hardware and software</small></div>
+        <div class="wire" data-k="net"><i></i></div>
+        <div class="node" data-k="sys"><span class="ic">🗄️</span>Server<small>Tally, ERP</small></div>
+        <div class="wire" data-k="net"><i></i></div>
+        <div class="node" data-k="sys"><span class="ic">🏦</span>Bank portal<small>online banking</small></div>
+      </div>
+      <p class="say" id="layerSay">Tap Systems, Networks or Data.</p>
+      <div class="row"><button class="btn bad" id="harmBtn" type="button">Show what an attack can do</button></div>
+      <div class="dlist" id="harms"><span class="chip">Damage</span><span class="chip">Disruption</span><span class="chip">Theft</span><span class="chip">Other loss</span></div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>Is it a critical information asset?</h3>
+    <p class="sub">Pick a business, then tap each item to test it. The test is not "does it earn money" but "can the business carry on its core activities without it".</p>
+    <div class="stage">
+      <div class="seg" role="group" aria-label="Choose a business" id="orgSeg">
+        <button type="button" data-o="bank" aria-pressed="true">Bank</button><button type="button" data-o="hosp" aria-pressed="false">Hospital</button><button type="button" data-o="ca" aria-pressed="false">CA firm</button>
+      </div>
+      <div class="assets" id="assets"></div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>Seven reasons security matters</h3>
+    <div class="stage">
+      <div class="reasons" id="reasons"></div>
+      <div class="storycap" id="reasonSay"></div>
+      <div id="mindWrap" hidden>
+        <p style="font-weight:700;margin-bottom:8px">Prevention alone is not enough. Broaden to intelligence, detection and response.</p>
+        <div class="mind" id="mind"></div>
+        <div class="row" style="margin-top:10px"><button class="btn pri" id="mindPlay" type="button">Play the four stages</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>Every business, online or not, holds information it cannot lose. Cybersecurity keeps that information and the machines and links that carry it safe. Because a break-in will happen one day, a business must also learn about threats, spot attacks quickly and respond.</p></div>
+
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · Q10, Q11</span>Cyber security is a concern for ALL organisations, not just those operating online. It covers ALL data, not just personal data.</div>
+    <div class="alert"><span class="lab">Exam alert · Q23</span>A critical information asset is fundamental to CORE ACTIVITIES and viability. It is not simply one that generates significant revenue.</div>
+    <div class="alert"><span class="lab">Exam alert · Q22</span>The real challenge for businesses of ALL sizes is getting the basics of cyber hygiene right.</div>
+  </div>
+
+  <div class="blk"><h3>Quick check · True or false?</h3>
+    <div class="tf" data-tf='[["Cyber security is a concern only for organisations that operate online.",false,"False. It is a concern for all organisations. (Q10)"],["Cyber security relates to the protection of personal data only.",false,"False. It covers all data. (Q10)"],["It is a legal obligation under data protection law to protect certain types of data in a computerised system.",true,"True. This is the first reason security matters. (ST)"]]'></div>
+  </div>
+</section>
+
+<!-- ============ 1.2 ============ -->
+<section class="topic sec1" id="t12" data-title="1.2 Five technical controls" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 1</span><span>Importance of Security</span><span class="crumbsep">›</span><span>Topic 1.2</span></div><div class="tt"><span class="tnum">1.2</span><h2>Five technical controls</h2></div>
+    <p>The minimum controls every business should apply: to cloud services, business and personal devices, and every technology it uses. Switch one off and watch what goes wrong.</p></div>
+
+  <div class="blk"><h3>The office control panel</h3>
+    <div class="stage">
+      <div class="cp">
+        <div class="swl" id="switches"></div>
+        <div class="net">
+          <div class="node cloud" id="nInternet"><span class="ic">🌐</span>Internet<small id="nInternetS">normal traffic</small></div>
+          <div class="gate" id="gate">FIREWALL ON</div>
+          <div class="office" id="office"><span class="lab">Office network</span>
+            <div class="node" id="nRouter"><span class="ic">📶</span>Router<small id="nRouterS">secure settings</small></div>
+            <div class="node" id="nPayroll"><span class="ic">🗂️</span>Payroll<small id="nPayrollS">HR only</small></div>
+            <div class="node" id="nPC1"><span class="ic">💻</span>PC 1<small id="nPC1S">clean</small></div>
+            <div class="node" id="nPC2"><span class="ic">💻</span>PC 2<small id="nPC2S">clean</small></div>
+            <div class="node" id="nApp"><span class="ic">🧾</span>Tally<small id="nAppS">up to date</small></div>
+            <div class="node" id="nPC3"><span class="ic">💻</span>PC 3<small id="nPC3S">clean</small></div>
+          </div>
+        </div>
+      </div>
+      <div class="issues" id="issues"></div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>See each control work</h3>
+    <div class="seg" role="group" aria-label="Choose a control" id="ctlSeg">
+      <button type="button" data-c="fw" aria-pressed="true">Firewall</button><button type="button" data-c="cf" aria-pressed="false">Secure configuration</button><button type="button" data-c="ac" aria-pressed="false">Access control</button><button type="button" data-c="mw" aria-pressed="false">Malware protection</button><button type="button" data-c="pm" aria-pressed="false">Patch management</button>
+    </div>
+
+    <div class="stage" data-cp="fw">
+      <p class="sub" style="color:var(--muted)">Traffic flows in from the internet and out from the office. The firewall intercepts every packet and decides.</p>
+      <div class="lanes">
+        <div class="node"><span class="ic">🌐</span>Internet</div>
+        <div class="lane" id="lane"><div class="fwwall" id="fwwall"></div></div>
+        <div class="node"><span class="ic">🏢</span>Office</div>
+      </div>
+      <div class="row"><button class="btn pri" id="fwSend" type="button">Send traffic</button><button class="btn" id="fwToggle" type="button" aria-pressed="true">Firewall: ON</button></div>
+      <div class="fwlog" id="fwlog" aria-live="polite"><div>Firewall log. Press "Send traffic".</div></div>
+      <div class="def"><span class="lab">Boundary firewalls and internet gateways</span><p>Software that intercepts network traffic in and out of a system.</p></div>
+    </div>
+
+    <div class="stage" data-cp="cf" hidden>
+      <p class="sub" style="color:var(--muted)">A new router arrives with factory settings that anyone can look up. Secure configuration means setting it up with cybersecurity as a priority.</p>
+      <div class="cfg" id="cfg"></div>
+      <div class="row"><button class="btn pri" id="cfgBtn" type="button">Apply secure settings</button><span class="say" id="cfgSay">Status: weak</span></div>
+      <div class="def"><span class="lab">Secure configuration</span><p>Ensuring the system is set up with cybersecurity as a priority. Choose the most secure settings for devices and software.</p></div>
+    </div>
+
+    <div class="stage" data-cp="ac" hidden>
+      <p class="sub" style="color:var(--muted)">Pick a member of staff. The system shows only the folders that person needs.</p>
+      <div class="staff" id="staff"></div>
+      <div class="folders" id="folders"></div>
+      <p class="say" id="acSay"></p>
+      <div class="def"><span class="lab">Access control</span><p>Physical and network procedures to restrict access to a system. Control who has access to data and services.</p></div>
+    </div>
+
+    <div class="stage" data-cp="mw" hidden>
+      <p class="sub" style="color:var(--muted)">An email arrives with an attachment called <span class="mono">Invoice_March.pdf.exe</span>.</p>
+      <div class="row"><button class="btn" id="mwToggle" type="button" aria-pressed="true">Anti-virus: ON</button><button class="btn bad" id="mwOpen" type="button">Open the attachment</button></div>
+      <div class="scanbar"><i id="mwBar"></i></div>
+      <div class="pcs" id="mwPcs"></div>
+      <p class="say" id="mwSay"></p>
+      <div class="def"><span class="lab">Malware protection</span><p>Software that prevents and removes unwanted programs from a system, such as anti-virus software.</p></div>
+    </div>
+
+    <div class="stage" data-cp="pm" hidden>
+      <p class="sub" style="color:var(--muted)">The software maker has found a weakness and released an update. Until it is installed, the hole stays open.</p>
+      <div class="wall" id="wall"></div>
+      <div class="row"><button class="btn bad" id="pmAttack" type="button">Hacker tries the known hole</button><button class="btn good" id="pmPatch" type="button">Install the update</button></div>
+      <p class="say" id="pmSay">Update available: fixes a security weakness.</p>
+      <div class="def"><span class="lab">Patch management</span><p>Ensuring the latest updates to software are installed. Keep devices and software up to date.</p></div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>Control and its technical protection (case Q25, Q26)</h3>
+    <div style="overflow-x:auto"><table class="recs" style="min-width:640px">
+      <thead><tr><th>Control: what the business should do</th><th>Technical protection</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Use a firewall to secure its internet connection</td><td><b>Boundary firewalls and internet gateways</b></td><td>Software that intercepts network traffic in and out of a system.</td></tr>
+        <tr><td>Choose the most secure settings for its devices and software</td><td><b>Secure configuration</b></td><td>Ensuring the system is set up with cybersecurity as a priority.</td></tr>
+        <tr><td>Control who has access to data and services</td><td><b>Access control</b></td><td>Physical and network procedures to restrict access to a system.</td></tr>
+        <tr><td>Protect itself from viruses and other malware</td><td><b>Malware protection</b></td><td>Software that prevents and removes unwanted programs from a system, such as anti-virus software.</td></tr>
+        <tr><td>Keep devices and software up to date</td><td><b>Patch management</b></td><td>Ensuring the latest updates to software are installed.</td></tr>
+      </tbody></table></div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>A gate that checks traffic, settings changed from the factory defaults, each person seeing only what they need, a scanner that catches bad programs, and updates that close known holes. These five work together as the basic lock set.</p></div>
+
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · Q9</span>Physical access is NOT a technical control. The five are firewalls, secure configuration, access control, malware protection and patch management.</div>
+    <div class="alert"><span class="lab">Exam alert · Q12</span>A firewall is software that INTERCEPTS NETWORK TRAFFIC in and out of a system.</div>
+    <div class="alert"><span class="lab">Exam alert · Q16</span>Both are TRUE: secure configuration = the system set up with cybersecurity as a priority; access controls = physical and network procedures to restrict access.</div>
+    <div class="alert"><span class="lab">Exam alert · Q19, Q6</span>Patch management = ensuring the latest updates are installed. Access controls, internet gateways and patch management should ALL be implemented.</div>
+  </div>
+
+  <div class="extra"><span class="lab">Beyond the syllabus · Encryption</span>
+    <p style="margin:6px 0 10px">Not in the Chapter 10 study book. Shown because it helps explain how data stays protected. Type a sample message, lock it, then unlock it with the key.</p>
+    <div class="cipher">
+      <div><input class="txt" id="encIn" value="Pay supplier NRs 50,000 on Friday" aria-label="Sample message to encrypt" maxlength="60"></div>
+      <div class="row"><button class="btn pri" id="encBtn" type="button">Encrypt</button><button class="btn" id="decBtn" type="button">Decrypt</button></div>
+      <div class="cbox" id="encOut"><span class="lab">Result</span><span id="encTxt">Press Encrypt.</span></div>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-top:8px">Demo only: a simple letter shift with key 7. Real systems use strong mathematical algorithms.</p>
+  </div>
+</section>
+
+<!-- ============ 1.3 ============ -->
+<section class="topic sec1" id="t13" data-title="1.3 Cyber-resilience" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 1</span><span>Importance of Security</span><span class="crumbsep">›</span><span>Topic 1.3</span></div><div class="tt"><span class="tnum">1.3</span><h2>Cyber-resilience</h2></div>
+    <p>Security is no guarantee of total protection. Resilience is having a plan for the attack that does get through, so the business keeps going.</p></div>
+  <div class="def"><span class="lab">Key term · Cyber-resilience</span><p>The ability of an organisation to ensure that its data and information are reliable, available, has integrity and is adequately protected from unauthorised access.</p></div>
+
+  <div class="blk"><h3>Disaster strikes. Can you recover?</h3>
+    <p class="sub">Pick what happens and whether a backup exists, then run it.</p>
+    <div class="stage">
+      <div class="row">
+        <div class="seg" role="group" aria-label="Choose the disaster" id="disSeg"><button type="button" data-d="rw" aria-pressed="true">Ransomware</button><button type="button" data-d="fire" aria-pressed="false">Fire</button><button type="button" data-d="hw" aria-pressed="false">Hardware failure</button></div>
+        <div class="seg" role="group" aria-label="Backup" id="bkSeg"><button type="button" data-b="1" aria-pressed="true">Backup kept off-site</button><button type="button" data-b="0" aria-pressed="false">No backup</button></div>
+      </div>
+      <div class="files" id="files"></div>
+      <div class="bkp" id="bkp"><span>💾 Backup</span><div class="prog"><i id="bkProg"></i></div><span id="bkTxt">ready</span></div>
+      <div class="row"><button class="btn bad" id="disRun" type="button">Run the disaster</button><button class="btn" id="disReset" type="button">Reset</button></div>
+      <p class="say" id="disSay">All files available.</p>
+      <div class="raip" id="raip"><span class="chip">Reliable</span><span class="chip">Available</span><span class="chip">Integrity</span><span class="chip">Protected</span></div>
+    </div>
+    <p style="max-width:78ch">As well as cybersecurity, organisations should have appropriate <b>IT disaster recovery procedures</b>, such as tested backups.</p>
+  </div>
+
+  <div class="blk"><h3>Threats to cyber-resilience</h3>
+    <p class="sub">Tap each threat to see what goes wrong.</p>
+    <div class="threats" id="threats"></div>
+    <p style="font-size:.9rem;color:var(--muted);max-width:78ch">The study book's table groups the last two as "Other threats". The chapter summary and case Q27 list them separately, giving five.</p>
+  </div>
+
+  <div class="blk"><h3>Build the information security plan</h3>
+    <p class="sub">Tick each area as you learn it. A complete plan covers all ten.</p>
+    <div class="stage"><div class="plan"><div class="ring" id="ring" style="--p:0"><div id="ringTxt">0/10<small>areas covered</small></div></div><div class="ticks" id="ticks"></div></div></div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>A strong front door does not help if a window is left open. Cybersecurity is the door. Resilience means expecting a break-in and having backups and recovery plans ready, so the data stays reliable, available, correct and protected.</p></div>
+
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · Q24</span>MAINSTREAM MEDIA is NOT a threat to cyber-resilience. The threats are mobile, networking and cloud, mobile access controls, and other threats.</div>
+    <div class="alert"><span class="lab">Exam alert · Q8</span>Data analytics can IDENTIFY, QUANTIFY and MANAGE the risk of cyberattack. It CANNOT ELIMINATE it.</div>
+    <div class="alert"><span class="lab">Exam alert · Q21</span>Responsibility for cyber security needs BOARD-LEVEL accountability, not just the IT department.</div>
+    <div class="alert"><span class="lab">Case answer · Q27</span>Five threats: mobile threats, networking and cloud, access controls in the mobile world, attacks on digital presence (website, social media, email), physical threats (fire, hardware failure, burglary).</div>
+    <div class="alert"><span class="lab">Case answer · Q28</span>Cybersecurity = protection of systems, networks and data in cyberspace from damage, disruption, theft or other loss. Then any five areas of the information security plan above.</div>
+  </div>
+</section>
+
+<!-- ============ 2.1 ============ -->
+<section class="topic sec2" id="t21" data-title="2.1 Cyber security risks" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 2</span><span>Cyber Risk and Fraud</span><span class="crumbsep">›</span><span>Topic 2.1</span></div><div class="tt"><span class="tnum">2.1</span><h2>Cyber security risks</h2></div>
+    <p>Cyber-risk is a type of operational risk. Something makes the IT systems fail, and the business pays for it.</p></div>
+
+  <div class="blk"><h3>Section 2 at a glance</h3>
+    <div class="glance">
+      <div class="gl"><span class="ic">📈</span><span>Cyber-risk is a type of operational risk that has become increasingly relevant to businesses in recent years.</span></div>
+      <div class="gl"><span class="ic">💸</span><span>Cyber-risk is the risk of financial loss, disruption or damage to reputation from failure of IT systems.</span></div>
+      <button class="gl" type="button" data-go="t22"><span class="ic">🎯</span><span>Cyberattacks are deliberate actions against an organisation, including phishing, hacking, malware and DDoS.</span><span class="go">2.2 →</span></button>
+      <button class="gl" type="button" data-go="t22"><span class="ic">🚪</span><span>Main cyberattacks: hacking (specialist software), phishing (bogus emails), file hijacking or ransomware, DDoS (overwhelming traffic).</span><span class="go">2.2 →</span></button>
+      <button class="gl" type="button" data-go="t22"><span class="ic">🕵️</span><span>Less common attacks: webcam hacking, keylogging, screenshot manager and ad clicker.</span><span class="go">2.2 →</span></button>
+      <button class="gl" type="button" data-go="t25"><span class="ic">🔐</span><span>Prevention: strong passwords, security software, two-factor authentication, keeping software updated.</span><span class="go">2.5 →</span></button>
+    </div>
+  </div>
+  <div class="def"><span class="lab">Key term · Cyber-risk</span><p>The risk of financial loss, disruption or damage to the reputation of an organisation from failure of its information technology systems due to accidents, breach of security, cyberattacks or poor systems integrity.</p></div>
+
+  <div class="blk"><h3>Where cyber-risk comes from, and what it costs</h3>
+    <p class="sub">Tap a cause. Watch it reach the IT systems and turn into a loss.</p>
+    <div class="stage">
+      <div class="cause">
+        <div class="col" id="causes"></div>
+        <span class="arrow">→</span>
+        <div class="node" id="itFail"><span class="ic">🖥️</span>IT system failure</div>
+        <span class="arrow">→</span>
+        <div class="col" id="outcomes"><div class="node">💸 Financial loss</div><div class="node">⏸️ Disruption</div><div class="node">📉 Damage to reputation</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>The ten risk categories</h3>
+    <p class="sub">Tap a risk to watch it happen.</p>
+    <div class="stage">
+      <div class="riskgrid" id="riskgrid"></div>
+      <div class="scene" id="scene"></div>
+      <p class="say" id="riskSay"></p>
+    </div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>Some risks come from people (hackers, fraudsters, saboteurs), some from bad software (viruses, worms, Trojans, spyware), and some from attacks on access (denial of service, stolen passwords, intercepted traffic, tricked staff).</p></div>
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · ST</span>Worms, Trojan horses and spyware are all examples of MALWARE.</div>
+    <div class="alert"><span class="lab">Exam alert · Q17</span>Computerised systems ARE still exposed to HUMAN threats. Worms and Trojan horses ARE malware.</div>
+  </div>
+</section>
+
+<!-- ============ 2.2 ============ -->
+<section class="topic sec2" id="t22" data-title="2.2 Cyberattacks" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 2</span><span>Cyber Risk and Fraud</span><span class="crumbsep">›</span><span>Topic 2.2</span></div><div class="tt"><span class="tnum">2.2</span><h2>Cyberattacks and threats</h2></div>
+    <p>A cyberattack is deliberate. Four are common, four are less common. Open each door to see it in action.</p></div>
+  <div class="def"><span class="lab">Key term · Cyberattack</span><p>A deliberate action through the Internet against an organisation with the intention of causing loss, damage or disruption to activities.</p></div>
+
+  <div class="blk">
+    <div class="amap" id="amap"></div>
+    <div class="stage" id="atkStage"></div>
+  </div>
+
+  <div class="blk"><h3>Name the attack · scenarios from the study book</h3>
+    <div class="stage"><p style="font-weight:700" id="naTag"></p><p id="naQ" style="font-size:1.08rem"></p><div class="row" id="naOpts"></div><p class="say" id="naSay"></p><div class="row"><button class="btn" type="button" id="naNext" hidden>Next scenario</button></div></div>
+  </div>
+
+  <div class="blk"><h3>The four less common attacks, side by side</h3>
+    <div class="compare">
+      <div class="node"><span class="ic">📷</span>Webcam hacking<small>takes over the webcam</small></div>
+      <div class="node"><span class="ic">⌨️</span>Keylogging<small>records what you type</small></div>
+      <div class="node"><span class="ic">🖼️</span>Screenshot manager<small>captures the screen</small></div>
+      <div class="node"><span class="ic">🖱️</span>Ad clicker<small>directs your computer to click a link</small></div>
+    </div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>Hacking breaks in with tools. Phishing tricks a person with a fake email. Ransomware locks files and asks for money. DDoS floods a website until it stops. The quieter four spy on the camera, the keys, the screen, or make the computer click links.</p></div>
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · Q13</span>PHISHING uses BOGUS EMAILS. HACKING uses SPECIALIST SOFTWARE. Exams often swap them.</div>
+    <div class="alert"><span class="lab">Exam alert · Q15</span>WEBCAM HACKING takes over the webcam. Taking screenshots of the screen is a SCREENSHOT MANAGER.</div>
+    <div class="alert"><span class="lab">Exam alert · Q2, Q14</span>File hijacking = files stolen and held for ransom. Keylogging records keystrokes. Ad clicker directs the computer to click a specific link.</div>
+  </div>
+</section>
+
+<!-- ============ 2.3 ============ -->
+<section class="topic sec2" id="t23" data-title="2.3 Hacking" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 2</span><span>Cyber Risk and Fraud</span><span class="crumbsep">›</span><span>Topic 2.3</span></div><div class="tt"><span class="tnum">2.3</span><h2>Hacking in detail</h2></div>
+    <p>Hacking uses specialist software and other tools to get in without permission and take administrative control of the network.</p></div>
+  <div class="def"><span class="lab">Key idea · Hacking</span><p>One of the main methods attackers use to gain access to computer networks, by specialist software and other tools. Intruders gain unauthorised access and take administrative control, so they can amend, copy and delete records, or even stop the network from operating.</p></div>
+
+  <div class="blk"><h3>Watch a hack happen</h3>
+    <div class="stage">
+      <div class="steps4" id="hkSteps"><span>Specialist software</span><span>Finds a way in</span><span>Unauthorised access</span><span>Admin control</span></div>
+      <div class="hk">
+        <div class="term" id="hkTerm"><span class="lab">ATTACKER'S SCREEN · SIMULATION</span><div id="hkLines">Waiting.</div></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="netstat" id="hkNet">Customer database · network running</div>
+          <div style="overflow-x:auto"><table class="recs"><thead><tr><th>Customer</th><th>Balance (NRs)</th></tr></thead><tbody id="hkRecs"></tbody></table></div>
+          <div class="row" id="hkActs" hidden><button class="btn" data-h="amend" type="button">Amend</button><button class="btn" data-h="copy" type="button">Copy</button><button class="btn" data-h="delete" type="button">Delete</button><button class="btn bad" data-h="stop" type="button">Stop the network</button></div>
+        </div>
+      </div>
+      <div class="row"><button class="btn bad" id="hkRun" type="button">Start the hack</button><button class="btn" id="hkReset" type="button">Reset</button></div>
+      <p class="say" id="hkSay"></p>
+    </div>
+  </div>
+
+  <div class="blk"><h3>The two risks of hacking</h3>
+    <div class="seg" role="group" aria-label="Choose a risk" id="hrSeg"><button type="button" data-r="data" aria-pressed="true">Data compromise</button><button type="button" data-r="infra" aria-pressed="false">Infrastructure damage</button></div>
+    <div class="stage" id="hrStage"></div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>A hacker is a burglar who uses tools to open the lock and then takes the master keys. With those keys they can change, copy or delete records, or switch the whole system off. The main worry is stolen data being sold. A second worry is the business itself stopping.</p></div>
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam answer · PQ1, Q29</span>Main method: hacking, using specialist software to gain unauthorised access and administrative control. Main risk: data on the network is compromised and sold to third parties or used for a political agenda.</div>
+  </div>
+</section>
+
+<!-- ============ 2.4 ============ -->
+<section class="topic sec2" id="t24" data-title="2.4 DDoS attacks" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 2</span><span>Cyber Risk and Fraud</span><span class="crumbsep">›</span><span>Topic 2.4</span></div><div class="tt"><span class="tnum">2.4</span><h2>Distributed denial of service</h2></div>
+    <p>A DDoS attack does not steal anything. It floods a website with so much traffic that real customers cannot get in.</p></div>
+  <div class="def"><span class="lab">Key idea · DDoS attack</span><p>Designed to disrupt an organisation's online presence by preventing legitimate users from accessing its online services, by overwhelming the website and communications links with a wave of internet traffic the system cannot handle.</p></div>
+  <div class="def"><span class="lab">Key term · Botnet</span><p>A large group of individual computers that criminals have previously compromised. On a signal from the organiser, they all send messages to the target at the same time.</p></div>
+
+  <div class="blk"><h3>A botnet waits for the signal</h3>
+    <p class="sub">These computers were compromised earlier. Their owners do not know. Send the organiser's signal.</p>
+    <div class="stage">
+      <div class="dd">
+        <div style="display:flex;flex-direction:column;gap:8px"><div class="node" id="orgNode"><span class="ic">🕹️</span>Attack organiser</div><div class="bots" id="bots"></div></div>
+        <div class="flow" id="flow"></div>
+        <div class="srv">
+          <div class="node" id="srvNode"><span class="ic">🖥️</span>shop-website.example<small id="srvS">working</small></div>
+          <div class="meter"><i id="srvLoad"></i></div>
+          <div class="users" id="dUsers"></div>
+        </div>
+      </div>
+      <div class="row"><button class="btn bad" id="ddGo" type="button">Send the signal</button><button class="btn" id="ddReset" type="button">Reset</button></div>
+      <p class="say" id="ddSay">Server load is normal. Real customers can shop.</p>
+    </div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>Imagine thousands of people told to phone one small shop at the same moment. The line is always busy, so real customers cannot get through. That is a DDoS attack on a website.</p></div>
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · Q3, Q7</span>DDoS = an internet site shut down by a planned surge of traffic, organised through BOTNETS. It is not hacking or phishing.</div>
+    <div class="alert"><span class="lab">Case answer · Q30</span>DDoS disrupts online presence by overwhelming the website and communication links with traffic it cannot handle. Organised through botnets: on the organiser's signal, all compromised machines message the target at once.</div>
+    <div class="alert"><span class="lab">Exam alert · Q15</span>DDoS attacks are designed to disrupt an organisation's ONLINE PRESENCE by blocking legitimate users.</div>
+  </div>
+</section>
+
+<!-- ============ 2.5 ============ -->
+<section class="topic sec2" id="t25" data-title="2.5 Preventing attacks" hidden>
+  <div class="thead"><div class="crumb"><span class="secpill">Section 2</span><span>Cyber Risk and Fraud</span><span class="crumbsep">›</span><span>Topic 2.5</span></div><div class="tt"><span class="tnum">2.5</span><h2>Preventing and tackling cyberattacks</h2></div>
+    <p>Most attacks are stopped by simple habits done every time.</p></div>
+
+  <div class="blk"><h3>1 · Strong passwords, never reused</h3>
+    <div class="stage">
+      <div class="pw">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label for="pwIn" style="font-weight:700">Type a sample password (never a real one)</label>
+          <input class="txt mono" id="pwIn" value="nepal123" autocomplete="off" spellcheck="false" maxlength="40">
+          <button class="btn" id="pwReuse" type="button" aria-pressed="true">I also use it on other sites</button>
+          <div class="meter"><i id="pwBar"></i></div>
+          <p class="say" id="pwSay"></p>
+          <p style="font-size:.9rem;color:var(--muted)">Tip from the book: password management apps can suggest and remember secure passwords.</p>
+        </div>
+        <div class="checks" id="pwChecks"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>2 · Security software: anti-virus and two-factor authentication</h3>
+    <p class="sub">Install security software such as anti-virus (see the malware demo in 1.2) and two-factor authentication. Two-factor authentication verifies the user at log in by sending a one-time code to a second device, such as a smartphone.</p>
+    <div class="stage">
+      <div class="seg" role="group" aria-label="Who is logging in" id="tfSeg"><button type="button" data-w="you" aria-pressed="true">You log in</button><button type="button" data-w="thief" aria-pressed="false">A thief with your stolen password</button></div>
+      <div class="tfa">
+        <div class="node" id="tf1"><span class="ic">🔑</span>Step 1<small>password entered</small></div>
+        <div class="phone" id="tf2"><div style="font-size:.8rem;color:var(--muted)">Owner's phone</div><div class="code" id="tfCode">------</div></div>
+        <div class="node" id="tf3"><span class="ic">🚪</span>Step 2<small>code entered?</small></div>
+      </div>
+      <div class="row"><button class="btn pri" id="tfGo" type="button">Log in</button></div>
+      <p class="say" id="tfSay"></p>
+    </div>
+  </div>
+
+  <div class="blk"><h3>3 · Keep software updated, 4 · Staff awareness, 5 · Phishing vigilance</h3>
+    <div class="stage">
+      <div class="seg" role="group" aria-label="Choose a habit" id="hbSeg"><button type="button" data-hb="up" aria-pressed="true">Updates</button><button type="button" data-hb="aw" aria-pressed="false">Staff awareness</button><button type="button" data-hb="ph" aria-pressed="false">Phishing vigilance</button></div>
+      <div id="hbStage"></div>
+    </div>
+  </div>
+
+  <div class="blk"><h3>Combating cyber risks: the organisation's approach</h3>
+    <p class="sub">From the chapter mind map. Press the button to build the approach from the top down.</p>
+    <div class="stage">
+      <div class="scene" id="combat" style="justify-content:flex-start"></div>
+      <div class="row"><button class="btn pri" type="button" id="combatGo">Build the approach</button></div>
+    </div>
+  </div>
+
+  <div class="sep"><span>Remember</span></div>
+  <div class="simple"><b class="k">In simple words</b><p>Use a long password that is different for every site, add a code from your phone, install updates when they come, tell staff about new scams, and slow down when an email looks odd.</p></div>
+  <div class="alerts">
+    <div class="alert"><span class="lab">Exam alert · Q18</span>The SAME password should NOT be used for multiple log-ins. Two-factor authentication DOES help identify the user at log in.</div>
+    <div class="alert"><span class="lab">Exam alert · Q20</span>STRONG PASSWORDS are a fundamental preventive control against cyberattacks.</div>
+    <div class="alert"><span class="lab">Self-test · advantage of strong passwords</span>They make it much harder for hackers to guess credentials and gain unauthorised access. Easy or reused passwords make access much easier.</div>
+  </div>
+</section>
+
+
+  <div class="tnav"><button class="btn" id="prevT" type="button">← Previous topic</button><button class="btn pri" id="nextT" type="button">Next topic →</button></div>
+  </main>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var reduced=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+var wait=function(ms){return reduced?0:ms};
+var timers=[];
+function later(fn,ms){var t=setTimeout(fn,wait(ms));timers.push(t);return t}
+function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+function pressSeg(seg,btn){$$("button",seg).forEach(function(b){b.setAttribute("aria-pressed",b===btn?"true":"false")})}
+function say(el,txt,cls){el.textContent=txt;el.className="say"+(cls?" "+cls:"")}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* ---------- theme ---------- */
+function isDark(){var a=document.documentElement.getAttribute("data-theme");if(a)return a==="dark";return window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches}
+function paintThemeBtn(){$("#themeBtn").textContent=isDark()?"Light mode":"Dark mode"}
+$("#themeBtn").addEventListener("click",function(){document.documentElement.setAttribute("data-theme",isDark()?"light":"dark");try{localStorage.setItem("c10-theme",document.documentElement.getAttribute("data-theme"))}catch(e){}paintThemeBtn()});
+try{var st=localStorage.getItem("c10-theme");if(st==="dark"||st==="light")document.documentElement.setAttribute("data-theme",st)}catch(e){}
+paintThemeBtn();
+
+/* ---------- topic navigation ---------- */
+var ORDER=["t11","t12","t13","t21","t22","t23","t24","t25"];
+var cur="t11";
+function show(id,scroll){
+  if(ORDER.indexOf(id)<0)id="t11";
+  clearTimers();cur=id;
+  ORDER.forEach(function(t){$("#"+t).hidden=t!==id});
+  $$(".tl").forEach(function(b){b.setAttribute("aria-current",b.dataset.t===id?"true":"false")});
+  var i=ORDER.indexOf(id);
+  $("#prevT").disabled=i===0;$("#nextT").disabled=i===ORDER.length-1;
+  if(location.hash.slice(1)!==id){try{history.replaceState(null,"","#"+id)}catch(e){location.hash=id}}
+  var sec=$("#"+id);$("#where").innerHTML='<b>'+(sec.classList.contains("sec1")?"Section 1":"Section 2")+'</b> · '+sec.dataset.title;
+  if(scroll)window.scrollTo(0,0);
+  if(id==="t22"&&!$("#atkStage").innerHTML)openDoor(0);
+  if(id==="t21")playRisk(riskCur);
+}
+$$(".tl").forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t,true)})});
+$("#prevT").addEventListener("click",function(){show(ORDER[Math.max(0,ORDER.indexOf(cur)-1)],true)});
+$("#nextT").addEventListener("click",function(){show(ORDER[Math.min(ORDER.length-1,ORDER.indexOf(cur)+1)],true)});
+window.addEventListener("hashchange",function(){var h=location.hash.slice(1);if(h&&h!==cur)show(h,true)});
+
+/* ---------- true / false ---------- */
+$$(".tf").forEach(function(box){
+  var items=JSON.parse(box.dataset.tf);
+  items.forEach(function(it){
+    var row=document.createElement("div");row.className="tfq";
+    row.innerHTML='<span>'+esc(it[0])+'</span><button type="button" data-v="1">True</button><button type="button" data-v="0">False</button><div class="why" hidden></div>';
+    $$("button",row).forEach(function(b){b.addEventListener("click",function(){
+      var ok=(b.dataset.v==="1")===it[1];row.className="tfq "+(ok?"ok":"no");
+      var w=$(".why",row);w.hidden=false;w.textContent=(ok?"Correct. ":"Not quite. ")+it[2];
+    })});
+    box.appendChild(row);
+  });
+});
+
+/* =========== glance links + key-term visuals =========== */
+$$(".gl[data-go]").forEach(function(b){b.addEventListener("click",function(){show(b.dataset.go,true)})});
+$("#kshGo").addEventListener("click",function(){
+  var c=$$("#katk .chip");c.forEach(function(x){x.className="chip"});
+  c.forEach(function(x,i){later(function(){x.className="chip bad pop";var sh=$("#ksh");sh.classList.remove("hit");void sh.offsetWidth;sh.classList.add("hit")},i*450);later(function(){x.className="chip";x.style.textDecoration="line-through"},i*450+350)});
+  later(function(){say($("#kshSay"),"Damage, disruption, theft and other loss are kept out.","ok")},c.length*450+200);
+});
+var gemLost=false;
+$("#kgemGo").addEventListener("click",function(){
+  gemLost=!gemLost;$("#kgem").classList.toggle("gone",gemLost);
+  $$("#kbars .barx").forEach(function(b,i){later(function(){b.classList.toggle("down",gemLost)},i*250)});
+  this.textContent=gemLost?"Restore the asset":"Lose the asset";this.className="btn "+(gemLost?"good":"bad");
+  say($("#kgemSay"),gemLost?"Without it, the bank cannot carry on. That is what makes it critical.":"",gemLost?"no":"");
+});
+
+/* =========== 1.1 =========== */
+var STORY=[
+ ["📧","Email arrives"],["😰","Pressure"],["💸","Payment"],["📉","Reality"]
+];
+var STORYCAP=[
+ '<div class="mail"><div class="mh">From: Managing Director &lt;md@<span class="lookalike">abc-c0</span>.com.np&gt; · 4:50 PM</div><div class="mb">Urgent. Transfer NRs 25,000,000 to our new supplier today. I am in a meeting, do not call.</div></div>',
+ 'The address has one character changed (a zero instead of an o). The accountant feels rushed. Nobody checks by phone.',
+ 'One person can both create and approve the payment. There is no second approval, so the bank sends the money to the fraudster.',
+ 'Next morning the real MD says he never sent it. The money is gone and the loss hits profit. The auditors ask: where were the controls?'
+];
+var si=0;
+function drawStory(){
+  $("#story").innerHTML=STORY.map(function(s,i){return '<div class="node'+(i<si?" bad":i===si?" on pop":" dim")+'"><span class="ic">'+s[0]+'</span>'+s[1]+'</div>'}).join("");
+  $("#storyCap").innerHTML=STORYCAP[si];
+  $("#stPrev").disabled=si===0;$("#stNext").disabled=si===STORY.length-1;
+}
+$("#stPrev").addEventListener("click",function(){si=Math.max(0,si-1);drawStory()});
+$("#stNext").addEventListener("click",function(){si=Math.min(3,si+1);drawStory()});
+drawStory();
+
+var LAY={sys:"Systems: the hardware and software that do the work, such as PCs, servers, Tally and the bank portal.",
+ net:"Networks: the links that connect the computers to each other and to the internet.",
+ dat:"Data: the valuable information stored in the systems and travelling across the networks."};
+$$("#laySeg button").forEach(function(b){b.addEventListener("click",function(){
+  pressSeg($("#laySeg"),b);var k=b.dataset.l;
+  $$("#layers .node").forEach(function(n){n.classList.toggle("on",k==="sys")});
+  $$("#layers .wire").forEach(function(w){w.classList.toggle("on",k!=="sys");w.classList.toggle("data",k==="dat")});
+  say($("#layerSay"),LAY[k]);
+})});
+$("#harmBtn").addEventListener("click",function(){
+  var c=$$("#harms .chip");c.forEach(function(x){x.className="chip"});
+  $$("#layers .node").forEach(function(n){n.classList.remove("shake");void n.offsetWidth;n.classList.add("shake")});
+  c.forEach(function(x,i){later(function(){x.className="chip bad pop"},300+i*350)});
+});
+
+var ASSETS={
+ bank:[["Core banking database",1,"The bank cannot run any account without it. Fundamental to core activities."],["Customer account records",1,"Every deposit, loan and payment depends on them."],["The building that houses the IT department",0,"A physical asset, not an information asset. (Q23)"],["A product that earns large fee income",0,"Earning revenue is not the test. (Q23)"]],
+ hosp:[["Patient records",1,"Doctors cannot treat patients safely without them."],["Pharmacy dispensing records",1,"Needed to give the right medicine to the right patient."],["The hospital car park",0,"A physical asset, not information."],["The canteen menu file",0,"The hospital works fine without it."]],
+ ca:[["Client audit working papers",1,"The firm's core work and its audit opinion rest on them."],["Client tax files",1,"Needed to prepare and support client tax returns."],["The office furniture list",0,"Not fundamental to core activities."],["The marketing brochure",0,"Useful, but the firm can operate without it."]]
+};
+function drawAssets(o){
+  $("#assets").innerHTML=ASSETS[o].map(function(a,i){return '<button class="asset" type="button" data-i="'+i+'"><b>'+esc(a[0])+'</b><small>Tap to test</small></button>'}).join("");
+  $$("#assets .asset").forEach(function(b){b.addEventListener("click",function(){
+    var a=ASSETS[o][+b.dataset.i];b.className="asset pop "+(a[1]?"ok":"no");
+    $("small",b).innerHTML="<b>"+(a[1]?"Critical. ":"Not critical. ")+"</b>"+esc(a[2]);
+  })});
+}
+$$("#orgSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#orgSeg"),b);drawAssets(b.dataset.o)})});
+drawAssets("bank");
+
+var REASONS=[
+ ["⚖️ Legal obligation","Data protection law and other regulations make it a legal duty to protect certain types of data in a computerised system."],
+ ["♟️ Strategic importance","Information accessed, stored, processed and made available online is of vital strategic and commercial importance."],
+ ["🌐 Increased connectivity","Because systems are connected, the threat of external attack is ever more likely."],
+ ["🏢 Business-wide risk","Cyber-risk belongs in every business activity. It is part of all business risks, not just 'IT'."],
+ ["🎯 Security will be compromised","Accept that a breach will happen. Broaden beyond prevention to intelligence, detection and response."],
+ ["💎 Focus on critical assets","Since breaches are inevitable, protect the most valuable data first: the critical information assets."],
+ ["🧼 Get the basics right","Most businesses don't get the basics right. Basic cyber hygiene is the real challenge for all sizes."]
+];
+$("#reasons").innerHTML=REASONS.map(function(r,i){return '<button type="button" data-i="'+i+'" aria-pressed="false">'+r[0]+'</button>'}).join("");
+function pickReason(i){
+  $$("#reasons button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.i===i?"true":"false")});
+  $("#reasonSay").innerHTML="<b>"+REASONS[i][0].slice(REASONS[i][0].indexOf(" ")+1)+".</b> "+esc(REASONS[i][1]);
+  if(i===4)$("#mindWrap").hidden=false;
+}
+$$("#reasons button").forEach(function(b){b.addEventListener("click",function(){pickReason(+b.dataset.i)})});
+pickReason(0);
+var MIND=[["🛡️","Prevention","keep threats out"],["📰","Intelligence","learn about new threats"],["🌡️","Detection","spot the break-in fast"],["🚑","Response","act and recover"]];
+$("#mind").innerHTML=MIND.map(function(m){return '<div class="node"><span class="ic">'+m[0]+'</span>'+m[1]+'<small>'+m[2]+'</small></div>'}).join("");
+$("#mindPlay").addEventListener("click",function(){
+  var n=$$("#mind .node");n.forEach(function(x){x.classList.remove("on","good")});
+  n.forEach(function(x,i){later(function(){n.forEach(function(y){y.classList.remove("on")});x.classList.add("on","pop")},i*800);later(function(){x.classList.add("good")},i*800+700)});
+});
+
+/* =========== 1.2 =========== */
+var SW=[["fw","Boundary firewall"],["cf","Secure configuration"],["ac","Access control"],["mw","Malware protection"],["pm","Patch management"]];
+var swOn={fw:1,cf:1,ac:1,mw:1,pm:1};
+$("#switches").innerHTML=SW.map(function(s){return '<button class="sw" type="button" role="switch" aria-checked="true" data-s="'+s[0]+'">'+s[1]+'<span class="t"></span></button>'}).join("");
+function setNode(id,bad,txt){var n=$("#"+id);n.classList.toggle("bad",!!bad);n.classList.toggle("good",!bad);$("#"+id+"S").textContent=txt}
+function drawNet(){
+  var g=$("#gate");g.classList.toggle("off",!swOn.fw);g.textContent=swOn.fw?"FIREWALL ON":"FIREWALL OFF";
+  $("#nInternetS").textContent=swOn.fw?"traffic checked at the gate":"suspicious traffic walks in";
+  $("#nInternet").classList.toggle("bad",!swOn.fw);
+  setNode("nRouter",!swOn.cf,swOn.cf?"secure settings":"admin / admin");
+  setNode("nPayroll",!swOn.ac,swOn.ac?"HR only":"anyone can open");
+  setNode("nPC2",!swOn.mw,swOn.mw?"clean":"infected");
+  setNode("nPC1",0,"clean");setNode("nPC3",0,"clean");
+  setNode("nApp",!swOn.pm,swOn.pm?"up to date":"known hole open");
+  var iss=[];
+  if(!swOn.fw)iss.push(["Firewall off:","nothing intercepts traffic, so suspicious connections reach the office network."]);
+  if(!swOn.cf)iss.push(["Insecure configuration:","the router still uses its factory login, which anyone can look up."]);
+  if(!swOn.ac)iss.push(["No access control:","every member of staff can open the payroll file."]);
+  if(!swOn.mw)iss.push(["No malware protection:","a virus on PC 2 is not caught or removed."]);
+  if(!swOn.pm)iss.push(["No patching:","Tally has a known weakness that the update would have fixed."]);
+  $("#issues").innerHTML=iss.length?iss.map(function(x){return '<div class="issue pop"><b>'+x[0]+'</b> '+x[1]+'</div>'}).join(""):'<div class="allgood">All five controls are on. The minimum lock set is in place.</div>';
+}
+$$("#switches .sw").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.s;swOn[k]=swOn[k]?0:1;b.setAttribute("aria-checked",swOn[k]?"true":"false");drawNet()})});
+drawNet();
+
+$$("#ctlSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#ctlSeg"),b);$$("[data-cp]").forEach(function(s){s.hidden=s.dataset.cp!==b.dataset.c})})});
+
+/* firewall */
+var fwOn=true;
+var PK=[["Email reply from supplier",1,1],["Request to bank portal",1,0],["Unknown login attempt",0,1],["Web page you asked for",1,1],["Port scan from unknown address",0,1],["Upload to cloud storage",1,0],["Malicious file push",0,1]];
+function fwLog(cls,txt){var d=document.createElement("div");d.className=cls;d.textContent=txt;var l=$("#fwlog");l.insertBefore(d,l.firstChild)}
+$("#fwToggle").addEventListener("click",function(){fwOn=!fwOn;this.setAttribute("aria-pressed",fwOn?"true":"false");this.textContent="Firewall: "+(fwOn?"ON":"OFF");$("#fwwall").classList.toggle("off",!fwOn)});
+$("#fwSend").addEventListener("click",function(){
+  var lane=$("#lane");$$(".pkt",lane).forEach(function(p){p.remove()});
+  PK.forEach(function(p,i){later(function(){
+    var e=document.createElement("div");e.className="pkt "+(p[1]?"g":"r")+(p[2]?"":" out");e.textContent=(p[2]?"→ ":"← ")+p[0];
+    e.style.top=(6+(i%6)*23)+"px";lane.appendChild(e);void e.offsetWidth;
+    var W=lane.clientWidth,w=e.offsetWidth,blocked=fwOn&&!p[1];
+    if(p[2]){e.style.left=(blocked?Math.max(0,W/2-w-10):Math.max(0,W-w))+"px"}else{e.style.right=Math.max(0,W-w)+"px"}
+    later(function(){
+      if(blocked){e.textContent="✕ "+p[0];fwLog("b","BLOCK  in   "+p[0]);later(function(){e.style.opacity="0"},700)}
+      else if(!p[1]){fwLog("b","PASS   in   "+p[0]+"  (firewall off)")}
+      else{fwLog("a","ALLOW  "+(p[2]?"in   ":"out  ")+p[0]);later(function(){e.style.opacity="0"},500)}
+    },1650);
+  },i*450)});
+});
+
+/* secure configuration */
+var CFG=[["Admin login","admin / admin","unique strong password"],["Remote admin from internet","ON","OFF"],["Wi-Fi","open, no password","password protected"],["Unused services","running","switched off"]];
+var cfgSafe=false;
+function drawCfg(){$("#cfg").innerHTML=CFG.map(function(c){return '<div class="cfgi"><span>'+c[0]+'</span><span class="v">'+c[1]+'</span></div>'}).join("")}
+drawCfg();
+$("#cfgBtn").addEventListener("click",function(){
+  var items=$$("#cfg .cfgi");
+  if(cfgSafe){cfgSafe=false;drawCfg();this.textContent="Apply secure settings";say($("#cfgSay"),"Status: weak","no");return}
+  cfgSafe=true;this.textContent="Reset to factory settings";
+  items.forEach(function(it,i){later(function(){it.className="cfgi ok pop";$(".v",it).textContent=CFG[i][2];if(i===items.length-1)say($("#cfgSay"),"Status: secure","ok")},i*450)});
+});
+
+/* access control */
+var STAFF=[["🧾","Clerk","sales entry"],["📒","Accountant","accounts"],["💼","CFO","finance head"],["🧑‍💻","IT admin","runs the systems"]];
+var FOLD=[["🧾","Sales invoices"],["💰","Payroll"],["🏦","Bank details"],["📁","Audit working papers"],["📜","Board minutes"],["🚪","Server room (keycard)"]];
+var ACC=[[0],[0,2,3],[0,1,2,3,4],[5]];
+$("#staff").innerHTML=STAFF.map(function(s,i){return '<button type="button" data-i="'+i+'" aria-pressed="false"><span>'+s[0]+'</span>'+s[1]+'<small>'+s[2]+'</small></button>'}).join("");
+function pickStaff(i){
+  $$("#staff button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.i===i?"true":"false")});
+  $("#folders").innerHTML=FOLD.map(function(f,j){var ok=ACC[i].indexOf(j)>=0;return '<div class="fold '+(ok?"open":"shut")+'"><span class="ic">'+(ok?f[0]:"🔒")+'</span><b>'+f[1]+'</b><small>'+(ok?"Access granted":"Access denied")+'</small></div>'}).join("");
+  say($("#acSay"),STAFF[i][1]+" can open "+ACC[i].length+" of "+FOLD.length+". Each person gets only what the job needs."+(i===3?" The keycard door is a physical access procedure.":""));
+}
+$$("#staff button").forEach(function(b){b.addEventListener("click",function(){pickStaff(+b.dataset.i)})});
+pickStaff(0);
+
+/* malware */
+var mwOn=true;
+function drawPcs(){$("#mwPcs").innerHTML=["PC 1","PC 2","PC 3","Server"].map(function(n){return '<div class="node good"><span class="ic">'+(n==="Server"?"🗄️":"💻")+'</span>'+n+'<small>clean</small></div>'}).join("")}
+drawPcs();
+$("#mwToggle").addEventListener("click",function(){mwOn=!mwOn;this.setAttribute("aria-pressed",mwOn?"true":"false");this.textContent="Anti-virus: "+(mwOn?"ON":"OFF");drawPcs();say($("#mwSay"),"")});
+$("#mwOpen").addEventListener("click",function(){
+  drawPcs();var bar=$("#mwBar");bar.style.transition="none";bar.style.width="0";void bar.offsetWidth;bar.style.transition="";
+  if(mwOn){bar.style.width="100%";say($("#mwSay"),"Scanning attachment...");later(function(){say($("#mwSay"),"Anti-virus found malware in the attachment and quarantined it. Nothing spread.","ok")},1500)}
+  else{say($("#mwSay"),"No scan. The program runs...","no");$$("#mwPcs .node").forEach(function(n,i){later(function(){n.className="node bad pop";$("small",n).textContent="infected"},600+i*500)});later(function(){say($("#mwSay"),"The malware spread from PC to PC and reached the server.","no")},2700)}
+});
+
+/* patch */
+var patched=false;
+$("#wall").innerHTML=Array.apply(null,Array(24)).map(function(_,i){return '<span class="brick'+(i===11?" hole":"")+'"></span>'}).join("");
+$("#pmAttack").addEventListener("click",function(){
+  var w=$("#wall");w.classList.remove("shake");void w.offsetWidth;w.classList.add("shake");
+  say($("#pmSay"),patched?"The hole is closed. The attack fails.":"The hacker gets in through the known weakness.",patched?"ok":"no");
+});
+$("#pmPatch").addEventListener("click",function(){
+  patched=!patched;var b=$$("#wall .brick")[11];b.className="brick "+(patched?"fixed pop":"hole");
+  this.textContent=patched?"Undo update (demo)":"Install the update";
+  say($("#pmSay"),patched?"Update installed. The known weakness is fixed.":"Update available: fixes a security weakness.",patched?"ok":"");
+});
+
+/* encryption extra */
+var encState=null;
+function shift(s,k){return s.replace(/[a-z]/g,function(c){return String.fromCharCode((c.charCodeAt(0)-97+k+26*3)%26+97)}).replace(/[A-Z]/g,function(c){return String.fromCharCode((c.charCodeAt(0)-65+k+26*3)%26+65)}).replace(/[0-9]/g,function(c){return String((+c+k+30)%10)})}
+$("#encBtn").addEventListener("click",function(){var t=$("#encIn").value||"Hello";encState=shift(t,7);$("#encOut").className="cbox lock pop";$("#encOut").innerHTML='<span class="lab">Ciphertext (unreadable)</span>'+esc(encState)});
+$("#decBtn").addEventListener("click",function(){if(!encState){$("#encTxt")&&( $("#encTxt").textContent="Encrypt first.");return}$("#encOut").className="cbox pop";$("#encOut").innerHTML='<span class="lab">Decrypted with key 7</span>'+esc(shift(encState,-7))});
+
+/* =========== 1.3 =========== */
+var FILES=[["📒","Sales ledger"],["💰","Payroll"],["👥","Customer list"],["🧾","Tax files"]];
+var dis="rw",bk=true,running=false;
+var DIS={rw:["🔒","locked"],fire:["🔥","destroyed"],hw:["⚠️","unreadable"]};
+function drawFiles(){$("#files").innerHTML=FILES.map(function(f){return '<div class="file"><span class="ic">'+f[0]+'</span>'+f[1]+'</div>'}).join("");$("#bkProg").style.width="0";$("#bkTxt").textContent=bk?"ready, kept off-site":"none";$$("#raip .chip").forEach(function(c){c.className="chip"});say($("#disSay"),"All files available.");running=false}
+$$("#disSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#disSeg"),b);dis=b.dataset.d;clearTimers();drawFiles()})});
+$$("#bkSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#bkSeg"),b);bk=b.dataset.b==="1";clearTimers();drawFiles()})});
+$("#disReset").addEventListener("click",function(){clearTimers();drawFiles()});
+$("#disRun").addEventListener("click",function(){
+  if(running)return;clearTimers();drawFiles();running=true;
+  var fs=$$("#files .file");
+  fs.forEach(function(f,i){later(function(){f.className="file gone pop";f.innerHTML='<span class="ic">'+DIS[dis][0]+'</span>'+FILES[i][1]+' '+DIS[dis][1]},300+i*450)});
+  var t=300+fs.length*450;
+  later(function(){
+    if(bk){say($("#disSay"),"Restoring from the off-site backup...");$("#bkTxt").textContent="restoring";$("#bkProg").style.width="100%";
+      later(function(){fs.forEach(function(f,i){f.className="file rest pop";f.innerHTML='<span class="ic">'+FILES[i][0]+'</span>'+FILES[i][1]+' restored'});$("#bkTxt").textContent="done";say($("#disSay"),"Files restored. The business keeps working: that is resilience.","ok");$$("#raip .chip").forEach(function(c,i){later(function(){c.className="chip good pop"},i*200)});running=false},1700)}
+    else{say($("#disSay"),"No backup. The data is lost and work stops.","no");$$("#raip .chip").forEach(function(c){c.className="chip bad"});running=false}
+  },t);
+});
+drawFiles();
+
+var THR=[["📱","Mobile threats","Laptops and phones holding data and connections to the organisation's system are lost or stolen."],
+ ["📶","Networking and cloud","Broadband, Wi-Fi or other connections become unavailable, so remote users cannot reach systems or data."],
+ ["🔓","Access controls in the mobile world","Weaker controls on mobile devices compromise access to the main system. Access provided by third parties may be outside the organisation's control."],
+ ["🌐","Attacks on digital presence","Attacks on company websites, social media and email."],
+ ["🔥","Physical threats","Fire, hardware failure and burglary, which also prevent access to company systems."]];
+$("#threats").innerHTML=THR.map(function(t,i){return '<button class="thr" type="button" aria-pressed="false" data-i="'+i+'"><span class="ic">'+t[0]+'</span><b>'+t[1]+'</b><small>'+t[2]+'</small></button>'}).join("");
+$$("#threats .thr").forEach(function(b){b.addEventListener("click",function(){b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true")})});
+
+var PLAN=["Securing system and device configurations","Network security","User privileges","Home and mobile working","Removable media controls","User education and awareness","Web services","Legal requirements","Compliance","Incident management and monitoring"];
+$("#ticks").innerHTML=PLAN.map(function(p){return '<button class="tick" type="button" aria-pressed="false"><i>✓</i>'+p+'</button>'}).join("");
+$$("#ticks .tick").forEach(function(b){b.addEventListener("click",function(){
+  b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");
+  var n=$$('#ticks .tick[aria-pressed="true"]').length;$("#ring").style.setProperty("--p",n*10);
+  $("#ringTxt").innerHTML=n+"/10<small>"+(n===10?"plan complete":"areas covered")+"</small>";
+})});
+
+/* =========== 2.1 =========== */
+var CAUSE=["⚠️ Accidents","🔓 Breach of security","🎯 Cyberattacks","🧩 Poor systems integrity"];
+$("#causes").innerHTML=CAUSE.map(function(c,i){return '<button class="btn" type="button" data-i="'+i+'">'+c+'</button>'}).join("");
+$$("#causes button").forEach(function(b){b.addEventListener("click",function(){
+  clearTimers();$$("#causes button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
+  var it=$("#itFail"),outs=$$("#outcomes .node");it.className="node";outs.forEach(function(o){o.className="node"});
+  later(function(){it.className="node bad shake"},350);
+  outs.forEach(function(o,i){later(function(){o.className="node bad pop"},800+i*300)});
+})});
+
+var RISK=[
+ ["Human threats","Hackers may get into the internal network to steal data or damage the system. Political cyber-terrorism is a major risk.",[["🧑‍💻","Hacker",""],"→",["🏢","Internal network","bad"],"→",["📂","Data stolen or system damaged","bad"]]],
+ ["Fraud","The theft of funds by dishonest use of a computer system.",[["💻","Payments system",""],"→",["🧑‍💼","Dishonest user","bad"],"→",["💸","Funds stolen","bad"]]],
+ ["Deliberate sabotage","Commercial espionage, malicious damage or industrial action.",[["🕵️","Commercial espionage","bad"],["💥","Malicious damage","bad"],["✊","Industrial action","bad"]]],
+ ["Viruses and corruptions","These can spread through the network to all of the organisation's computers.","virus"],
+ ["Malware","Hostile or intrusive software such as worms and spyware. It can deny access to programs, delete files, steal information and spread from system to system.",[["🪱","Worms","bad"],["🐴","Trojan horses","bad"],["👁️","Spyware","bad"],"→",["🚫","Deny access · delete files · steal data · spread","bad"]]],
+ ["Trojan horse","A type of malware that disguises itself as legitimate software.",[["🎁","'Free invoice tool'","good"],"→",["📦","Installed by the user",""],"→",["🐛","Malware inside","bad"]]],
+ ["Denial of service","An attempt to prevent legitimate users of a service from using that service.",[["📨","Flood of requests","bad"],"→",["🖥️","Service overloaded","bad"],"→",["👤","Real user turned away","bad"]]],
+ ["Password theft","A third party steals or manages to guess a user's password.",[["🔑","n e p a l 1 2 3",""],"→",["🤔","Guess, guess, guess","bad"],"→",["🔓","Guessed: account open","bad"]]],
+ ["Traffic interception","A third party intercepts information sent between a user and a host.",[["👤","User",""],"→",["🕵️","Copies the data in transit","bad"],"→",["🖥️","Host",""]]],
+ ["Social engineering","Similar to phishing: users are deceived into revealing sensitive information.",[["📞","Caller: 'IT support here'","bad"],"→",["👤","Staff member trusts them",""],"→",["🔓","Password revealed","bad"]]]
+];
+$("#riskgrid").innerHTML=RISK.map(function(r,i){return '<button type="button" data-i="'+i+'" aria-pressed="false">'+r[0]+'</button>'}).join("");
+var riskCur=0;
+function playRisk(i){
+  riskCur=i;clearTimers();$$("#riskgrid button").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.i===i?"true":"false")});
+  var r=RISK[i],sc=$("#scene");say($("#riskSay"),r[0]+": "+r[1]);
+  if(r[2]==="virus"){
+    sc.innerHTML=["PC A","PC B","PC C","PC D","Server"].map(function(n){return '<div class="node good"><span class="ic">'+(n==="Server"?"🗄️":"💻")+'</span>'+n+'</div>'}).join('<span class="arrow">→</span>');
+    $$(".node",sc).forEach(function(n,k){later(function(){n.className="node bad pop";n.querySelector(".ic").textContent="🦠"},400+k*450)});
+    return;
+  }
+  sc.innerHTML=r[2].map(function(x){return x==="→"?'<span class="arrow" style="opacity:0">→</span>':'<div class="node" style="opacity:0" data-c="'+x[2]+'"><span class="ic">'+x[0]+'</span>'+esc(x[1])+'</div>'}).join("");
+  Array.prototype.slice.call(sc.children).forEach(function(c,k){later(function(){c.style.opacity="1";if(c.dataset.c)c.className="node pop "+c.dataset.c},k*350)});
+}
+$$("#riskgrid button").forEach(function(b){b.addEventListener("click",function(){playRisk(+b.dataset.i)})});
+playRisk(0);
+
+/* =========== 2.2 =========== */
+var DOORS=[
+ ["Main","Hacking","specialist software"],["Main","Phishing","bogus emails"],["Main","File hijacking / ransomware","files held to ransom"],["Main","DDoS","overwhelming traffic"],
+ ["Less common","Webcam hacking","webcam taken over"],["Less common","Keylogging","keystrokes recorded"],["Less common","Screenshot manager","screen captured"],["Less common","Ad clicker","directed to click a link"]
+];
+$("#amap").innerHTML=DOORS.map(function(d,i){return '<button class="door" type="button" aria-pressed="false" data-i="'+i+'"><span class="k">'+d[0]+'</span><b>'+d[1]+'</b><small>'+d[2]+'</small></button>'}).join("");
+$$("#amap .door").forEach(function(b){b.addEventListener("click",function(){openDoor(+b.dataset.i)})});
+
+function openDoor(i){
+  clearTimers();
+  $$("#amap .door").forEach(function(b){b.setAttribute("aria-pressed",+b.dataset.i===i?"true":"false")});
+  var s=$("#atkStage");
+  var H=function(t,m,k){return '<h3 style="font-size:1.15rem">'+t+'</h3><p style="color:var(--muted)"><b style="color:var(--ink)">Method:</b> '+m+' <b style="color:var(--ink)">Key characteristic:</b> '+k+'</p>'};
+  if(i===0){s.innerHTML=H("Hacking","Using specialist software and tools to gain unauthorised access to systems.","Intruders take administrative control. They can amend, copy and delete records or stop the network.")+'<div class="row"><button class="btn pri" type="button" id="goHack">Watch it in 2.3</button></div>';$("#goHack").onclick=function(){show("t23",true)};return}
+  if(i===3){s.innerHTML=H("DDoS attack","Overwhelming websites and other online services with vast amounts of internet traffic.","Designed to crash or stop the system. Organised through botnets.")+'<div class="row"><button class="btn pri" type="button" id="goDd">Watch it in 2.4</button></div>';$("#goDd").onclick=function(){show("t24",true)};return}
+  if(i===1){phishing(s,H);return}
+  if(i===2){ransom(s,H);return}
+  if(i===4){webcam(s,H);return}
+  if(i===5){keylog(s,H);return}
+  if(i===6){shots(s,H);return}
+  if(i===7){adclick(s,H);return}
+}
+var CLUES=["Strange sender","Generic greeting","Urgency or threat","Spelling and grammar errors","Asks for security details","Suspicious link"];
+function phishing(s,H){
+  s.innerHTML=H("Phishing","Bogus emails that ask the user for security information and personal details.","Deceives users into revealing sensitive information. Often contains spelling and grammatical errors.")+
+  '<p style="font-weight:700">Tap anything that looks suspicious. <span id="clueN">0</span> of 6 found.</p>'+
+  '<div class="inbox"><div class="ih"><span>From: ABC Bank Securty Team &lt;<span class="clue" data-c="0" data-n="1">alert@abc-bank-verify.net</span>&gt;</span><span>TRAINING SIMULATION · fictional bank</span></div><div class="ib">'+
+  '<b><span class="clue" data-c="2" data-n="3">URGENT!!</span> Your <span class="clue" data-c="3" data-n="4">acount</span> will be suspended</b>'+
+  '<p><span class="clue" data-c="1" data-n="2">Dear Costumer,</span></p>'+
+  '<p>We detected unusual <span class="clue" data-c="3" data-n="4">activty</span>. <span class="clue" data-c="2" data-n="3">Your account will be closed within 24 hours</span> unless you <span class="clue" data-c="4" data-n="5">reply with your username, password and date of birth</span>.</p>'+
+  '<p><span class="clue" data-c="5" data-n="6"><span class="fakebtn">Verify my ABC Bank account</span></span> <small style="color:#6a7487">(points to abc-bank-verify.net/login)</small></p></div></div>'+
+  '<div class="cluelist" id="cluelist"></div><div class="row"><button class="btn" type="button" id="allClues">Show all clues</button></div>';
+  var found={};
+  function draw(){$("#cluelist").innerHTML=CLUES.map(function(c,k){return '<div class="'+(found[k]?"f":"")+'">'+(k+1)+'. '+(found[k]?c:"? ? ?")+'</div>'}).join("");$("#clueN").textContent=Object.keys(found).length}
+  function mark(k){found[k]=1;$$('.clue[data-c="'+k+'"]',s).forEach(function(e){e.classList.add("found")});draw()}
+  $$(".clue",s).forEach(function(e){e.addEventListener("click",function(){mark(+e.dataset.c)})});
+  $("#allClues").onclick=function(){for(var k=0;k<6;k++)mark(k)};draw();
+}
+function ransom(s,H){
+  var F=["Financial statements","Payroll","Customer records","Invoices","Audit evidence","HR records"];
+  s.innerHTML=H("File hijacking / ransomware","Malicious software where criminals hijack a user's files and hold them to ransom.","Files are stolen or encrypted and a payment is demanded for their return.")+
+  '<div class="files" id="rwFiles">'+F.map(function(f){return '<div class="file"><span class="ic">📁</span>'+f+'</div>'}).join("")+'</div>'+
+  '<div class="row"><button class="btn bad" type="button" id="rwGo">Launch ransomware attack (simulation)</button><button class="btn" type="button" id="rwReset">Reset</button></div><div id="rwNote"></div>';
+  $("#rwGo").onclick=function(){
+    this.disabled=true;var fs=$$("#rwFiles .file");
+    fs.forEach(function(f,k){later(function(){f.className="file gone pop";f.innerHTML='<span class="ic">🔒</span>'+F[k]+'.locked'},300+k*450)});
+    later(function(){$("#rwNote").innerHTML='<div class="ransom pop"><h4>YOUR FILES ARE LOCKED</h4><p>Pay to get them back. (Fictional classroom message. No real instructions.)</p></div><p style="margin-top:10px">Work stops: no payroll, no invoices, no reporting. Recovery depends on backups. <button class="btn" type="button" id="goBk">See backup and recovery in 1.3</button></p>';$("#goBk").onclick=function(){show("t13",true)}},300+fs.length*450+200);
+  };
+  $("#rwReset").onclick=function(){ransom(s,H)};
+}
+function webcam(s,H){
+  s.innerHTML=H("Webcam hacking","The user's webcam is taken over.","Not screenshots: that is a screenshot manager.")+
+  '<div class="lap" id="lap"><span class="camdot"></span><div id="lapIn" style="text-align:center">📷<br>Camera off<br><small>indicator light dark</small></div></div>'+
+  '<div class="row"><button class="btn bad" type="button" id="camGo">Simulate camera takeover</button><button class="btn" type="button" id="camOff">Cover the lens</button></div><p class="say" id="camSay"></p>';
+  $("#camGo").onclick=function(){$("#lap").classList.add("on");$("#lapIn").innerHTML='<span style="color:#ff6b6b;font-family:var(--mono);font-weight:700">● REC · SIMULATION</span><br><span style="font-size:2.6rem">🧑‍💼</span><br><small>a drawing, never your real camera</small>';say($("#camSay"),"The light comes on with no app open: a warning sign. The attacker sees the person and the room.","no")};
+  $("#camOff").onclick=function(){$("#lap").classList.remove("on");$("#lapIn").innerHTML='⬛<br>Lens covered<br><small>nothing to see</small>';say($("#camSay"),"A physical cover blocks the view even if malware switches the camera on.","ok")};
+}
+function keylog(s,H){
+  s.innerHTML=H("Keylogging","Criminals record what the user types onto their keyboard.","Passwords and messages are captured as they are typed.")+
+  '<div class="spy"><div style="display:flex;flex-direction:column;gap:6px"><label for="klIn" style="font-weight:700">Type here (try a fake password like demo123)</label><input class="txt mono" id="klIn" autocomplete="off" spellcheck="false" maxlength="40"><small style="color:var(--muted)">Only this box is read. Nothing leaves the page.</small></div>'+
+  '<div class="term"><span class="lab">KEYLOGGER RECORD · SIMULATION</span><div id="klOut">waiting for keys...</div></div></div>';
+  $("#klIn").addEventListener("input",function(){var v=this.value;$("#klOut").textContent=v?v.split("").join(" · "):"waiting for keys..."});
+}
+function shots(s,H){
+  s.innerHTML=H("Screenshot manager","Screenshots are taken of the user's computer screen.","Whatever is visible is captured, even when a password shows as dots.")+
+  '<div class="spy"><div class="desk" id="desk"><div class="win"><b>📊 Dashboard</b>Revenue NRs 4.8 crore</div><div class="win"><b>📧 Email</b>CFO: Q3 results, confidential</div><div class="win"><b>🧾 Invoice</b>Everest Traders NRs 3,25,000</div><div class="win"><b>🔑 Login</b>password ••••••••</div><div class="flash" id="flash"></div></div>'+
+  '<div class="term"><span class="lab">SENT TO ATTACKER · SIMULATION</span><div class="shots" id="shotList"></div><div id="shotTxt">no captures yet</div></div></div>'+
+  '<div class="row"><button class="btn bad" type="button" id="shotGo">Take hidden screenshot</button></div>';
+  var n=0;
+  $("#shotGo").onclick=function(){var f=$("#flash");f.classList.remove("go");void f.offsetWidth;f.classList.add("go");n++;var sp=document.createElement("span");sp.className="pop";sp.textContent="screen_"+n;$("#shotList").appendChild(sp);$("#shotTxt").textContent=n+" capture"+(n>1?"s":"")+": dashboard, email, invoice and login screen exposed"};
+}
+function adclick(s,H){
+  s.innerHTML=H("Ad clicker","The user's computer is directed to click a specific link.","The clicks happen without the user choosing them.")+
+  '<div class="browser"><div class="url">news-site.example · demo page</div><div class="pg" id="adPg"><b>Daily News</b><span style="color:var(--muted)">Today\'s headlines...</span><span class="adlink" id="adLink">Sponsored: Big Laptop Sale</span><span style="color:var(--muted)">More stories...</span><span class="cursor" id="cur">🖱️</span></div></div>'+
+  '<div class="row"><button class="btn bad" type="button" id="adGo">Start the ad clicker (simulation)</button><span class="say" id="adSay">Clicks made without the user: 0</span></div>';
+  var n=0;
+  $("#adGo").onclick=function(){
+    this.disabled=true;n=0;var pg=$("#adPg"),l=$("#adLink"),c=$("#cur");
+    for(var k=0;k<5;k++){(function(k){
+      later(function(){c.style.left=(l.offsetLeft+l.offsetWidth/2)+"px";c.style.top=(l.offsetTop+l.offsetHeight/2)+"px"},k*1200);
+      later(function(){l.classList.remove("hit");void l.offsetWidth;l.classList.add("hit");n++;say($("#adSay"),"Clicks made without the user: "+n,"no")},k*1200+650);
+      later(function(){c.style.left="80%";c.style.top="80%"},k*1200+900);
+    })(k)}
+    later(function(){$("#adGo").disabled=false;say($("#adSay"),"5 clicks the user never made. The computer was directed to the link.","no")},6100);
+  };
+}
+
+/* =========== 2.3 =========== */
+var RECS=[["Asha Traders","125,000"],["Bikash Store","48,500"],["Sita Pharma","302,000"],["Ram Hardware","76,250"]];
+function hkReset(){
+  clearTimers();$$("#hkSteps span").forEach(function(x){x.className=""});
+  $("#hkLines").textContent="Waiting.";$("#hkRecs").innerHTML=RECS.map(function(r){return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>'}).join("");
+  $("#hkActs").hidden=true;$("#hkNet").className="netstat";$("#hkNet").textContent="Customer database · network running";say($("#hkSay"),"");$("#hkRun").disabled=false;
+}
+var HKL=[["> run scan-tool --target office-network",0],["scanning... 3 open doors found",0],["weak point: default admin login",1],["login as admin ... ACCESS GRANTED (unauthorised)",2],["administrative control: YES",3]];
+$("#hkRun").addEventListener("click",function(){
+  hkReset();this.disabled=true;$("#hkLines").innerHTML="";
+  HKL.forEach(function(l,k){later(function(){
+    var d=document.createElement("div");d.textContent=l[0];$("#hkLines").appendChild(d);
+    $$("#hkSteps span").forEach(function(x,j){x.className=j<l[1]?"done":j===l[1]?"on":""});
+    if(k===HKL.length-1){$("#hkActs").hidden=false;say($("#hkSay"),"The intruder has admin control. Try what they can now do.","no")}
+  },k*800)});
+});
+$$("#hkActs button").forEach(function(b){b.addEventListener("click",function(){
+  var a=b.dataset.h,rows=$$("#hkRecs tr");
+  if(a==="amend"){rows[0].children[1].textContent="1,250";rows[0].children[1].className="chg";say($("#hkSay"),"Amend: Asha Traders' balance changed from 125,000 to 1,250.","no")}
+  if(a==="copy"){var d=document.createElement("div");d.textContent="copied 4 customer records to attacker's computer";$("#hkLines").appendChild(d);say($("#hkSay"),"Copy: the records are now in the attacker's hands, ready to sell.","no")}
+  if(a==="delete"){rows[1].className="del";say($("#hkSay"),"Delete: Bikash Store's record is gone.","no")}
+  if(a==="stop"){$("#hkNet").className="netstat down";$("#hkNet").textContent="Network stopped · nobody can work";say($("#hkSay"),"Stop: the whole network stops operating.","no")}
+})});
+$("#hkReset").addEventListener("click",hkReset);
+hkReset();
+var HR={
+ data:'<div class="scene"><div class="node bad"><span class="ic">📂</span>HR and customer records<small>personal data</small></div><span class="arrow">+</span><div class="node bad"><span class="ic">♟️</span>Strategic and sensitive data</div><span class="arrow">→</span><div class="node bad"><span class="ic">💰</span>Sold to third parties</div><div class="node bad"><span class="ic">🏛️</span>Political agenda</div></div><p><b>Data compromise</b> is the main risk. Data on the network is used by attackers to make money, usually by selling it to third parties, or to achieve a political agenda.</p>',
+ infra:'<div class="board"><div><span>KTM → PKR 09:15</span><span>SYSTEM DOWN</span></div><div><span>KTM → BWA 10:40</span><span>SYSTEM DOWN</span></div><div><span>Bookings today</span><span>0</span></div></div><p><b>Infrastructure damage.</b> Damage to the network can put the physical infrastructure in danger and stop the business operating. If a travel company\'s network goes down, day-to-day activities cease, with major effects on its suppliers and customers.</p>'
+};
+$$("#hrSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#hrSeg"),b);$("#hrStage").innerHTML=HR[b.dataset.r]})});
+$("#hrStage").innerHTML=HR.data;
+
+/* =========== 2.4 =========== */
+var USERS=["Asha: checkout","Bikash: browsing","Sita: payment"];
+$("#bots").innerHTML=Array.apply(null,Array(12)).map(function(){return '<div class="bot">💻</div>'}).join("");
+$("#flow").innerHTML=Array.apply(null,Array(16)).map(function(_,i){return '<i style="top:'+(6+(i*37)%108)+'px;animation-delay:'+((i*0.13)%0.9).toFixed(2)+'s"></i>'}).join("");
+function ddReset(){
+  clearTimers();$$("#bots .bot").forEach(function(b){b.className="bot"});$("#flow").className="flow";
+  var l=$("#srvLoad");l.style.width="15%";l.style.background="var(--safe)";$("#srvS").textContent="working";$("#srvNode").className="node";$("#orgNode").className="node";
+  $("#dUsers").innerHTML=USERS.map(function(u){return '<div>✓ '+u+' works</div>'}).join("");
+  say($("#ddSay"),"Server load is normal. Real customers can shop.");$("#ddGo").disabled=false;
+}
+$("#ddGo").addEventListener("click",function(){
+  ddReset();this.disabled=true;$("#orgNode").className="node bad pulse";
+  $$("#bots .bot").forEach(function(b,i){later(function(){b.className="bot live pop"},300+i*90)});
+  later(function(){$("#flow").className="flow go";say($("#ddSay"),"Every bot sends traffic to the website at the same time.","no")},1500);
+  later(function(){var l=$("#srvLoad");l.style.width="60%";l.style.background="var(--warn)";$("#srvS").textContent="slowing down"},2100);
+  later(function(){var l=$("#srvLoad");l.style.width="100%";l.style.background="var(--threat)";$("#srvS").textContent="overloaded";$("#srvNode").className="node bad shake"},2900);
+  $$("#dUsers div").forEach(function(d,i){later(function(){d.className="x pop";d.textContent="✕ "+USERS[i]+" fails"},3300+i*400)});
+  later(function(){say($("#ddSay"),"The website crashes. Real customers cannot get in. Online presence disrupted.","no")},4600);
+});
+$("#ddReset").addEventListener("click",ddReset);
+ddReset();
+
+/* =========== 2.5 =========== */
+var COMMON=["password","nepal","admin","123456","qwerty","welcome","abc123","letmein","kathmandu"];
+var reuse=true;
+function pwCheck(){
+  var p=$("#pwIn").value,low=p.toLowerCase();
+  var c=[[p.length>=12,"At least 12 characters"],[/[a-z]/.test(p)&&/[A-Z]/.test(p),"Upper and lower case letters"],[/[0-9]/.test(p),"A number"],[/[^A-Za-z0-9]/.test(p),"A symbol"],[!COMMON.some(function(w){return low.indexOf(w)>=0}),"Not a common word or pattern"],[!reuse,"Not reused on other sites"]];
+  var n=c.filter(function(x){return x[0]}).length;
+  $("#pwChecks").innerHTML=c.map(function(x){return '<div class="'+(x[0]?"y":"")+'">'+x[1]+'</div>'}).join("");
+  var bar=$("#pwBar");bar.style.width=Math.max(8,n/6*100)+"%";bar.style.background=n<=2?"var(--threat)":n<=4?"var(--warn)":"var(--safe)";
+  say($("#pwSay"),n<=2?"Weak: easy to guess.":n<=4?"Fair: still has gaps.":n===5?"Almost: fix the last gap.":"Strong and unique.",n<=2?"no":n===6?"ok":"");
+}
+$("#pwIn").addEventListener("input",pwCheck);
+$("#pwReuse").addEventListener("click",function(){reuse=!reuse;this.setAttribute("aria-pressed",reuse?"true":"false");this.textContent=reuse?"I also use it on other sites":"Used only here";pwCheck()});
+pwCheck();
+
+var who="you";
+$$("#tfSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#tfSeg"),b);who=b.dataset.w;tfReset()})});
+function tfReset(){clearTimers();$("#tf1").className="node";$("#tf3").className="node";$("#tfCode").textContent="------";$("#tf2").style.borderColor="";say($("#tfSay"),"")}
+$("#tfGo").addEventListener("click",function(){
+  tfReset();var code=String(100000+Math.floor(Math.random()*900000));
+  later(function(){$("#tf1").className="node good pop";say($("#tfSay"),"Password correct. Now the second factor.")},300);
+  later(function(){$("#tfCode").textContent=code;$("#tf2").style.borderColor="var(--accent)"},1000);
+  later(function(){
+    if(who==="you"){$("#tf3").className="node good pop";say($("#tfSay"),"You type "+code+" from your phone. Logged in.","ok")}
+    else{$("#tf3").className="node bad shake";say($("#tfSay"),"The code went to the owner's phone. The thief has only the password, so the login is blocked.","no")}
+  },1900);
+});
+
+var HB={
+ up:function(st){st.innerHTML='<div class="bkp"><span>🔄 Updates for security software and the operating system: fix security weaknesses</span><div class="prog"><i id="upProg"></i></div></div><div class="row"><button class="btn good" type="button" id="upGo">Install now</button><button class="btn" type="button" id="upLater">Remind me later</button></div><p class="say" id="upSay"></p>';
+   $("#upGo").onclick=function(){$("#upProg").style.width="100%";say($("#upSay"),"Installing...");later(function(){say($("#upSay"),"Up to date. The weakness hackers could use is fixed.","ok")},1700)};
+   $("#upLater").onclick=function(){say($("#upSay"),"The weakness stays open for hackers to use.","no")}},
+ aw:function(st){var L=[["📢","New scam alert shared","with employees, customers and partners"],["🚫","Don't log on to unsecured websites",""],["🔍","Check the source before clicking a link",""]];
+   st.innerHTML='<div class="scene" id="awScene"></div><div class="row"><button class="btn pri" type="button" id="awGo">Brief the staff</button></div>';
+   $("#awGo").onclick=function(){var sc=$("#awScene");sc.innerHTML="";L.forEach(function(x,i){later(function(){var d=document.createElement("div");d.className="node good pop";d.innerHTML='<span class="ic">'+x[0]+'</span>'+x[1]+(x[2]?'<small>'+x[2]+'</small>':"");sc.appendChild(d)},i*500)})}},
+ ph:function(st){st.innerHTML='<div class="inbox"><div class="ib" id="phLine">Dear <span data-e>costumer</span>, your <span data-e>acount</span> will be <span data-e>suspend</span> unless you <span data-e>verifys</span> you details today.</div></div><div class="row"><button class="btn pri" type="button" id="phGo">Check the email</button></div><p class="say" id="phSay"></p>';
+   $("#phGo").onclick=function(){$$("#phLine [data-e]").forEach(function(e,i){later(function(){e.className="lookalike pop"},i*300)});later(function(){say($("#phSay"),"Four spelling and grammar errors. That should arouse suspicion.","no")},1300)}}
+};
+$$("#hbSeg button").forEach(function(b){b.addEventListener("click",function(){pressSeg($("#hbSeg"),b);clearTimers();HB[b.dataset.hb]($("#hbStage"))})});
+HB.up($("#hbStage"));
+
+/* name the attack */
+var NA=[["Q1","Criminals send bogus emails that ask the user for security information and personal details.",1],
+ ["Q2","Grange Ltd's data files have been stolen. The criminal gang offer to return them for a payment of NRs 100 million.",2],
+ ["Q4","Criminals record what a user types onto their keyboard.",4],
+ ["Q5","Amin receives an email appearing to be from his company's bank, asking him to confirm security information via a link. Money is then transferred out of the company's account.",1],
+ ["Q7","Hannon Ltd's website was overwhelmed with vast amounts of traffic, which caused it to crash.",3]];
+var NAO=["Hacking","Phishing","File hijacking","DDoS","Keylogging","Webcam hacking"];
+var nai=0;
+function drawNA(){
+  var q=NA[nai];$("#naTag").textContent="Scenario "+(nai+1)+" of "+NA.length+" · "+q[0];$("#naQ").textContent=q[1];say($("#naSay"),"");$("#naNext").hidden=true;
+  $("#naOpts").innerHTML=NAO.map(function(o,i){return '<button class="btn" type="button" data-i="'+i+'">'+o+'</button>'}).join("");
+  $$("#naOpts button").forEach(function(b){b.addEventListener("click",function(){
+    var ok=+b.dataset.i===q[2];$$("#naOpts button").forEach(function(x){x.disabled=true;if(+x.dataset.i===q[2])x.className="btn good"});if(!ok)b.className="btn bad";
+    say($("#naSay"),(ok?"Correct: ":"It is ")+NAO[q[2]]+".",ok?"ok":"no");$("#naNext").hidden=false;$("#naNext").textContent=nai===NA.length-1?"Start again":"Next scenario";
+  })});
+}
+$("#naNext").addEventListener("click",function(){nai=(nai+1)%NA.length;drawNA()});
+drawNA();
+
+/* combating cyber risks */
+var CB=[["🏛️","Board-level accountability","with oversight by non-executive directors (NEDs)"],["📋","Define responsibility","who in the organisation is responsible and accountable"],["🗣️","Communicate clearly","explain technical security language so everyone understands it"],["🛡️","Prevention first","prevention is better and cheaper than cure"]];
+function drawCB(on){$("#combat").innerHTML=CB.map(function(c){return '<div class="node'+(on?"":" dim")+'" style="min-width:150px;flex:1 1 150px"><span class="ic">'+c[0]+'</span>'+c[1]+'<small>'+c[2]+'</small></div>'}).join("")}
+drawCB(false);
+$("#combatGo").addEventListener("click",function(){drawCB(false);$$("#combat .node").forEach(function(n,i){later(function(){n.className="node on pop"},i*500)})});
+
+/* boot */
+show(location.hash.slice(1)||"t11",false);
+})();
+</script>
+</body></html>

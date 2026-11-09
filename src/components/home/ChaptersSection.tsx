@@ -6,7 +6,9 @@ interface Props {
   /** Where "Open chapter 7" goes: the next unfinished topic */
   chapter7Href: string
   /** Where "Open chapter 10" goes */
-  chapter10Href: string | null
+  chapter10Href: string
+  /** The earlier Chapter 10 practice labs (LO7a to LO7c), or null when none is open */
+  labsHref: string | null
 }
 
 const WORDS = ['No', 'One', 'Two', 'Three', 'Four']
@@ -25,7 +27,7 @@ function Soon({ card }: { card: ChapterCard }) {
 }
 
 /** The four Part B chapters. What is open and how many lessons are ready comes from the chapter data. */
-export function ChaptersSection({ cards, chapter7Href, chapter10Href }: Props) {
+export function ChaptersSection({ cards, chapter7Href, chapter10Href, labsHref }: Props) {
   const open = cards.filter((c) => c.status === 'open').length
   const soon = cards.length - open
   return (
@@ -41,6 +43,7 @@ export function ChaptersSection({ cards, chapter7Href, chapter10Href }: Props) {
           const href = c.href ?? (isSeven ? chapter7Href : chapter10Href)
           const partial = c.built < c.total
           const boards = c.href !== undefined
+          const isTen = c.number === 10
           return (
             <article key={c.number} className="lp-card lp-chcard lp-reveal">
               <div className="lp-stack" style={{ gap: '.375rem' }}>
@@ -50,6 +53,8 @@ export function ChaptersSection({ cards, chapter7Href, chapter10Href }: Props) {
               </div>
               {isSeven ? (
                 <div className="lp-chrow"><span>Topics</span><b>{TOPICS.length} in {SECTIONS.length} sections</b></div>
+              ) : isTen ? (
+                <div className="lp-chrow"><span>Topics</span><b>8 in 2 sections</b></div>
               ) : boards ? (
                 <div className="lp-chrow"><span>Topic boards</span><b>{c.total} sections</b></div>
               ) : (
@@ -59,6 +64,7 @@ export function ChaptersSection({ cards, chapter7Href, chapter10Href }: Props) {
                 </div>
               )}
               {href && <a className="lp-btn lp-btn-primary" href={href}>Open chapter {c.number}</a>}
+              {isTen && labsHref && <a className="lp-chrow" href={labsHref} style={{ textDecoration: 'underline' }}>Practice labs (LO7a to LO7c)</a>}
             </article>
           )
         })}

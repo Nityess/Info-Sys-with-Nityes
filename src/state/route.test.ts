@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { HOME_HASH, parseHash, chapter8Hash, sectionHash, unitHash } from './route'
+import { HOME_HASH, parseHash, chapter10Hash, chapter8Hash, sectionHash, unitHash } from './route'
 
 describe('hash route', () => {
   it('treats empty and unknown hashes as home', () => {
@@ -28,6 +28,10 @@ describe('hash route', () => {
     expect(parseHash('#/chapter8/s3')).toMatchObject({ view: 'chapter8', id: 's3' })
     expect(parseHash('#/chapter8/s4')).toEqual({ view: 'home' })
     expect(parseHash('#/chapter8/')).toEqual({ view: 'home' })
+  })
+  it('parses the Chapter 10 lab page', () => {
+    expect(parseHash(chapter10Hash())).toEqual({ view: 'chapter10' })
+    expect(parseHash('#/chapter10/x')).toEqual({ view: 'home' })
   })
   it('rejects ids with odd characters', () => {
     expect(parseHash('#/unit/a/b')).toEqual({ view: 'home' })

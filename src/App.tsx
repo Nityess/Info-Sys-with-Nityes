@@ -10,6 +10,7 @@ import { BUILT_TOPICS, LESSON_SHELL_TOPICS } from './components/rail/builtTopics
 import { useProgress } from './state/progress'
 import { boardIdForRoute, boardLabel, topicForRoute } from './components/board/boardRoute'
 import { HOME_HASH, unitHash } from './state/route'
+import { Chapter10Page } from './components/chapter10/Chapter10Page'
 import { TEXT_PX } from './state/settings'
 import { navigate, useRoute } from './state/useRoute'
 import { useSettings } from './state/useSettings'
@@ -38,7 +39,7 @@ export default function App() {
   const { raw, settings, set } = useSettings()
   const route = useRoute()
   // The phone menu remembers the page it was opened on, so any navigation closes it by itself
-  const routeKey = route.view === 'home' ? 'home' : `${route.view}:${route.id}`
+  const routeKey = route.view === 'home' || route.view === 'chapter10' ? route.view : `${route.view}:${route.id}`
   const [drawerFor, setDrawerFor] = useState<string | null>(null)
   const drawerOpen = drawerFor === routeKey
   const setDrawerOpen = (open: boolean) => setDrawerFor(open ? routeKey : null)
@@ -71,9 +72,9 @@ export default function App() {
   const boardId = boardIdForRoute(route)
 
   useEffect(() => {
-    const what = unit ? unit.title : boardId ? boardLabel(boardId) : null
+    const what = unit ? unit.title : boardId ? boardLabel(boardId) : route.view === 'chapter10' ? 'Chapter 10 Data security' : null
     document.title = what ? `${what} | ${SITE}` : `${SITE} | ICAN Foundation Information Systems`
-  }, [unit, boardId])
+  }, [unit, boardId, route.view])
 
   const unitId = unit?.topic ? unit.id : null
   useEffect(() => {
@@ -93,6 +94,10 @@ export default function App() {
         <BoardPage key={boardId} boardId={boardId} initialTopic={topicForRoute(route)} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
       </Suspense>
     )
+  }
+
+  if (route.view === 'chapter10') {
+    return <Chapter10Page dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
   }
 
   if (!unit) {
