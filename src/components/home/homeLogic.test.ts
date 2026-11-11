@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { chapters } from '../../content/chapters'
-import { EXAM, HOW_STEPS, PAPER_SPLIT, TOPIC_CARDS, splitPercent } from './homeData'
+import { EXAM, PAPER_SPLIT, splitPercent } from './homeData'
 import { SECTIONS, TOPICS } from '../../content/chapters/ch07/topics'
 import { chapterCards, heroAction, isBuilt, topicHref } from './homeLogic'
 
@@ -22,14 +22,6 @@ describe('landing page facts', () => {
   it('splits Part B marks 30 and 20, which is 60 and 40 percent', () => {
     expect(PAPER_SPLIT.objective + PAPER_SPLIT.subjective).toBe(EXAM.partBMarks)
     expect(splitPercent()).toEqual({ objective: 60, subjective: 40 })
-  })
-  it('has one key line for every Chapter 7 topic, and only CATIVA is a source mnemonic', () => {
-    expect(Object.keys(TOPIC_CARDS).sort()).toEqual(TOPICS.map((t) => t.code).sort())
-    expect(Object.entries(TOPIC_CARDS).filter(([, c]) => c.sourceMnemonic).map(([k, c]) => [k, c.sourceMnemonic])).toEqual([['1.9', 'CATIVA']])
-  })
-  it('describes the eight parts of a topic and flags only the playground step', () => {
-    expect(HOW_STEPS).toHaveLength(8)
-    expect(HOW_STEPS.filter((s) => 'gold' in s).map((s) => s.title)).toEqual(['Playground'])
   })
   it('counts 18 topics in 3 sections, 9 plus 5 plus 4', () => {
     expect(TOPICS).toHaveLength(18)
@@ -94,17 +86,5 @@ describe('topicHref', () => {
     expect(linked).toEqual(['1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9'])
     expect(topicHref(chapters, '1.5')).toBe('#/unit/ch07-t1-5')
     expect(topicHref(chapters, '1.1')).toBeNull()
-  })
-})
-
-describe('topic card titles', () => {
-  it('has a short card title for every topic, with no em dashes', async () => {
-    const { TOPIC_CARDS } = await import('./homeData')
-    const { TOPICS } = await import('../../content/chapters/ch07/topics')
-    for (const t of TOPICS) {
-      expect(TOPIC_CARDS[t.code]?.title, t.code).toBeTruthy()
-      expect(TOPIC_CARDS[t.code].title).not.toContain('\u2014')
-    }
-    expect(TOPIC_CARDS['1.9'].title).toBe('Information processing')
   })
 })

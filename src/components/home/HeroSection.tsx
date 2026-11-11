@@ -72,8 +72,6 @@ export function HeroSection({ action, actionHref, dark, onToggleDark, settingsSl
       <header className="lp-wrap lp-header">
         <Wordmark onClick={() => goto('top')} />
         <nav className="lp-nav" aria-label="Page sections">
-          <a href="#chapter-7" onClick={(e) => { e.preventDefault(); goto('chapter-7') }}>Chapter 7</a>
-          <a href="#how" onClick={(e) => { e.preventDefault(); goto('how') }}>How lessons work</a>
           <a href="#chapters" onClick={(e) => { e.preventDefault(); goto('chapters') }}>All chapters</a>
         </nav>
         <div className="lp-tools">

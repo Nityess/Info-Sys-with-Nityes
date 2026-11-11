@@ -3,11 +3,9 @@ import type { ReactNode } from 'react'
 import { ArrowRight } from 'lucide-react'
 import type { Chapter } from '../../content/types'
 import { sectionHash } from '../../state/route'
-import { Chapter7Map } from './Chapter7Map'
 import { ChaptersSection } from './ChaptersSection'
 import { FreeSection } from './FreeSection'
 import { HeroSection } from './HeroSection'
-import { HowSection } from './HowSection'
 import { BRAND } from './homeData'
 import { chapterCards, heroAction } from './homeLogic'
 import { scrollToId, useCalm, useReveal } from './useLandingMotion'
@@ -58,8 +56,6 @@ export function Landing({ chapters, done, started, dark, onToggleDark, settingsS
       <HeroSection action={action} actionHref={startHref} dark={dark} onToggleDark={onToggleDark} settingsSlot={settingsSlot} goto={goto} />
 
       <main id="main" tabIndex={-1} style={{ outline: 'none' }}>
-        <Chapter7Map hrefFor={(code) => sectionHash(`s${code[0]}`, code)} />
-        <HowSection />
         <ChaptersSection cards={cards} chapter7Href={ch7} />
         <FreeSection />
 
