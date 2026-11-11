@@ -1,15 +1,17 @@
-import { useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { chapter7Hash } from '../../state/route'
+import { Chapters } from './Chapters'
+import { Closing } from './Closing'
+import { DemoTabs } from './DemoTabs'
 import { Footer } from './Footer'
 import { Hero } from './Hero'
-import { MarksSheet } from './MarksSheet'
+import { Method } from './Method'
 import { NavBar } from './NavBar'
+import { SimMarquee } from './SimMarquee'
 import { chapterCards } from './homeLogic'
-import { scrollToId, useCalm, useReveal } from './useLandingMotion'
-import './landing.css'
-import './landing-hero.css'
-import './landing-sheet.css'
+import './ns-base.css'
+import './ns-sections.css'
 
 interface Props {
   /** Everything the student has opened, for the Chapter 9 explored count */
@@ -21,18 +23,15 @@ interface Props {
 }
 
 /**
- * The landing page: sticky nav (chapter links, sidebar on phones), a hero with a live ledger demo, the marks sheet
- * with a link to each chapter, and a short footer. All links are plain hash links.
+ * The landing page, built from the "Home page" design: nav, hero with a real screen and the teacher, the simulator strip,
+ * "see it work" tabs, the four chapter cards with the marks bar, how a topic goes, the phone band, the closing call and the footer.
  */
 export function Landing({ started, dark, onToggleDark, settingsSlot }: Props) {
-  const root = useRef<HTMLDivElement>(null)
-  const calm = useCalm()
-  useReveal(root)
   const cards = useMemo(() => chapterCards(started), [started])
-  const goto = (id: string) => scrollToId(id, calm)
+  const startHref = chapter7Hash()
 
   return (
-    <div className="lp" id="top" ref={root}>
+    <div className="ns" id="top">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-semibold focus:text-ink"
@@ -44,11 +43,15 @@ export function Landing({ started, dark, onToggleDark, settingsSlot }: Props) {
         Skip to content
       </a>
 
-      <NavBar cards={cards} dark={dark} onToggleDark={onToggleDark} settingsSlot={settingsSlot} calm={calm} goTop={() => goto('top')} />
+      <NavBar dark={dark} onToggleDark={onToggleDark} settingsSlot={settingsSlot} />
 
       <main id="main" tabIndex={-1} style={{ outline: 'none' }}>
-        <Hero startHref={chapter7Hash()} goto={goto} />
-        <MarksSheet cards={cards} />
+        <Hero startHref={startHref} />
+        <SimMarquee />
+        <DemoTabs />
+        <Chapters cards={cards} />
+        <Method />
+        <Closing startHref={startHref} />
       </main>
 
       <Footer />

@@ -11,6 +11,10 @@ export interface ChapterCard {
   href: string
   /** The one fact line on the card: label and value */
   row: readonly [string, string]
+  /** One line about the chapter, shown on its card */
+  blurb: string
+  /** Button text on the card */
+  cta: string
   /** A short label that replaces "Open now" on a new chapter */
   badge?: string
   /** True once the student has opened something in the chapter (Chapter 9 simulators) */
@@ -33,3 +37,10 @@ export const cardHref = (c: ChapterCard): string => c.href
 
 /** The one fact line on a chapter card: label and value. */
 export const cardFact = (c: ChapterCard): readonly [string, string] => c.row
+
+/** The small status pill on a chapter card: how many simulators were explored, a New flag, or just Open. */
+export function cardStatus(c: ChapterCard): { text: string; isNew: boolean } {
+  if (c.started) return { text: `${c.row[0]} ${c.row[1]}`, isNew: false }
+  if (c.badge) return { text: `${c.badge} · ${exploredCount(new Set()).total} simulators`, isNew: true }
+  return { text: 'Open', isNew: false }
+}

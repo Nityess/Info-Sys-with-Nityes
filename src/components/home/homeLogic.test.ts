@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { EXAM } from './homeData'
-import { cardFact, cardHref, chapterCards } from './homeLogic'
+import { cardFact, cardHref, cardStatus, chapterCards } from './homeLogic'
 
 describe('landing facts', () => {
   it('learning outcome marks add up to Part B', () => {
@@ -31,7 +31,7 @@ describe('chapterCards', () => {
     expect(cards[1]).toMatchObject({ number: 8, href: '#/chapter8', row: ['Topics', '20 in 3 sections'] })
   })
   it('opens Chapter 9 as the simulator hub, marked New, and counts explored simulators', () => {
-    expect(cards[2]).toMatchObject({ number: 9, href: '#/chapter9', row: ['Simulators', '17 live'], badge: 'New', started: false })
+    expect(cards[2]).toMatchObject({ number: 9, href: '#/chapter9', row: ['Simulators', '17 live'], badge: 'New', blurb: expect.any(String), started: false })
     const after = chapterCards(new Set(['ch09-1-1', 'ch09-2-5', 'ch07-t1-2']))[2]
     expect(after).toMatchObject({ row: ['Explored', '2 of 17'], started: true })
   })
@@ -52,5 +52,22 @@ describe('chapter card helpers', () => {
   it('shows marks that add up to Part B, in the order of the chapters', () => {
     expect(cards.map((c) => c.weight)).toEqual([10, 15, 15, 10])
     expect(cards.reduce((n, c) => n + c.weight, 0)).toBe(EXAM.partBMarks)
+  })
+})
+
+const cards = chapterCards()
+describe('cardStatus', () => {
+  it('says Open for plain chapters, New with the simulator count for Chapter 9, and Explored once started', () => {
+    const cards = chapterCards()
+    expect(cardStatus(cards[0])).toEqual({ text: 'Open', isNew: false })
+    expect(cardStatus(cards[2])).toEqual({ text: 'New · 17 simulators', isNew: true })
+    const after = chapterCards(new Set(['ch09-1-1']))[2]
+    expect(cardStatus(after)).toEqual({ text: 'Explored 1 of 17', isNew: false })
+  })
+  it('gives every chapter a blurb and a button label', () => {
+    for (const c of cards) {
+      expect(c.blurb.length).toBeGreaterThan(20)
+      expect(c.cta).toMatch(/^Open/)
+    }
   })
 })

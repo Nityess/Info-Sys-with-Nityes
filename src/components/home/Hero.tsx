@@ -1,37 +1,53 @@
-import { ArrowRight } from 'lucide-react'
-import { LedgerDemo } from './LedgerDemo'
+import ch8 from '../../assets/home/ch8.webp'
+import teacher from '../../assets/home/teacher.webp'
+import { Arrow, Tick } from './Arrow'
+import { Jump } from './Jump'
 
-interface Props {
-  /** Where the main button goes (a hash link) */
-  startHref: string
-  goto: (id: string) => void
-}
-
-/** The first screen: one plain headline, one main button, and a live demo on ruled paper with a red margin line. */
-export function Hero({ startHref, goto }: Props) {
+/** The first screen: tag, one headline with a drawn marker, two buttons, and a scene of a real screen with the teacher. */
+export function Hero({ startHref }: { startHref: string }) {
   return (
-    <section className="lp-hero" aria-labelledby="lp-h1">
-      <span className="lp-margin" aria-hidden="true" />
-      <div className="lp-wrap lp-hero-grid">
-        <div className="lp-hero-copy">
-          <h1 id="lp-h1" className="lp-serif lp-h1 lp-rise">Learn Information Systems by trying it</h1>
-          <p className="lp-sub lp-rise" style={{ animationDelay: '.12s' }}>
-            Short lessons and live simulations for ICAN Foundation, Paper 2 Part B. Made for your phone.
+    <section className="ns-hero" aria-labelledby="ns-h1">
+      <div className="ns-wrap ns-hero-grid">
+        <div style={{ paddingBottom: 'clamp(1.875rem,6vw,5.25rem)' }}>
+          <span className="ns-tag ns-rise"><i />ICAN CAP Foundation · Paper 2 · Part B</span>
+          <h1 id="ns-h1" className="ns-d ns-h1 ns-rise" style={{ animationDelay: '.08s' }}>
+            Information Systems you can{' '}
+            <em>
+              play with.
+              <svg viewBox="0 0 300 20" preserveAspectRatio="none" fill="none" aria-hidden="true">
+                <path d="M4 13 C 60 3, 110 18, 160 9 S 250 4, 296 11" stroke="#FFC93C" strokeWidth="6" strokeLinecap="round" />
+              </svg>
+            </em>
+          </h1>
+          <p className="ns-sub ns-rise" style={{ animationDelay: '.16s' }}>
+            Press the button, break the business, watch what happens. Then get the exam words, exactly as the study book says them.
           </p>
-          <div className="lp-actions lp-rise" style={{ animationDelay: '.22s' }}>
-            <a className="lp-btn lp-btn-primary" href={startHref}>
-              Start Chapter 7
-              <ArrowRight width={18} height={18} strokeWidth={2.5} aria-hidden />
+          <div className="ns-acts ns-rise" style={{ animationDelay: '.24s' }}>
+            <a className="ns-btn ns-btn-p" href={startHref}>
+              Start with Chapter 7
+              <Arrow />
             </a>
-            <a className="lp-btn lp-btn-ghost" href="#chapters" onClick={(e) => { e.preventDefault(); goto('chapters') }}>
-              See the chapters
-            </a>
+            <Jump to="demo" className="ns-btn ns-btn-g">See it work</Jump>
           </div>
-          <p className="lp-note lp-rise" style={{ animationDelay: '.3s' }}>
-            Free. No account. Saved on your device.
-          </p>
+          <ul className="ns-trust ns-rise" style={{ animationDelay: '.32s' }}>
+            {['Free', 'No account', 'Works on your phone'].map((t) => (
+              <li key={t}><Tick />{t}</li>
+            ))}
+          </ul>
         </div>
-        <LedgerDemo />
+        <div className="ns-scene ns-rise" style={{ animationDelay: '.2s' }}>
+          <div className="ns-arch" aria-hidden="true" />
+          <div className="ns-win">
+            <div className="ns-win-bar" aria-hidden="true"><i /><i /><i /><span>Chapter 8 · Run the system</span></div>
+            <img src={ch8} alt="A real Chapter 8 screen: a system running, with input turning into output." width={1100} height={687} />
+          </div>
+          <img className="ns-man" src={teacher} alt="CA Nitesh, your teacher, smiling with both hands open." width={904} height={960} />
+          <div className="ns-pill ns-pill-b" aria-hidden="true"><Tick size={16} weight={3.2} />hash OK</div>
+          <div className="ns-pill ns-pill-a" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            hash wrong
+          </div>
+        </div>
       </div>
     </section>
   )

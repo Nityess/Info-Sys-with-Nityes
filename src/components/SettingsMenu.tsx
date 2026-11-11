@@ -55,7 +55,7 @@ export function SettingsMenu({ raw, onChange, dark, onToggleDark, onDark }: Prop
         aria-label="Settings"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className={onDark ? 'lp-iconbtn' : 'rounded-lg p-2 transition hover:bg-white dark:hover:bg-slate-900'}
+        className={onDark ? 'ns-icon' : 'rounded-lg p-2 transition hover:bg-white dark:hover:bg-slate-900'}
       >
         <Gear className="h-5 w-5" aria-hidden />
       </button>

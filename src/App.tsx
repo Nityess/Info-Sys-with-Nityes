@@ -15,7 +15,7 @@ import { useSettings } from './state/useSettings'
 const Landing = lazy(() => import('./components/home/Landing').then((m) => ({ default: m.Landing })))
 
 const THEME_KEY = 'ican-is-lab:theme'
-const SITE = 'Info System with ca.nityes'
+const SITE = 'Information Systems with CA Nitesh'
 
 function initialDark(): boolean {
   try {

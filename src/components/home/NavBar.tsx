@@ -1,62 +1,45 @@
-import { useEffect, useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { Menu, Moon, Sun } from 'lucide-react'
-import { NavDrawer } from './NavDrawer'
-import { Wordmark } from './Wordmark'
-import type { ChapterCard } from './homeLogic'
-import { cardHref } from './homeLogic'
+import teacher from '../../assets/home/teacher.webp'
+import { Arrow } from './Arrow'
+import { BRAND } from './homeData'
+import { Jump } from './Jump'
 
 interface Props {
-  cards: ChapterCard[]
   dark: boolean
   onToggleDark: () => void
+  /** Settings button, built by the app so it shares state with the study screens */
   settingsSlot?: ReactNode
-  calm: boolean
-  goTop: () => void
 }
 
-/**
- * Sticky top bar: the wordmark, a link to each chapter (from 900px wide), light or dark and settings.
- * On a phone the chapters move into the sidebar behind the menu button. It gets a line once the page scrolls.
- */
-export function NavBar({ cards, dark, onToggleDark, settingsSlot, calm, goTop }: Props) {
-  const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const root = document.querySelector<HTMLElement>('.lp')
-    if (!root) return
-    const onScroll = () => setScrolled(root.scrollTop > 8)
-    onScroll()
-    root.addEventListener('scroll', onScroll, { passive: true })
-    return () => root.removeEventListener('scroll', onScroll)
-  }, [])
-
+/** Sticky top bar: face and name, three in-page links (from 860px wide), a start button, light or dark and settings. */
+export function NavBar({ dark, onToggleDark, settingsSlot }: Props) {
   return (
-    <>
-    <header className={`lp-nav ${scrolled ? 'scrolled' : ''}`}>
-      <div className="lp-wrap lp-nav-in">
-        <Wordmark onClick={goTop} />
-        <nav className="lp-nav-links" aria-label="Chapters">
-          {cards.map((c) => (
-            <a key={c.number} href={cardHref(c)}>
-              Chapter {c.number}
-            </a>
-          ))}
+    <header className="ns-nav">
+      <div className="ns-wrap ns-nav-in">
+        <Jump to="top" className="ns-brand" aria-label={`${BRAND}, back to top`}>
+          <span className="ns-face"><img src={teacher} alt="" width={904} height={960} /></span>
+          <span>
+            <b>Information Systems</b>
+            <small>with CA Nitesh</small>
+          </span>
+        </Jump>
+        <nav className="ns-links" aria-label="Sections">
+          <Jump to="demo" className="l">See it work</Jump>
+          <Jump to="chapters" className="l">Chapters</Jump>
+          <Jump to="method" className="l">How it works</Jump>
         </nav>
-        <div className="lp-tools">
-          <button type="button" className="lp-iconbtn lp-nav-theme" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={onToggleDark}>
-            {dark ? <Sun width={22} height={22} aria-hidden /> : <Moon width={22} height={22} aria-hidden />}
+        <div className="ns-tools">
+          <button type="button" className="ns-icon" aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'} onClick={onToggleDark}>
+            {dark ? <Sun width={20} height={20} aria-hidden /> : <Moon width={20} height={20} aria-hidden />}
           </button>
-          <span className="lp-nav-gear">{settingsSlot}</span>
-          <button type="button" className="lp-iconbtn lp-nav-menu" aria-label="Open the menu" aria-expanded={open} onClick={() => setOpen(true)}>
-            <Menu width={24} height={24} aria-hidden />
-          </button>
+          {settingsSlot}
+          <Jump to="chapters" className="ns-btn ns-btn-p ns-btn-sm ns-nav-cta">
+            Start learning
+            <Arrow />
+          </Jump>
         </div>
       </div>
     </header>
-    {/* Outside the header: a blurred header would trap the drawer's fixed position */}
-    <NavDrawer open={open} onClose={() => setOpen(false)} cards={cards} dark={dark} onToggleDark={onToggleDark} settingsSlot={settingsSlot} calm={calm} />
-    </>
   )
 }
