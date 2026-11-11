@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://info-sys-with-nityes.vercel.app/sitemap.xml
