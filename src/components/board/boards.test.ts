@@ -2,19 +2,15 @@ import { describe, expect, it } from 'vitest'
 import c7s1 from '../../content/boards/c7s1.json'
 import c7s2 from '../../content/boards/c7s2.json'
 import c7s3 from '../../content/boards/c7s3.json'
-import c8s1 from '../../content/boards/c8s1.json'
-import c8s2 from '../../content/boards/c8s2.json'
-import c8s3 from '../../content/boards/c8s3.json'
 import mcq7 from '../../content/boards/mcq7.json'
-import mcq8 from '../../content/boards/mcq8.json'
 import { ICONS } from '../../content/boards/iconData'
 import { questionsFor } from './gameLogic'
 import type { Board, Mcq } from './types'
 
 // The board data is copied from the designer's files by scripts/extractBoards.mjs. These tests catch a bad copy or a design file that breaks the rules.
 
-const boards = [c7s1, c7s2, c7s3, c8s1, c8s2, c8s3] as unknown as Board[]
-const banks: Record<7 | 8, Mcq[]> = { 7: mcq7 as Mcq[], 8: mcq8 as Mcq[] }
+const boards = [c7s1, c7s2, c7s3] as unknown as Board[]
+const banks: Record<7, Mcq[]> = { 7: mcq7 as Mcq[] }
 const walkStrings = (v: unknown, out: string[] = []): string[] => {
   if (typeof v === 'string') out.push(v)
   else if (Array.isArray(v)) v.forEach((x) => walkStrings(x, out))
@@ -23,9 +19,9 @@ const walkStrings = (v: unknown, out: string[] = []): string[] => {
 }
 
 describe('board structure', () => {
-  it('has the topics the handoff lists: Chapter 7 is 9, 5 and 5 topics, Chapter 8 section 1 is 5', () => {
-    expect(boards.map((b) => b.topics.length)).toEqual([9, 5, 5, 5, 3, 8])
-    expect(boards.map((b) => [b.chapter, b.section])).toEqual([[7, 1], [7, 2], [7, 3], [8, 1], [8, 2], [8, 3]])
+  it('has the topics the handoff lists: Chapter 7 is 9, 5 and 5 topics', () => {
+    expect(boards.map((b) => b.topics.length)).toEqual([9, 5, 5])
+    expect(boards.map((b) => [b.chapter, b.section])).toEqual([[7, 1], [7, 2], [7, 3]])
   })
   it('gives every topic the parts the board shows', () => {
     for (const b of boards) {
@@ -36,17 +32,13 @@ describe('board structure', () => {
         expect(t.name && t.line && t.remember && t.simple, `${b.id} ${t.id} text`).toBeTruthy()
         expect(t.frames, `${b.id} ${t.id} frames`).toHaveLength(4)
         expect(t.gls.length, `${b.id} ${t.id} glossary`).toBeGreaterThan(0)
-        expect(Boolean(t.demo || t.scene || t.lab), `${b.id} ${t.id} has something to watch or try`).toBe(true)
-        if (!t.lab) expect(t.groups?.length ?? 0, `${b.id} ${t.id} cards`).toBeGreaterThan(0)
+        expect(Boolean(t.demo || t.scene), `${b.id} ${t.id} has something to watch or try`).toBe(true)
+        expect(t.groups?.length ?? 0, `${b.id} ${t.id} cards`).toBeGreaterThan(0)
       }
     }
   })
-  it('keeps the Validation lab on Chapter 8 topic 3.6 only', () => {
-    expect(boards.flatMap((b) => b.topics.filter((t) => t.lab).map((t) => `${b.id}:${t.id}`))).toEqual(['c8s3:3.6'])
-  })
-  it('uses the step demos from dm7.js and dm8.js: Chapter 7 section 3 topics 3.1 to 3.4 and Chapter 8 section 1 topics 1.1 to 1.5', () => {
+  it('uses the step demos from dm7.js: Chapter 7 section 3 topics 3.1 to 3.4', () => {
     expect(c7s3.topics.filter((t) => 'demo' in t).map((t) => t.id)).toEqual(['3.1', '3.2', '3.3', '3.4'])
-    expect(c8s1.topics.filter((t) => 'demo' in t).map((t) => t.id)).toEqual(['1.1', '1.2', '1.3', '1.4', '1.5'])
   })
 })
 
@@ -105,7 +97,7 @@ describe('games and the question banks', () => {
     }
   })
   it('has four options and a valid answer for every bank question', () => {
-    for (const m of [...mcq7, ...mcq8] as Mcq[]) {
+    for (const m of [...mcq7] as Mcq[]) {
       expect(m.opts, `Q${m.n}`).toHaveLength(4)
       expect(m.ans >= 0 && m.ans < 4, `Q${m.n} answer`).toBe(true)
       expect(m.why.length, `Q${m.n} explanation`).toBeGreaterThan(10)
@@ -115,14 +107,11 @@ describe('games and the question banks', () => {
     const used = [c7s1, c7s2, c7s3].flatMap((b) => (b as unknown as Board).topics.flatMap((t) => (t.game?.items ?? []).flatMap((i) => ('mcq' in i ? [i.mcq] : []))))
     expect([...used].sort((a, b) => a - b)).toEqual(Array.from({ length: 24 }, (_, i) => i + 1))
   })
-  it('uses the Chapter 8 section 1 questions the handoff lists', () => {
-    expect((c8s1 as unknown as Board).mcqUsed).toEqual([1, 3, 8, 9, 14, 17, 31])
-  })
 })
 
 describe('copy rules', () => {
   it('has no em dashes anywhere in the board data or the banks (a numeric range such as 1 to 12 may keep its en dash)', () => {
-    const bad = [...boards, mcq7, mcq8].flatMap((b) => walkStrings(b)).filter((s) => /—/.test(s))
+    const bad = [...boards, mcq7].flatMap((b) => walkStrings(b)).filter((s) => /—/.test(s))
     expect(bad).toEqual([])
   })
   it('labels the mnemonics as a memory aid', () => {

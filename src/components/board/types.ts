@@ -113,15 +113,13 @@ export interface Topic {
   gls: [string, string][]
   groups?: Group[]
   game?: Game
-  /** The Validation lab (Chapter 8, 3.6) */
-  lab?: boolean
   demo?: Demo
   scene?: Scene
 }
 
 export interface Board {
   id: string
-  chapter: 7 | 8
+  chapter: 7
   section: 1 | 2 | 3
   title: string
   blurb: string

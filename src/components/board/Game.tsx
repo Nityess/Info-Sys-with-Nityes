@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { advance, feedback, initialGame, isDone, nextLabel, optionsOf, pick, progressText, questionsFor, resultText, splitWhy } from './gameLogic'
+import { advance, feedback, initialGame, isDone, nextLabel, optionsOf, pick, progressText, questionsFor, resultText } from './gameLogic'
 import type { Game as GameData, Mcq } from './types'
 
 /**
@@ -27,7 +27,6 @@ export function Game({ game, bank }: { game: GameData; bank: readonly Mcq[] }) {
   if (!q) return null
   const options = optionsOf(game, q)
   const fb = answered ? feedback(q, options, s.picked) : null
-  const [why, others] = fb ? splitWhy(fb.text) : ['', '']
 
   return (
     <div className="bd-play">
@@ -52,8 +51,7 @@ export function Game({ game, bank }: { game: GameData; bank: readonly Mcq[] }) {
           <div role="status">
             {fb && (
               <div className={`bd-fb ${fb.ok ? 'bd-fb-ok' : 'bd-fb-bad'} bd-rise`}>
-                <p>{why}</p>
-                {others && <p>{others}</p>}
+                <p>{fb.text}</p>
               </div>
             )}
           </div>

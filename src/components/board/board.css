@@ -1,4 +1,4 @@
-/* Topic board: one page per section of Chapter 7 and Chapter 8. Ported from landing-handoff/design/Section*.dc.html and Ch8Section*.dc.html.
+/* Topic board: one page per section of Chapter 7. Ported from landing-handoff/design/Section*.dc.html.
    Scoped under .bd. Sizes in rem so the Text size setting works. Dark mode follows the app's html.dark class.
    Section accents: .bd-s1 blue, .bd-s2 teal, .bd-s3 amber. Demo stage and node scene: board-demo.css. */
 
@@ -79,9 +79,6 @@
 .bd-fb-ok{background:var(--brand-soft);color:var(--brand-text)}
 .bd-fb-bad{background:var(--bad-soft);color:var(--bad-text)}
 .bd-row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(16.25rem,100%),1fr));gap:.75rem}
-.bd-lab{padding:1rem;display:flex;flex-direction:column;gap:.625rem;border:2px solid var(--line-strong);border-radius:.875rem;background:var(--surface)}
-.bd-labrow{display:flex;align-items:center;gap:.625rem}
-.bd-labval{min-width:3ch;text-align:center;font-size:1.625rem}
 .bd-step{width:2.75rem;height:2.75rem;border-radius:.75rem;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);font-size:1.25rem;font-weight:700;cursor:pointer;font-family:inherit}
 
 /* In simple words, Remember */

@@ -43,9 +43,3 @@ export function feedback(q: Question, options: readonly string[], picked: number
 
 export const resultText = (score: number, total: number): string =>
   `You got ${score} of ${total}. ${score === total ? 'Perfect. You think like an examiner.' : 'Try again to push it higher.'}`
-
-/** Chapter 8 explanations end with "Why the others are wrong: ..."; this lets the screen show that part on its own line. */
-export function splitWhy(why: string): [string, string] {
-  const at = why.indexOf('Why the others are wrong:')
-  return at < 0 ? [why, ''] : [why.slice(0, at).trim(), why.slice(at).trim()]
-}

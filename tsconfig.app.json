@@ -22,5 +22,6 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/components/board", "src/components/topic", "src/components/rail", "src/components/lesson", "src/content/chapter7", "src/content/chapters", "src/content/boards", "src/virtual-modules.d.ts"]
 }

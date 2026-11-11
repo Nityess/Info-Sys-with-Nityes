@@ -6,7 +6,6 @@ import { Game } from './Game'
 import { Ico } from './Ico'
 import { NodeScene } from './NodeScene'
 import { SimpleWords } from './SimpleWords'
-import { ValidationLab } from './ValidationLab'
 import type { Mcq, Topic } from './types'
 
 /** "Watch how it works": the topic's step demo, or its box and arrow scene when it has no demo. */
@@ -27,7 +26,7 @@ interface Props {
   onNext: () => void
 }
 
-/** One topic of a board: heading, animation, flip cards, game or lab, "In simple words", the Remember strip, and Previous and Next. */
+/** One topic of a board: heading, animation, flip cards, game, "In simple words", the Remember strip, and Previous and Next. */
 export function TopicPanel({ topic, bank, onPrev, onNext }: Props) {
   // Replay remounts everything below the heading, so the animation, the cards and the game all start again
   const [run, setRun] = useState(0)
@@ -54,7 +53,6 @@ export function TopicPanel({ topic, bank, onPrev, onNext }: Props) {
       <div key={run} className="bd-body">
         <TopicVisual topic={topic} />
         {topic.groups && <FlipCards groups={topic.groups} />}
-        {topic.lab && <ValidationLab />}
         {topic.game && <Game game={topic.game} bank={bank} />}
         <SimpleWords topic={topic} />
         <div className="bd-rem bd-rise" style={{ '--d': '.3s' } as React.CSSProperties}><span>{topic.remember}</span></div>

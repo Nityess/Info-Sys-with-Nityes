@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { advance, feedback, initialGame, isDone, nextLabel, optionsOf, pick, progressText, questionsFor, resultText, splitWhy } from './gameLogic'
+import { advance, feedback, initialGame, isDone, nextLabel, optionsOf, pick, progressText, questionsFor, resultText } from './gameLogic'
 import type { Game, Mcq } from './types'
 
 const bank: Mcq[] = [{ n: 4, q: 'Which is operational?', opts: ['A', 'B', 'C', 'D'], ans: 2, why: 'Daily detail.' }]
@@ -53,9 +53,5 @@ describe('feedback and score text', () => {
   it('praises a perfect score only', () => {
     expect(resultText(3, 3)).toBe('You got 3 of 3. Perfect. You think like an examiner.')
     expect(resultText(2, 3)).toBe('You got 2 of 3. Try again to push it higher.')
-  })
-  it('splits the Chapter 8 "why the others are wrong" part onto its own line', () => {
-    expect(splitWhy('Data is raw. Why the others are wrong: A is out.')).toEqual(['Data is raw.', 'Why the others are wrong: A is out.'])
-    expect(splitWhy('Plain reason.')).toEqual(['Plain reason.', ''])
   })
 })

@@ -2,7 +2,7 @@
 //   node scripts/extractBoards.mjs            (run inside app/; reads ../landing-handoff)
 // The design files keep their data inline in a script block. This evaluates only that block (helpers C, S, I, R, N, D)
 // in a sandbox, so nothing is retyped by hand. MCQ items stay as { mcq: n } references into the question banks.
-// Animation step data comes from design/source/dm7.js and dm8.js (the files hold stale copies of it).
+// Animation step data comes from design/source/dm7.js (the files hold stale copies of it).
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -18,9 +18,6 @@ const BOARDS = [
   { id: 'c7s1', file: 'Section1', chapter: 7, section: 1, dm: null },
   { id: 'c7s2', file: 'Section2', chapter: 7, section: 2, dm: null },
   { id: 'c7s3', file: 'Section3', chapter: 7, section: 3, dm: 'dm7.js' },
-  { id: 'c8s1', file: 'Ch8Section1', chapter: 8, section: 1, dm: 'dm8.js' },
-  { id: 'c8s2', file: 'Ch8Section2', chapter: 8, section: 2, dm: null },
-  { id: 'c8s3', file: 'Ch8Section3', chapter: 8, section: 3, dm: null },
 ]
 
 const HELPERS = `
@@ -52,7 +49,6 @@ for (const b of BOARDS) {
   let DM = {}
   if (b.dm) {
     DM = run(`${HELPERS}\n(${read(join(hand, 'design', 'source', b.dm)).trim().replace(/;\s*$/, '')})`)
-    if (b.dm === 'dm8.js' && JSON.stringify(DM) !== JSON.stringify(data.DM)) console.warn(`${b.file}: dm8.js differs from the copy inside the html (using dm8.js)`)
   }
 
   const topics = data.T.map((t) => {
@@ -78,7 +74,7 @@ for (const b of BOARDS) {
 }
 
 // Question banks, as the teacher wrote them. Em dashes are not allowed in the app's copy, so " — " becomes ", " exactly as the design files do.
-for (const [file, id] of [['chapter7-mcq-bank.json', 'mcq7'], ['chapter8-mcq-bank.json', 'mcq8']]) {
+for (const [file, id] of [['chapter7-mcq-bank.json', 'mcq7']]) {
   const bank = JSON.parse(read(join(hand, 'data', file)))
   const fix = (s) => s.replace(/\s+—\s+/g, ', ').replace(/—/g, ', ')
   const slim = bank.map((x) => ({ n: x.n, q: fix(x.q), opts: x.opts.map(fix), ans: x.ans, why: fix(x.why) }))

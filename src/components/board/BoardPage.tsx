@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { ArrowLeft, Moon, Sun } from 'lucide-react'
-import { HOME_HASH, chapter8Hash, sectionHash } from '../../state/route'
+import { HOME_HASH, sectionHash } from '../../state/route'
 import { Ico } from './Ico'
 import { loadBank, loadBoard } from './boardData'
 import type { BoardId } from './boardData'
@@ -21,7 +21,7 @@ interface Props {
   settingsSlot: ReactNode
 }
 
-/** One section of Chapter 7 or Chapter 8: the heading, the topic tabs and the topic on show. Replaces the earlier scene pages. */
+/** One section of Chapter 7: the heading, the topic tabs and the topic on show. Replaces the earlier scene pages. */
 export function BoardPage({ boardId, initialTopic, dark, onToggleDark, settingsSlot }: Props) {
   const [loaded, setLoaded] = useState<{ board: Board; bank: Mcq[] } | null>(null)
   const [topicId, setTopicId] = useState<string | null>(initialTopic ?? null)
@@ -43,8 +43,7 @@ export function BoardPage({ boardId, initialTopic, dark, onToggleDark, settingsS
   // Choosing a topic also puts it in the address, so a copied link opens the same topic (no page reload, no history entry)
   const choose = (b: Board, id: string) => {
     setTopicId(id)
-    const hash = b.chapter === 8 ? chapter8Hash(`s${b.section}`, id) : sectionHash(`s${b.section}`, id)
-    window.history.replaceState(null, '', hash)
+    window.history.replaceState(null, '', sectionHash(`s${b.section}`, id))
   }
 
   return (
