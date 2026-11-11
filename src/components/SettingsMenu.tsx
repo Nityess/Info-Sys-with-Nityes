@@ -81,12 +81,6 @@ export function SettingsMenu({ raw, onChange, dark, onToggleDark, onDark }: Prop
                 ))}
               </div>
             </fieldset>
-            <Switch label="Teacher mode" hint="Shows tools for checking new content." checked={raw.teacher} onChange={(v) => onChange({ teacher: v })} />
-            {raw.teacher && (
-              <div className="pl-3">
-                <Switch label="Show study-book questions" hint="The two questions copied from the study book." checked={raw.showSourceQuestions} onChange={(v) => onChange({ showSourceQuestions: v })} />
-              </div>
-            )}
           </div>
         </div>
       )}

@@ -1,13 +1,8 @@
 import { useCallback, useSyncExternalStore } from 'react'
-import { defaultSettings, effectiveSettings, parseSettings } from './settings'
+import { defaultSettings, parseSettings } from './settings'
 import type { Settings } from './settings'
 
 const KEY = 'ican-is-lab:settings'
-
-interface Snapshot {
-  raw: Settings
-  effective: Settings
-}
 
 function load(): Settings {
   try {
@@ -18,9 +13,7 @@ function load(): Settings {
   }
 }
 
-const toSnapshot = (raw: Settings): Snapshot => ({ raw, effective: effectiveSettings(raw) })
-
-let snapshot = toSnapshot(load())
+let snapshot: Settings = load()
 const listeners = new Set<() => void>()
 
 function subscribe(cb: () => void) {
@@ -29,9 +22,9 @@ function subscribe(cb: () => void) {
 }
 
 function update(patch: Partial<Settings>) {
-  snapshot = toSnapshot({ ...snapshot.raw, ...patch })
+  snapshot = { ...snapshot, ...patch }
   try {
-    localStorage.setItem(KEY, JSON.stringify(snapshot.raw))
+    localStorage.setItem(KEY, JSON.stringify(snapshot))
   } catch {
     // storage blocked: settings just last for this visit
   }
@@ -41,5 +34,5 @@ function update(patch: Partial<Settings>) {
 export function useSettings() {
   const s = useSyncExternalStore(subscribe, () => snapshot)
   const set = useCallback((patch: Partial<Settings>) => update(patch), [])
-  return { raw: s.raw, settings: s.effective, set }
+  return { raw: s, settings: s, set }
 }

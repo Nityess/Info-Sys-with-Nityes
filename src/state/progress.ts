@@ -1,15 +1,7 @@
 import { useCallback, useState } from 'react'
-import type { Chapter } from '../content/types'
 
 const DONE_KEY = 'ican-is-lab:completed'
 const STARTED_KEY = 'ican-is-lab:started'
-
-/** Percent (0-100, rounded) of a chapter's units that are completed. */
-export function completionPercent(chapter: Chapter, done: ReadonlySet<string>): number {
-  if (chapter.units.length === 0) return 0
-  const n = chapter.units.filter((u) => done.has(u.id)).length
-  return Math.round((n / chapter.units.length) * 100)
-}
 
 /** Returns a set with unitId added (same set if already present, so React can skip a re-render). */
 export function withDone(done: Set<string>, unitId: string): Set<string> {

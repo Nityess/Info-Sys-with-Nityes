@@ -8,8 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "test": "vitest run",
-    "preview": "vite preview",
-    "boards": "node scripts/extractBoards.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",
