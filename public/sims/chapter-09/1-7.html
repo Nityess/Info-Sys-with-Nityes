@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Data Risk Investigation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: case replay timeline with a playhead, risk-naming chips, a grid of six risk rooms, a short second case, key points */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:0 14px;min-height:40px;background:var(--panel);font-size:.86em}
+.chip.right{background:var(--ok-soft);border-color:var(--ok)}
+.chip.wrong{background:var(--bad-soft);border-color:var(--bad);animation:shake .4s}
+.rooms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.rooms{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.rooms{grid-template-columns:minmax(0,1fr)}}
+.room{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;align-content:start;background:var(--panel)}
+.room h3{font-size:.98rem}
+.room svg{width:100%;height:auto;background:var(--panel2);border-radius:10px}
+.room p{margin:0;font-size:.84em}
+.room.hit{border-color:var(--bad)}
+.room .out{font-size:.84em;color:var(--bad);min-height:2.4em}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Risks of big data simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 1.7 Risks of big data, data science and analytics</div>
+      <h1>Data Risk Investigation</h1>
+      <p class="role">Gorkha Foods trusted its new data system so much that it made a costly mistake. Replay the case, name the risk, then step into six rooms where data goes wrong.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bPlay" type="button">Replay the case</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+
+  <div class="card">
+    <div class="scroll">
+      <svg class="scene" viewBox="0 0 960 360" role="img" aria-label="Five-step timeline of the Gorkha Foods case: data collected, a false pattern, board relies on it, decision made, loss">
+        <rect width="960" height="360" fill="var(--panel2)"/>
+        <g id="panels"></g>
+        <rect x="30" y="318" width="900" height="6" rx="3" fill="var(--line)"/>
+        <rect id="prog" x="30" y="318" width="0" height="6" rx="3" fill="var(--bad)"/>
+        <circle id="head" cx="30" cy="321" r="9" fill="var(--bad)" stroke="var(--panel)" stroke-width="3"/>
+        <g id="dots"></g>
+      </svg>
+    </div>
+    <div class="pad" style="border-top:1px solid var(--line)">
+      <p style="margin:0;font-weight:500">Which risk did Gorkha Foods run into?</p>
+      <div class="chips" id="chips"></div>
+      <div id="caseRes" aria-live="polite"></div>
+    </div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="kabita"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Kabita · cybersecurity specialist</div><p id="capTxt">Tap Replay the case, then name the risk.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+
+  <section class="card pad" aria-label="Six risk rooms">
+    <div><h2 style="font-size:1.05rem">Six rooms where data goes wrong</h2><p class="note">Press each button and watch the risk play out at Everest Fashion.</p></div>
+    <div class="rooms" id="rooms"></div>
+  </section>
+
+  <section class="card pad" aria-label="Second case">
+    <div class="row" style="justify-content:space-between"><h2 style="font-size:1.05rem">Quick case: Jhapa Jams</h2><button class="btn" id="bJam" type="button">Play it</button></div>
+    <div class="scroll"><svg class="scene" id="jam" viewBox="0 0 960 200" role="img" aria-label="Jhapa Jams reads many reviews, launches a mixed-fruit jam and sales disappoint" style="min-width:560px"></svg></div>
+    <div id="jamRes" aria-live="polite"></div>
+  </section>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="tw"><table style="min-width:460px"><thead><tr><th>Risk</th><th>Explanation</th></tr></thead><tbody>
+      <tr><td><b>Storage</b></td><td>The sheer volume of big data means organisations must monitor and flex storage levels to avoid running out.</td></tr>
+      <tr><td><b>Workforce skills</b></td><td>Organisations need enough data scientists and analysts with the right mix of knowledge and experience.</td></tr>
+      <tr><td><b>Data dependency</b></td><td>Organisations can become dependent on data to make decisions, risking poor decisions if data has errors or is misinterpreted. Links to veracity.</td></tr>
+      <tr><td><b>Information overload</b></td><td>Huge numbers of insights can actually slow down business decisions.</td></tr>
+      <tr><td><b>Data privacy</b></td><td>Collecting, storing and analysing data risks breaching data privacy law. Organisations must comply.</td></tr>
+      <tr><td><b>Data security</b></td><td>Big data is a source of competitive advantage, so it must be protected from cybersecurity risks.</td></tr>
+    </tbody></table></div>
+    <div class="spots"><div><b>Dependency vs security</b><p>Trusting wrong data and deciding badly is data dependency. Data being stolen is data security.</p></div><div><b>Veracity</b><p>Misreading or wrong data, like the jam reviews, is a veracity problem.</p></div></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Gorkha Foods and Jhapa Jams are made-up businesses based on the study note's two cases. Kabita, Everest Fashion, figures and products are illustrative.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const RISKS=[["storage","Storage"],["skills","Workforce skills"],["dep","Data dependency"],["over","Information overload"],["priv","Data privacy"],["sec","Data security"]];
+const P=[
+ {x:30,t:"1. Data comes in",d:"A new system collects sales data for one product. It works well."},
+ {x:210,t:"2. System expanded",d:"Directors love it, so it now reports on every product."},
+ {x:390,t:"3. A false pattern",d:"A system error shows a sales trend for one product that does not exist."},
+ {x:570,t:"4. Board relies on it",d:"Nobody questions the data. The board approves a big decision."},
+ {x:750,t:"5. Substantial loss",d:"The trend was never real. The decision loses a lot of money."}
+];
+function drawPanels(step){
+  $("#panels").innerHTML=P.map((p,i)=>{const on=i<=step;return `<g opacity="${on?1:.25}" class="fade">
+    <rect x="${p.x}" y="20" width="170" height="270" rx="12" fill="var(--panel)" stroke="${i===2&&on?"var(--bad)":"var(--line)"}" stroke-width="2"/>
+    <text x="${p.x+12}" y="44" style="font:600 12px var(--f-disp);fill:var(--ink)">${p.t}</text>
+    <foreignObject x="${p.x+10}" y="214" width="150" height="72"><div xmlns="http://www.w3.org/1999/xhtml" style="font:11.5px/1.35 var(--f-body);color:var(--muted)">${p.d}</div></foreignObject>
+    ${art(i,on)}</g>`;}).join("");
+}
+function art(i,on){
+  const x=P[i].x;
+  if(i===0)return `<ellipse cx="${x+85}" cy="80" rx="40" ry="10" fill="var(--blue)"/><rect x="${x+45}" y="80" width="80" height="80" fill="var(--blue)" opacity=".7"/><ellipse cx="${x+85}" cy="160" rx="40" ry="10" fill="var(--blue)"/><text x="${x+85}" y="190" text-anchor="middle" class="tm" font-size="10">1 product</text>`;
+  if(i===1)return [0,1,2,3,4].map(k=>`<ellipse cx="${x+40+k*22}" cy="${80+k*6}" rx="14" ry="5" fill="var(--blue)"/><rect x="${x+26+k*22}" y="${80+k*6}" width="28" height="${70-k*6}" fill="var(--blue)" opacity=".6"/>`).join("")+`<text x="${x+85}" y="190" text-anchor="middle" class="tm" font-size="10">all products</text>`;
+  if(i===2)return `<path d="M${x+20} 170 L${x+50} 160 L${x+75} 165 L${x+95} 150 L${x+115} ${on?78:150} L${x+140} ${on?70:148} L${x+155} ${on?66:146}" fill="none" stroke="var(--bad)" stroke-width="3"/><text x="${x+120}" y="62" text-anchor="middle" style="font:700 11px var(--f-body);fill:var(--bad)">${on?"trend!?":""}</text><text x="${x+85}" y="196" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--bad)">${on?"system error":""}</text>`;
+  if(i===3)return `<rect x="${x+25}" y="150" width="120" height="14" rx="3" fill="var(--wood)"/>${[0,1,2,3].map(k=>`<circle cx="${x+42+k*28}" cy="132" r="9" fill="var(--skin${k%2?"2":""})"/><path d="M${x+32+k*28} 150v-8a10 10 0 0 1 20 0v8z" fill="var(--steel)"/>`).join("")}${on?`<rect x="${x+50}" y="70" width="70" height="34" rx="6" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2" transform="rotate(-8 ${x+85} 87)"/><text x="${x+85}" y="92" text-anchor="middle" transform="rotate(-8 ${x+85} 87)" style="font:700 12px var(--f-mono);fill:var(--ok)">APPROVED</text>`:""}`;
+  if(i===4)return `<text x="${x+85}" y="120" text-anchor="middle" style="font:700 24px var(--f-mono);fill:var(--bad)" id="lossT">${on?"−Rs 2.4 cr":"Rs 0"}</text><path d="M${x+40} 150l45 30 45-30" fill="none" stroke="var(--bad)" stroke-width="4" stroke-linecap="round" opacity="${on?1:.3}"/>`;
+  return "";
+}
+let step=-1,playing=false,named=false;
+async function replay(){if(playing)return;playing=true;$("#bPlay").disabled=true;named=false;renderChips();$("#caseRes").innerHTML="";
+  for(let i=0;i<5;i++){step=i;drawPanels(i);const px=P[i].x+85;$("#prog").setAttribute("width",px-30);$("#head").setAttribute("cx",px);cap(P[i].d);log("Case",P[i].d,i>=2?"bad":"");await sleep(i===2?1700:1200);}
+  cap("Now name the risk Gorkha Foods ran into.");playing=false;$("#bPlay").disabled=false;}
+function renderChips(){$("#chips").innerHTML=RISKS.map(r=>`<button type="button" class="chip" data-k="${r[0]}">${r[1]}</button>`).join("");
+  $$(".chip").forEach(c=>c.onclick=()=>{if(step<4){$("#caseRes").innerHTML='<div class="result mid">Replay the case first.</div>';return;}
+    if(c.dataset.k==="dep"){c.classList.add("right");$("#caseRes").innerHTML='<div class="result ok"><b>Data dependency.</b> The board became so reliant on the data that nobody questioned an error in it, and the decision made a substantial loss. It links to veracity: the data was not accurate.</div>';log("Named it","Data dependency: relying on data that had an error.","good");}
+    else{c.classList.remove("wrong");void c.offsetWidth;c.classList.add("wrong");const why={sec:"Nothing was stolen or hacked. The data was wrong, and the board trusted it.",storage:"They never ran out of space.",skills:"The problem was not a lack of analysts; the board relied on faulty output.",over:"They had one clear (but false) pattern, not too many insights.",priv:"No customer data was misused."}[c.dataset.k];
+      $("#caseRes").innerHTML=`<div class="result bad">Not this one. ${why}</div>`;}});}
+/* rooms */
+const ROOMS=[
+ {k:"storage",n:"Storage",d:"Data keeps growing.",btn:"Let a busy month pour in",out:"Storage hits 100%. New sales data is dropped because nobody flexed the storage.",
+  svg:'<rect x="20" y="20" width="200" height="30" rx="6" fill="var(--panel)" stroke="var(--line)"/><rect id="r-storage-bar" x="22" y="22" width="60" height="26" rx="5" fill="var(--blue)" style="transition:width 1.6s,fill .3s"/><text id="r-storage-t" x="120" y="80" text-anchor="middle" style="font:600 13px var(--f-mono);fill:var(--ink)">30% full</text>',
+  run:async()=>{const b=$("#r-storage-bar"),t=$("#r-storage-t");b.setAttribute("width",196);for(let p=30;p<=100;p+=10){t.textContent=p+"% full";await sleep(180);}b.setAttribute("fill","var(--bad)");t.textContent="FULL · data dropped";t.setAttribute("style","font:700 13px var(--f-mono);fill:var(--bad)");}},
+ {k:"skills",n:"Workforce skills",d:"Lots of data, too few analysts.",btn:"Hand the data to the team",out:"Reports pile up unread. Without enough skilled analysts, the data is wasted.",
+  svg:'<rect x="40" y="70" width="60" height="8" fill="var(--wood)"/><rect x="60" y="40" width="22" height="30" rx="3" fill="var(--steel)"/><text x="70" y="100" text-anchor="middle" style="font:10px var(--f-mono);fill:var(--muted)">empty chair</text><g id="r-skills-pile"></g>',
+  run:async()=>{const g=$("#r-skills-pile");for(let i=0;i<10;i++){g.insertAdjacentHTML("beforeend",`<rect x="${140+(i%2)*6}" y="${84-i*7}" width="60" height="6" rx="1" fill="${i>6?"var(--bad)":"var(--amber)"}"/>`);await sleep(120);}g.insertAdjacentHTML("beforeend",'<text x="170" y="18" text-anchor="middle" style="font:700 10px var(--f-mono);fill:var(--bad)">unread</text>');}},
+ {k:"dep",n:"Data dependency",d:"Following data without question.",btn:"Feed it one wrong number",out:"The dashboard says order 900 scarves. Nobody checks. 600 sit unsold. Wrong data, blind trust.",
+  svg:'<rect x="20" y="20" width="110" height="60" rx="6" fill="var(--panel)" stroke="var(--line)"/><text id="r-dep-t" x="75" y="56" text-anchor="middle" style="font:700 16px var(--f-mono);fill:var(--ink)">order 300</text><path d="M135 50h40" stroke="var(--ink)" stroke-width="2"/><circle cx="200" cy="40" r="10" fill="var(--skin)"/><path d="M188 80v-20a12 12 0 0 1 24 0v20z" fill="var(--steel)"/>',
+  run:async()=>{const t=$("#r-dep-t");await sleep(300);t.textContent="order 900";t.setAttribute("style","font:700 16px var(--f-mono);fill:var(--bad)");await sleep(600);$("#r-dep-t").insertAdjacentHTML("afterend",'<text x="200" y="20" text-anchor="middle" style="font:700 10px var(--f-mono);fill:var(--bad)">"OK!"</text>');}},
+ {k:"over",n:"Information overload",d:"Too many insights at once.",btn:"Switch on every dashboard",out:"Hundreds of alerts and charts. Anita takes three days to decide something that used to take an hour.",
+  svg:'<g id="r-over-g"></g><text id="r-over-t" x="120" y="100" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--muted)">decision time: 1 hour</text>',
+  run:async()=>{const g=$("#r-over-g");for(let i=0;i<36;i++){g.insertAdjacentHTML("beforeend",`<rect x="${10+(i%9)*25}" y="${8+Math.floor(i/9)*18}" width="21" height="14" rx="2" fill="${["var(--blue)","var(--amber)","var(--rose)","var(--violet)"][i%4]}" opacity=".8"/>`);if(i%6===0)$("#r-over-t").textContent="decision time: "+(1+Math.floor(i/6)*12)+" hours";await sleep(50);}$("#r-over-t").textContent="decision time: 3 days";$("#r-over-t").setAttribute("style","font:700 11px var(--f-mono);fill:var(--bad)");}},
+ {k:"priv",n:"Data privacy",d:"Using personal data without care.",btn:"Sell the loyalty list to a partner",out:"Customers never agreed to this. That can breach data privacy law, with fines and lost trust.",
+  svg:'<rect x="20" y="25" width="70" height="56" rx="6" fill="var(--panel)" stroke="var(--line)"/><path d="M30 40h50M30 52h40M30 64h46" stroke="var(--muted)" stroke-width="2"/><rect id="r-priv-doc" x="20" y="25" width="70" height="56" rx="6" fill="none"/><g id="r-priv-n" opacity="0"><rect x="140" y="25" width="90" height="56" rx="6" fill="var(--bad-soft)" stroke="var(--bad)"/><text x="185" y="50" text-anchor="middle" style="font:700 10px var(--f-mono);fill:var(--bad)">REGULATOR</text><text x="185" y="66" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--bad)">notice + fine</text></g>',
+  run:async()=>{await movePathIn("r-priv","M90 52 C110 52, 120 52, 140 52","var(--rose)");$("#r-priv-n").setAttribute("opacity",1);}},
+ {k:"sec",n:"Data security",d:"Valuable data needs protecting.",btn:"Leave the database unprotected",out:"A hacker copies the customer and pricing data. A rival now knows Everest Fashion's plans.",
+  svg:'<ellipse cx="60" cy="30" rx="30" ry="8" fill="var(--blue)"/><rect x="30" y="30" width="60" height="50" fill="var(--blue)" opacity=".7"/><ellipse cx="60" cy="80" rx="30" ry="8" fill="var(--blue)"/><circle cx="200" cy="40" r="14" fill="var(--bad)"/><path d="M193 38h14M195 45h10" stroke="var(--panel)" stroke-width="2"/><text id="r-sec-t" x="200" y="80" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--bad)"></text>',
+  run:async()=>{await movePathIn("r-sec","M90 55 C130 70, 160 60, 186 44","var(--bad)");$("#r-sec-t").textContent="data copied";}}
+];
+function movePathIn(prefix,d,col){return new Promise(res=>{const svg=$("#svg-"+prefix.split("-")[1]);const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");svg.appendChild(p);
+  const L=p.getTotalLength(),c=document.createElementNS(NS,"rect");c.setAttribute("width",14);c.setAttribute("height",10);c.setAttribute("rx",2);c.setAttribute("fill",col);svg.appendChild(c);const t0=performance.now();
+  const st=now=>{const k=Math.min(1,(now-t0)/(REDUCE?30:900));const pt=p.getPointAtLength(k*L);c.setAttribute("x",pt.x-7);c.setAttribute("y",pt.y-5);if(k<1)requestAnimationFrame(st);else res();};requestAnimationFrame(st);});}
+function renderRooms(){$("#rooms").innerHTML=ROOMS.map(r=>`<div class="room" id="room-${r.k}"><h3>${r.n}</h3><p class="note">${r.d}</p><svg id="svg-${r.k}" viewBox="0 0 240 110" aria-hidden="true">${r.svg}</svg><button class="btn" type="button" data-k="${r.k}">${r.btn}</button><p class="out" id="out-${r.k}"></p></div>`).join("");
+  $$(".room .btn").forEach(b=>b.onclick=async()=>{const r=ROOMS.find(x=>x.k===b.dataset.k);b.disabled=true;await r.run();$("#out-"+r.k).textContent=r.out;$("#room-"+r.k).classList.add("hit");log(r.n,r.out,"bad");});}
+/* jam case */
+async function jam(){const s=$("#jam");$("#bJam").disabled=true;$("#jamRes").innerHTML="";
+  s.innerHTML=`<rect width="960" height="200" fill="var(--panel2)"/><g id="jr"></g><text x="20" y="24" class="tl">REVIEWS AND SOCIAL MEDIA</text>`;
+  const words=["mix it!","more flavours","love mixed fruit","try new","blend?","so good"];
+  for(let i=0;i<6;i++){$("#jr").insertAdjacentHTML("beforeend",`<g><rect x="${20+(i%3)*110}" y="${40+Math.floor(i/3)*50}" width="100" height="36" rx="6" fill="var(--rose-soft)" stroke="var(--rose)"/><text x="${70+(i%3)*110}" y="${63+Math.floor(i/3)*50}" text-anchor="middle" style="font:600 11px var(--f-body);fill:var(--ink)">${words[i]}</text></g>`);await sleep(150);}
+  s.insertAdjacentHTML("beforeend",`<path d="M360 100h70" stroke="var(--ink)" stroke-width="2"/><path d="M425 94l10 6-10 6z" fill="var(--ink)"/><rect x="450" y="50" width="140" height="100" rx="10" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2"/><text x="520" y="92" text-anchor="middle" style="font:700 13px var(--f-body);fill:var(--ink)">NEW: mixed</text><text x="520" y="110" text-anchor="middle" style="font:700 13px var(--f-body);fill:var(--ink)">fruit jam</text>`);
+  await sleep(700);let bars="";[80,60,40,22,12].forEach((h,i)=>{bars+=`<rect x="${640+i*40}" y="${160-h}" width="26" height="${h}" fill="var(--bad)" opacity=".8"/>`;});
+  s.insertAdjacentHTML("beforeend",`<text x="720" y="40" text-anchor="middle" class="tl">SALES AFTER LAUNCH</text>${bars}<text x="740" y="185" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--bad)">demand did not exist</text>`);
+  $("#jamRes").innerHTML='<div class="result bad"><b>Veracity.</b> The reviews were read as demand that was not really there. The data was misinterpreted, so its trustworthiness was the problem.</div>';log("Jhapa Jams","Misread reviews led to a flop: a veracity problem.","bad");$("#bJam").disabled=false;}
+$("#bPlay").onclick=replay;$("#bJam").onclick=jam;
+const endTour=tourSetup([
+ {t:"Gorkha Foods bought a new system to analyse big data. Watch what happened over the year.",a:()=>replay()},
+ {t:"The data was wrong and nobody questioned it. Which risk is that? Try the buttons under the timeline.",a:()=>{}},
+ {t:"Now step into the six risk rooms below. Each one shows a different way big data can hurt a business.",a:()=>{$("#rooms").scrollIntoView({behavior:REDUCE?"auto":"smooth",block:"center"});}}
+],"Replay the case, name the risk, then try the six rooms.");
+$("#bReset").onclick=()=>{if(playing)return;step=-1;drawPanels(-1);$("#prog").setAttribute("width",0);$("#head").setAttribute("cx",30);renderChips();$("#caseRes").innerHTML="";renderRooms();$("#jam").innerHTML="";$("#jamRes").innerHTML="";feedReset();endTour();};
+shellSetup();drawPanels(-1);renderChips();renderRooms();
+})();
+</script>
+
+</body>
+</html>

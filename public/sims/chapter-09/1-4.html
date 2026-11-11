@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Data to Product Factory</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: factory hall scene with six stations on a conveyor, side panel of station and spotlight switches, product result, key points */
+.st-sw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.sw{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;min-height:44px;background:var(--panel);font-size:.86em;text-align:left}
+.sw i{font:600 .66rem var(--f-mono);font-style:normal;padding:2px 7px;border-radius:999px;background:var(--ok-soft);color:var(--ok)}
+.sw[aria-pressed="false"]{background:var(--panel2)}
+.sw[aria-pressed="false"] i{background:var(--bad-soft);color:var(--bad)}
+.prod{border-radius:12px;padding:12px;display:grid;gap:6px}
+.machine .arm{transition:transform .25s}
+.machine.busy .arm{transform:translateY(16px)}
+.machine.off rect.body{fill:var(--bad-soft)}
+.lamp{transition:opacity .4s}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Data science factory simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 1.4 Importance of big data and data science</div>
+      <h1>Data to Product Factory</h1>
+      <p class="role">Everest Fashion gets too many online returns because of wrong sizes. Nisha wants to build a size advisor from data. Run the factory, then break it.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bRun" type="button">Run the line</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card split">
+    <div style="min-width:0">
+      <div class="scroll">
+        <svg class="scene" id="scene" viewBox="0 0 960 430" role="img" aria-label="A factory with six stations along a conveyor belt turning raw data into a size advisor app, lit by three spotlights">
+          <rect width="960" height="430" fill="var(--panel2)"/>
+          <g id="lamps"></g>
+          <rect x="20" y="318" width="920" height="16" rx="8" fill="var(--steel)"/>
+          <path id="beltLines" d="M30 326h900" stroke="var(--panel)" stroke-width="3" stroke-dasharray="10 14" opacity=".6"/>
+          <g id="machines"></g>
+          <!-- hopper -->
+          <path d="M20 200h70l-15 60h-40z" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
+          <text x="55" y="190" text-anchor="middle" class="tl">RAW DATA</text>
+          <g id="hopperDots"></g>
+          <!-- product -->
+          <g id="product" opacity=".25" class="fade">
+            <rect x="880" y="200" width="56" height="104" rx="9" fill="var(--ink)"/><rect id="pScr" x="885" y="210" width="46" height="84" rx="4" fill="var(--panel)"/>
+            <text id="pT1" x="908" y="236" text-anchor="middle" class="tx" font-size="8">Size advisor</text>
+            <text id="pT2" x="908" y="262" text-anchor="middle" class="tx" font-size="15" font-weight="700">?</text>
+            <text id="pT3" x="908" y="282" text-anchor="middle" class="tm" font-size="7"></text>
+          </g>
+          <g id="packet"></g>
+          <text id="err" x="480" y="390" text-anchor="middle" class="tx" font-size="13" font-weight="600" fill="var(--bad)"></text>
+          <g id="dots"></g>
+        </svg>
+      </div>
+      <div class="caption" aria-live="polite"><span id="capAva" data-k="nisha"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Nisha · Everest Fashion data analyst</div><p id="capTxt">Tap Watch the story, or Run the line to watch raw data become a product.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+    </div>
+    <aside class="side pad" aria-label="Controls">
+      <div><h2 style="font-size:1rem">Stations</h2><p class="note">Switch one off and run the line again.</p></div>
+      <div class="st-sw" id="stSw"></div>
+      <div><h2 style="font-size:1rem">Spotlights: why big data matters now</h2></div>
+      <div style="display:grid;gap:6px" id="drSw"></div>
+      <div class="prod" id="prod" style="background:var(--panel2)"><b>The product</b><span class="note">Run the line to see what comes out.</span></div>
+    </aside>
+  </div>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Data science</cite>Deals with collecting, preparing, managing, analysing, interpreting and visualising large and complex datasets.</div>
+    <div class="spots">
+      <div><b>The whole life cycle</b><p>From acquisition and exploration to analysis and communication. Not just the analysis step.</p></div>
+      <div><b>Asset to product</b><p>It is about extracting value from data and translating it from asset to product.</p></div>
+    </div>
+    <div class="def"><cite>Why big data matters more and more</cite>New sources of data (open data, social media, internet of things) · exponential growth in computing power and storage, so entire datasets can be processed · new infrastructure for knowledge creation, such as crowdsourcing and open source software.</div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion is a made-up shop based on the study note's fashion retailer case. Nisha, the size advisor and every number are illustrative. Real data science projects loop back and repeat stages.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const ST=[
+ {k:"collect",n:"Collect",x:150,col:"var(--blue)",does:"Gathers orders, returns and the measurements customers typed in.",off:"Nothing to work with. Without collection there is no data at all.",stop:true},
+ {k:"prepare",n:"Prepare",x:270,col:"var(--violet)",does:"Removes duplicates, fills gaps, fixes '170cm' vs '1.7m'.",off:"Dirty data went straight through. The advisor tells everyone to buy XL.",stop:false,bad:"XL",badNote:"for everyone"},
+ {k:"manage",n:"Manage",x:390,col:"var(--amber)",does:"Stores it safely in one place so every step uses the same data.",off:"Nowhere to keep it. The data is lost between steps.",stop:true},
+ {k:"analyse",n:"Analyse",x:510,col:"var(--rose)",does:"Finds the pattern: returns rise when chest size is near the top of a size band.",off:"No analysis, so no pattern is found.",stop:true},
+ {k:"interpret",n:"Interpret",x:630,col:"var(--brand)",does:"Turns the pattern into a rule: near the top of a band? Size up.",off:"A pattern with no meaning. The screen shows 'correlation 0.82'. So what?",stop:false,bad:"0.82",badNote:"correlation?"},
+ {k:"visualise",n:"Visualise",x:750,col:"var(--ok)",does:"Shows it in a way people use: a friendly screen that says your size.",off:"The answer is stuck in a spreadsheet. Customers can't use it.",stop:false,bad:"B7:C9",badNote:"see sheet 3"}
+];
+const DR=[
+ {k:"src",n:"New data sources",x:200,txt:"social media, IoT, open data"},
+ {k:"cpu",n:"Computing power and storage",x:480,txt:"whole datasets, not samples"},
+ {k:"infra",n:"New infrastructure",x:760,txt:"crowdsourcing, open source"}
+];
+let on={},dr={},running=false;
+function init(){ST.forEach(s=>on[s.k]=true);DR.forEach(d=>dr[d.k]=true);}
+init();
+/* draw machines + lamps */
+function drawStatic(){
+  $("#machines").innerHTML=ST.map((s,i)=>`<g class="machine" id="m-${s.k}">
+    <rect class="body" x="${s.x-44}" y="196" width="88" height="70" rx="8" fill="var(--panel)" stroke="${s.col}" stroke-width="2.5"/>
+    <text x="${s.x}" y="186" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">${i+1}. ${s.n}</text>
+    <g class="arm"><rect x="${s.x-6}" y="266" width="12" height="20" fill="var(--steel)"/><rect x="${s.x-18}" y="284" width="36" height="6" rx="2" fill="var(--steel)"/></g>
+    <circle id="lt-${s.k}" cx="${s.x+30}" cy="208" r="5" fill="var(--ok)"/>
+    <text id="mt-${s.k}" x="${s.x}" y="236" text-anchor="middle" class="tm" font-size="9">ready</text></g>`).join("");
+  $("#lamps").innerHTML=DR.map(d=>`<g class="lamp" id="lp-${d.k}"><path d="M${d.x-14} 20h28l-6 16h-16z" fill="var(--ink)"/>
+    <path id="beam-${d.k}" d="M${d.x-10} 36L${d.x-120} 180h240L${d.x+10} 36z" fill="var(--amber)" opacity=".12"/>
+    <text x="${d.x}" y="58" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--amber)">${d.n.toUpperCase()}</text></g>`).join("");
+  hopper();
+}
+function hopper(){const n=dr.src?28:6;let g="";for(let i=0;i<n;i++){g+=`<circle cx="${35+Math.random()*40}" cy="${205+Math.random()*40}" r="3" fill="${["var(--blue)","var(--rose)","var(--amber)","var(--violet)"][i%4]}"/>`;}$("#hopperDots").innerHTML=g;}
+function sw(){
+  $("#stSw").innerHTML=ST.map((s,i)=>`<button type="button" class="sw" data-k="${s.k}" aria-pressed="${on[s.k]}"><span>${i+1}. ${s.n}</span><i>${on[s.k]?"ON":"OFF"}</i></button>`).join("");
+  $("#drSw").innerHTML=DR.map(d=>`<button type="button" class="sw" data-d="${d.k}" aria-pressed="${dr[d.k]}"><span><b>${d.n}</b><br><span class="note">${d.txt}</span></span><i>${dr[d.k]?"ON":"OFF"}</i></button>`).join("");
+  $$("#stSw .sw").forEach(b=>b.onclick=()=>{const k=b.dataset.k;on[k]=!on[k];$("#m-"+k).classList.toggle("off",!on[k]);$("#lt-"+k).setAttribute("fill",on[k]?"var(--ok)":"var(--bad)");$("#mt-"+k).textContent=on[k]?"ready":"switched off";sw();
+    const s=ST.find(x=>x.k===k);log("Station",on[k]?`${s.n} back on.`:`${s.n} switched off. Run the line to see what breaks.`,on[k]?"":"bad");cap(on[k]?"Station back on.":`${s.n} is off. Press Run the line.`);});
+  $$("#drSw .sw").forEach(b=>b.onclick=()=>{const k=b.dataset.d;dr[k]=!dr[k];$("#beam-"+k).setAttribute("opacity",dr[k]?.12:0);$("#lp-"+k).style.opacity=dr[k]?1:.35;if(k==="src")hopper();sw();
+    const msg={src:"Without new sources the hopper holds only old internal records. The advisor has little to learn from.",cpu:"Without cheap computing power and storage, the line can only handle a small sample, so it runs slowly and misses detail.",infra:"Without open source tools and crowdsourcing, analysis tools cost more and the line slows down."};
+    log("Spotlight",dr[k]?`${DR.find(d=>d.k===k).n} back on.`:msg[k],dr[k]?"":"bad");});
+}
+/* packet drawing per stage */
+function packetSVG(stage){
+  const r=()=>Math.random();
+  if(stage===0){let g="";for(let i=0;i<(dr.src?24:6);i++)g+=`<circle cx="${-24+r()*48}" cy="${-24+r()*44}" r="3" fill="${["var(--blue)","var(--rose)","var(--amber)","var(--violet)"][i%4]}"/>`;return g;}
+  if(stage===1)return `<path d="M-26 -22h52l-6 40h-40z" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2"/>`+Array.from({length:14},(_,i)=>`<circle cx="${-16+(i%5)*8}" cy="${-10+Math.floor(i/5)*8}" r="3" fill="${["var(--blue)","var(--rose)","var(--amber)"][i%3]}"/>`).join("");
+  if(stage===2)return Array.from({length:16},(_,i)=>`<rect x="${-22+(i%4)*12}" y="${-22+Math.floor(i/4)*12}" width="9" height="9" rx="2" fill="var(--violet)"/>`).join("");
+  if(stage===3)return `<rect x="-28" y="-24" width="56" height="44" rx="4" fill="var(--panel)" stroke="var(--amber)" stroke-width="2"/><path d="M-28 -12h56M-28 0h56M-28 10h56M-8 -24v44" stroke="var(--amber)" stroke-width="1.2"/>`;
+  if(stage===4)return `<rect x="-28" y="-24" width="56" height="44" rx="4" fill="var(--panel)" stroke="var(--rose)" stroke-width="2"/>`+Array.from({length:9},(_,i)=>`<circle cx="${-20+i*5}" cy="${12-i*3.6+(r()-.5)*6}" r="2.5" fill="var(--rose)"/>`).join("")+`<path d="M-22 14L22 -18" stroke="var(--ink)" stroke-width="1.5"/>`;
+  if(stage===5)return on.interpret?`<path d="M-34 -22h68v32h-40l-10 10v-10h-18z" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="2"/><text x="0" y="-8" text-anchor="middle" style="font:600 7px var(--f-body);fill:var(--ink)">Near top of band?</text><text x="0" y="2" text-anchor="middle" style="font:700 8px var(--f-body);fill:var(--ink)">Size up</text>`
+    :`<rect x="-30" y="-20" width="60" height="30" rx="4" fill="var(--panel)" stroke="var(--bad)" stroke-width="2"/><text x="0" y="0" text-anchor="middle" style="font:600 9px var(--f-mono);fill:var(--bad)">r = 0.82</text>`;
+  if(stage===6)return `<rect x="-28" y="-24" width="56" height="44" rx="4" fill="var(--panel)" stroke="var(--ok)" stroke-width="2"/><rect x="-20" y="-2" width="8" height="16" fill="var(--ok)"/><rect x="-6" y="-14" width="8" height="28" fill="var(--ok)"/><rect x="8" y="-6" width="8" height="20" fill="var(--ok)"/>`;
+  return "";
+}
+function place(x){$("#packet").setAttribute("transform",`translate(${x} 300)`);}
+async function slide(from,to){const dur=(to-from)*(dr.cpu?4:12)*(dr.infra?1:1.5);const t0=performance.now();
+  await new Promise(res=>{const st=now=>{const k=Math.min(1,(now-t0)/(REDUCE?30:dur));place(from+(to-from)*k);if(k<1)requestAnimationFrame(st);else res();};requestAnimationFrame(st);});}
+function product(state){
+  const p=$("#prod");$("#product").setAttribute("opacity",state?1:.25);
+  if(!state){$("#pT2").textContent="?";$("#pT3").textContent="";$("#pScr").setAttribute("fill","var(--panel)");p.style.background="var(--panel2)";p.innerHTML='<b>The product</b><span class="note">Run the line to see what comes out.</span>';return;}
+  const v={good:["M","your size","var(--ok-soft)"],XL:["XL","for everyone","var(--bad-soft)"],"0.82":["0.82","so what?","var(--amber-soft)"],"B7:C9":["B7:C9","sheet 3","var(--amber-soft)"]}[state];
+  $("#pT2").textContent=v[0];$("#pT3").textContent=v[1];$("#pScr").setAttribute("fill",v[2]);p.style.background=v[2];
+  p.innerHTML=state==="good"?`<b>Size advisor works</b><span>Bikash types 96 cm chest: "Choose M." Data turned from an asset into a product.${!dr.src||!dr.cpu?" It took longer and learned from less data because a spotlight is off.":""}</span>`
+    :`<b>Product is broken</b><span>${ST.find(s=>s.bad===state).off}</span>`;
+}
+async function run(){
+  if(running)return;running=true;$("#bRun").disabled=true;$("#err").textContent="";product(null);
+  place(55);$("#packet").innerHTML=packetSVG(0);await sleep(300);
+  let badState=null,stage=0;
+  for(const s of ST){
+    await slide(stage===0?55:ST[stage-1].x,s.x);
+    const m=$("#m-"+s.k);
+    if(!on[s.k]){
+      if(s.stop){$("#err").textContent=`Stopped at ${s.n}: ${s.off}`;log(s.n,s.off,"bad");cap(`The line stopped at ${s.n}. Every stage of the life cycle is needed.`);running=false;$("#bRun").disabled=false;return;}
+      badState=badState||s.bad;log(s.n,`Skipped. ${s.off}`,"bad");$("#packet").innerHTML=packetSVG(stage===4&&s.k==="interpret"?5:stage);stage++;continue;}
+    m.classList.add("busy");$("#mt-"+s.k).textContent="working…";cap(`${s.n}: ${s.does}`);
+    await sleep(dr.cpu?700:1600);m.classList.remove("busy");$("#mt-"+s.k).textContent="done";
+    stage++;$("#packet").innerHTML=packetSVG(stage);log(s.n,s.does);
+  }
+  await slide(ST[5].x,880);$("#packet").innerHTML="";product(badState||"good");
+  cap(badState?"Something came out, but it's wrong. A missing stage spoils the product.":"Raw data became a working product: that is the whole data science life cycle.");
+  if(!badState)log("Product","Size advisor live. Data science covers the whole journey, from collecting to visualising.","good");
+  running=false;$("#bRun").disabled=false;ST.forEach(s=>$("#mt-"+s.k).textContent=on[s.k]?"ready":"switched off");
+}
+$("#bRun").onclick=run;
+const endTour=tourSetup([
+ {t:"Everest Fashion gets lots of online returns because people pick the wrong size. Nisha wants a size advisor built from data.",a:()=>{}},
+ {t:"Raw data pours into the hopper: orders, returns, and measurements customers typed in. Messy and mixed up.",a:()=>{hopper();}},
+ {t:"Data science is the whole journey, not just the analysis. Watch all six stations turn it into a product.",a:()=>run()},
+ {t:"Why is this possible now? Three spotlights: new data sources, cheap computing power and storage, and new infrastructure like open source tools.",a:()=>{}},
+ {t:"Your turn. Switch a station or a spotlight off and run the line again.",a:()=>{}}
+],"Switch a station or spotlight off, then Run the line.");
+$("#bReset").onclick=()=>{if(running)return;init();ST.forEach(s=>{$("#m-"+s.k).classList.remove("off");$("#lt-"+s.k).setAttribute("fill","var(--ok)");$("#mt-"+s.k).textContent="ready";});
+  DR.forEach(d=>{$("#beam-"+d.k).setAttribute("opacity",.12);$("#lp-"+d.k).style.opacity=1;});hopper();sw();product(null);$("#packet").innerHTML="";$("#err").textContent="";feedReset();endTour();};
+shellSetup();drawStatic();sw();
+})();
+</script>
+
+</body>
+</html>

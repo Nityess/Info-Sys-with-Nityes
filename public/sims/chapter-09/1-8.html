@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>AI Customer Service Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: message composer, four phones side by side (automation + three AI types), intelligence ladder, two small "AI at work" demos */
+.compose{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end;padding:14px 16px;border-bottom:1px solid var(--line)}
+.compose .grp{display:grid;gap:4px}
+.compose .lbl{font:600 .68rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.phones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px}
+@media (max-width:1000px){.phones{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.phones{grid-template-columns:minmax(0,1fr)}}
+.phone{background:var(--ink);border-radius:22px;padding:10px;display:grid;gap:6px;min-width:0}
+.phone .top{color:var(--panel);display:grid;gap:4px;padding:2px 4px}
+.phone .top b{font-family:var(--f-disp);font-size:.95em}
+.iq{display:flex;gap:4px;flex-wrap:wrap}
+.iq span{font:600 .62rem var(--f-mono);padding:1px 6px;border-radius:999px;background:#ffffff1f;color:#ffffff80}
+.iq span.on{background:var(--brand);color:#fff}
+.screen{background:var(--panel);border-radius:14px;padding:10px;min-height:280px;display:flex;flex-direction:column;gap:8px}
+.bub{max-width:88%;padding:8px 10px;border-radius:12px;font-size:.84em;line-height:1.4;animation:pop .3s ease}
+.bub.me{align-self:flex-end;background:var(--rose-soft);border-bottom-right-radius:4px}
+.bub.bot{align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.typing{align-self:flex-start;display:flex;gap:4px;padding:10px 12px;background:var(--panel2);border-radius:12px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{50%{opacity:.2}}
+.phone .note2{color:#ffffffaa;font-size:.76em;padding:0 4px}
+.mini{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:760px){.mini{grid-template-columns:minmax(0,1fr)}}
+.mini svg{width:100%;height:auto;background:var(--panel2);border-radius:10px}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Intelligent systems simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 1.8 Intelligent systems and automation</div>
+      <h1>AI Customer Service Lab</h1>
+      <p class="role">Everest Fashion is choosing a chat assistant. Bikash sends the same message to four of them at once. Compare who just follows a script and who actually understands him.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card">
+    <div class="compose">
+      <div class="grp"><span class="lbl">Bikash's message</span><div class="seg" role="group" aria-label="Message"><button type="button" data-m="torn" aria-pressed="true">Torn jacket, needs it Friday</button><button type="button" data-m="addr" aria-pressed="false">Change delivery address</button></div></div>
+      <div class="grp"><span class="lbl">His mood</span><div class="seg" role="group" aria-label="Mood"><button type="button" data-t="calm" aria-pressed="true">Calm</button><button type="button" data-t="upset" aria-pressed="false">Upset</button></div></div>
+      <button class="btn pri" id="bSend" type="button">Send to all four</button>
+    </div>
+    <div class="phones" id="phones"></div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="anita"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Anita · CEO, Everest Fashion</div><p id="capTxt">Tap Watch the story, or pick a message and a mood, then send it.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+
+  <div class="two">
+    <section class="card pad" aria-label="The intelligence ladder">
+      <h2 style="font-size:1.05rem">The intelligence ladder</h2>
+      <svg viewBox="0 0 420 220" role="img" aria-label="Three steps: analytical uses cognitive intelligence, human-inspired adds emotional, humanised adds social" style="width:100%;height:auto">
+        <rect x="10" y="150" width="130" height="60" rx="8" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2"/><text x="75" y="176" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">Analytical</text><text x="75" y="194" text-anchor="middle" class="tm" font-size="10">cognitive</text>
+        <rect x="145" y="95" width="130" height="115" rx="8" fill="var(--violet-soft)" stroke="var(--violet)" stroke-width="2"/><text x="210" y="121" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">Human-inspired</text><text x="210" y="139" text-anchor="middle" class="tm" font-size="10">cognitive</text><text x="210" y="154" text-anchor="middle" class="tm" font-size="10">+ emotional</text>
+        <rect x="280" y="40" width="130" height="170" rx="8" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="2"/><text x="345" y="66" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">Humanised</text><text x="345" y="84" text-anchor="middle" class="tm" font-size="10">cognitive</text><text x="345" y="99" text-anchor="middle" class="tm" font-size="10">+ emotional</text><text x="345" y="114" text-anchor="middle" class="tm" font-size="10">+ social</text><text x="345" y="140" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--brand)">highest form</text><text x="345" y="154" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--brand)">self-aware</text>
+      </svg>
+      <p class="note">The rule-based bot is not on the ladder at all. It is automation: it performs a task decided in advance, with no intelligence.</p>
+    </section>
+    <section class="card pad" aria-label="AI at work elsewhere">
+      <h2 style="font-size:1.05rem">AI at work elsewhere</h2>
+      <div class="mini">
+        <div style="display:grid;gap:6px"><b style="font-size:.9em">Bank: spotting fraud</b><svg id="fraud" viewBox="0 0 240 130" aria-label="Card transactions flowing past a fraud detector"></svg><button class="btn" id="bFraud" type="button">Run today's card payments</button></div>
+        <div style="display:grid;gap:6px"><b style="font-size:.9em">Delivery: best route</b><svg id="route" viewBox="0 0 240 130" aria-label="Delivery van route between four stops"></svg><button class="btn" id="bRoute" type="button">Optimise the route</button></div>
+      </div>
+      <p class="note" id="miniNote">Banks use AI to detect fraudulent transactions; logistics firms use it to optimise routes.</p>
+    </section>
+  </div>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Intelligent systems</cite>Computer-based systems that represent, reason about and interpret data, learning about its structure, analysing it to extract patterns and meaning, deriving new information, and identifying strategies and behaviours to act on the results.</div>
+    <div class="def"><cite>Artificial intelligence</cite>The use of computers to do tasks which are thought to require human intelligence, such as learning, knowing, sensing, reasoning, creating things, problem-solving, and generating and understanding language.</div>
+    <div class="def"><cite>Automation</cite>The creation of technology and its application to control and monitor the production and delivery of goods and services, performing tasks previously decided on and performed by humans.</div>
+    <div class="tw"><table style="min-width:440px"><thead><tr><th>Type of AI</th><th>Intelligence used</th><th>Key characteristic</th></tr></thead><tbody>
+      <tr><td><b>Analytical</b></td><td>Cognitive</td><td>Represents the world; learns from past experience to inform future decisions.</td></tr>
+      <tr><td><b>Human-inspired</b></td><td>Cognitive + emotional</td><td>Understands human emotions as well as cognitive elements.</td></tr>
+      <tr><td><b>Humanised</b></td><td>Cognitive + emotional + social</td><td>The highest form. Self-conscious and self-aware when interacting with humans.</td></tr>
+    </tbody></table></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion is a made-up shop based on the study note's fashion retailer case. All replies are scripted to illustrate each type; real systems vary.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const BOTS=[
+ {k:"rule",n:"Rule-based bot",iq:[],note:"Automation: same pre-written reply every time."},
+ {k:"ana",n:"Analytical AI",iq:["cognitive"],note:"Reasons from data and past cases."},
+ {k:"hum",n:"Human-inspired AI",iq:["cognitive","emotional"],note:"Also reads how he feels."},
+ {k:"hmz",n:"Humanised AI",iq:["cognitive","emotional","social"],note:"Socially aware, and aware of itself."}
+];
+const MSG={torn:{calm:"Hi, my jacket arrived torn. I need it for Friday.",upset:"Seriously?! My jacket arrived TORN and I need it Friday!!"},
+           addr:{calm:"Can I change my delivery address?",upset:"I need to change my delivery address NOW, it's going to the wrong place!"}};
+const R={
+ torn:{rule:{any:"Thank you for contacting us. Your ticket number is 4471. We reply within 3 working days."},
+  ana:{any:"Order 1042 was delivered Tuesday. Torn items are usually fixed fastest with a replacement, so one is booked to arrive Thursday."},
+  hum:{calm:"Sorry about that, Bikash. A replacement will reach you Thursday, in time for Friday.",upset:"I can tell this is really frustrating, with Friday so close. I'm sorry. A replacement arrives Thursday and I've upgraded it to express, free."},
+  hmz:{calm:"That's annoying before a Friday plan. I'm the shop's AI assistant: a new one arrives Thursday. If you'd rather not wait, the Pokhara store can hold one for you today.",upset:"That's a rotten surprise right before Friday, and I'd be upset too. I'm the shop's AI assistant, so I'll be straight: express replacement on Thursday, and as a backup the Pokhara store will hold one for you today. Is it for an event? I can check a matching scarf."}},
+ addr:{rule:{any:"To change your address go to My Orders, then Edit delivery. Done!"},
+  ana:{any:"Your parcel leaves the warehouse at 4 pm. Changing the address now will keep the same delivery day. Tap here to update it."},
+  hum:{calm:"Of course. Tap here to update it; it will still arrive on time.",upset:"No problem, let's fix it right now so it doesn't go astray. Tap here; it will still arrive on time."},
+  hmz:{calm:"Sure. Moving house or sending a gift? Tap here to update it, and it still arrives on time.",upset:"Got it, I'll make this quick so it doesn't end up at the wrong door. I've opened the address form for you; it still arrives on time."}}
+};
+let msg="torn",mood="calm",busy=false;
+function renderPhones(){
+  $("#phones").innerHTML=BOTS.map(b=>`<div class="phone"><div class="top"><b>${b.n}</b><div class="iq">${["cognitive","emotional","social"].map(q=>`<span class="${b.iq.includes(q)?"on":""}">${q}</span>`).join("")}</div></div><div class="screen" id="scr-${b.k}"><p class="note">Waiting for Bikash...</p></div><div class="note2">${b.note}</div></div>`).join("");
+}
+function reply(b){const r=R[msg][b.k];return r.any||r[mood];}
+async function send(){
+  if(busy)return;busy=true;$("#bSend").disabled=true;
+  BOTS.forEach(b=>{$("#scr-"+b.k).innerHTML=`<div class="bub me">${MSG[msg][mood]}</div>`;});
+  await sleep(500);
+  BOTS.forEach(b=>$("#scr-"+b.k).insertAdjacentHTML("beforeend",'<div class="typing" aria-label="typing"><i></i><i></i><i></i></div>'));
+  const delays={rule:400,ana:1100,hum:1500,hmz:1900};
+  await Promise.all(BOTS.map(async b=>{await sleep(delays[b.k]);const s=$("#scr-"+b.k);s.querySelector(".typing").remove();s.insertAdjacentHTML("beforeend",`<div class="bub bot">${reply(b)}</div>`);}));
+  const verdict=msg==="addr"?"A simple question: even the rule-based bot copes. Basic queries are exactly what automated expert systems filter out first."
+    :mood==="upset"?"Same complaint, upset tone. The rule-based and analytical replies did not change at all; the human-inspired and humanised ones did, because they read emotion.":"The rule-based bot sent a fixed template. The three AIs reasoned about the actual problem.";
+  cap(verdict);log(msg==="addr"?"Basic query":"Complaint",verdict,msg==="torn"&&mood==="upset"?"good":"");
+  busy=false;$("#bSend").disabled=false;
+}
+$$("[data-m]").forEach(b=>b.onclick=()=>{msg=b.dataset.m;$$("[data-m]").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+$$("[data-t]").forEach(b=>b.onclick=()=>{mood=b.dataset.t;$$("[data-t]").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+$("#bSend").onclick=send;
+/* mini demos */
+function drawRoute(opt){const S=[[30,100],[200,30],[60,30],[200,105]],order=opt?[0,2,1,3]:[0,1,2,3];
+  const d=order.map((i,k)=>(k?"L":"M")+S[i][0]+" "+S[i][1]).join("");let len=0;for(let k=1;k<order.length;k++){const a=S[order[k-1]],b=S[order[k]];len+=Math.hypot(a[0]-b[0],a[1]-b[1]);}
+  $("#route").innerHTML=`<path d="${d}" fill="none" stroke="${opt?"var(--ok)":"var(--bad)"}" stroke-width="3" stroke-dasharray="6 4" id="rp"/>`+S.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="9" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/><text x="${p[0]}" y="${p[1]+4}" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--ink)">${i===0?"W":i}</text>`).join("")+`<text x="120" y="124" text-anchor="middle" style="font:600 11px var(--f-mono);fill:${opt?"var(--ok)":"var(--bad)"}">${(len/20).toFixed(1)} km</text>`;
+  return len/20;}
+$("#bRoute").onclick=()=>{const a=drawRoute(false);setTimeout(()=>{const b=drawRoute(true);$("#miniNote").textContent=`Route optimisation: the AI reorders the stops and cuts the trip from ${a.toFixed(1)} km to ${b.toFixed(1)} km (illustrative).`;log("AI at work","Logistics firms use AI to optimise delivery routes.");},REDUCE?0:900);};
+$("#bFraud").onclick=async()=>{const s=$("#fraud");s.innerHTML='<rect x="150" y="20" width="70" height="90" rx="8" fill="var(--panel)" stroke="var(--brand)" stroke-width="2"/><text x="185" y="70" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--brand)">AI check</text>';
+  const tx=[["Rs 1,200","Pokhara"],["Rs 650","Pokhara"],["Rs 3,400","Kathmandu"],["Rs 2,10,000","abroad, 3am"],["Rs 900","Pokhara"]];
+  for(const [i,t] of tx.entries()){const bad=i===3;const g=document.createElementNS(NS,"g");g.innerHTML=`<rect x="0" y="-11" width="110" height="22" rx="5" fill="${bad?"var(--bad-soft)":"var(--blue-soft)"}" stroke="${bad?"var(--bad)":"var(--blue)"}"/><text x="6" y="4" style="font:600 9px var(--f-mono);fill:var(--ink)">${t[0]} · ${t[1]}</text>`;s.appendChild(g);
+    const a=g.animate([{transform:"translate(-110px,65px)"},{transform:"translate(30px,65px)"}],{duration:REDUCE?20:700,fill:"forwards"});await a.finished;
+    if(bad){s.insertAdjacentHTML("beforeend",'<text x="185" y="40" text-anchor="middle" style="font:700 10px var(--f-mono);fill:var(--bad)">FLAGGED</text>');await sleep(700);}else await sleep(150);g.remove();}
+  $("#miniNote").textContent="Fraud detection: the AI learned this customer's normal pattern, so one huge payment abroad at 3am stands out and is blocked (illustrative).";log("AI at work","Banks use AI to detect fraudulent transactions.");};
+const endTour=tourSetup([
+ {t:"Everest Fashion wants a chat assistant. Bikash's jacket arrived torn and he needs it by Friday.",a:()=>{}},
+ {t:"He sends the same calm message to four assistants. Watch how each one replies.",a:async()=>{msg="torn";mood="calm";$$("[data-m]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.m==="torn"));$$("[data-t]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.t==="calm"));await send();}},
+ {t:"Now he's upset. The rule-based and analytical replies stay the same; the emotionally aware ones change.",a:async()=>{mood="upset";$$("[data-t]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.t==="upset"));await send();}},
+ {t:"Your turn. Try a simple question too: automation handles basic queries well. Then try the two AI demos below.",a:()=>{}}
+],"Pick a message and a mood, then send it to all four.");
+$("#bReset").onclick=()=>{if(busy)return;renderPhones();$("#fraud").innerHTML="";drawRoute(false);feedReset();endTour();};
+shellSetup();renderPhones();drawRoute(false);
+})();
+</script>
+
+</body>
+</html>

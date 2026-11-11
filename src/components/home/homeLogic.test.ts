@@ -58,11 +58,11 @@ describe('heroAction', () => {
 
 describe('chapterCards', () => {
   const cards = chapterCards(chapters, new Set())
-  it('lists chapters 7 to 10 in order: lessons and boards open, Chapter 9 coming soon', () => {
+  it('lists chapters 7 to 10 in order, all open', () => {
     expect(cards.map((c) => [c.number, c.status])).toEqual([
       [7, 'open'],
       [8, 'open'],
-      [9, 'soon'],
+      [9, 'open'],
       [10, 'open'],
     ])
   })
@@ -70,6 +70,12 @@ describe('chapterCards', () => {
     expect(cards[0]).toMatchObject({ built: 8, total: 18 })
     expect(cards[1].unitId).toBeUndefined()
     expect(cards[1]).toMatchObject({ href: '#/chapter8/s1', row: ['Topic boards', '3 sections'] })
+  })
+  it('opens Chapter 9 as the simulator hub, marked New, and counts explored simulators', () => {
+    expect(cards[2]).toMatchObject({ number: 9, href: '#/chapter9', row: ['Simulators', '17 live'], badge: 'New', started: false })
+    expect(cards[2].unitId).toBeUndefined()
+    const after = chapterCards(chapters, new Set(), new Set(['ch09-1-1', 'ch09-2-5', 'ch07-t1-2']))[2]
+    expect(after).toMatchObject({ row: ['Explored', '2 of 17'], started: true })
   })
   it('opens Chapter 10 as its own page', () => {
     expect(cards[3]).toMatchObject({ number: 10, href: '#/chapter10', row: ['Topics', '8 in 2 sections'] })

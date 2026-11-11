@@ -1,7 +1,7 @@
 // Facts shown on the landing page. Every number comes from docs/syllabus.md (exam context
 // and LO mark weightings), the Chapter_NN PDF names, or the practice papers noted below.
 
-import { chapter10Hash, chapter8Hash } from '../../state/route'
+import { chapter10Hash, chapter8Hash, chapter9Hash } from '../../state/route'
 
 /** Site name, as in the landing page design. */
 export const BRAND = 'Info System with ca.nityes'
@@ -31,12 +31,10 @@ export function splitPercent(split: { objective: number; subjective: number } = 
   return { objective, subjective: 100 - objective }
 }
 
-/** Chapters whose lessons are not built yet. They show as coming soon, with no button. */
-export const COMING_SOON = [{ number: 9, title: 'Financial technology', lo: 'LO6', weight: 15 }] as const
-
-/** Chapters that open as topic boards (Chapter 8) or as one finished page (Chapter 10), with the fact line on their card. */
+/** Chapters that open as topic boards (Chapter 8), simulators (Chapter 9) or one finished page (Chapter 10), with the fact line on their card. */
 export const BOARD_CHAPTERS = [
   { number: 8, title: 'Types of management information systems', lo: 'LO5', weight: 15, href: chapter8Hash('s1'), row: ['Topic boards', '3 sections'] },
+  { number: 9, title: 'Financial technology', lo: 'LO6', weight: 15, href: chapter9Hash(), row: ['Simulators', '17 live'], badge: 'New' },
   { number: 10, title: 'Data security', lo: 'LO7', weight: 10, href: chapter10Hash(), row: ['Topics', '8 in 2 sections'] },
 ] as const
 

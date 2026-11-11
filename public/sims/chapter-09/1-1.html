@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Winter Stock Decision Centre</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a control-room stage (live scene + decision panel), the four-V workbench under it, key points last */
+:root{
+  --bg:#eef2f5; --panel:#ffffff; --panel2:#f6f8fa; --ink:#14202b; --muted:#566373; --line:#d5dce3;
+  --brand:#0d5f63; --brand-soft:#d9eeee;
+  --pos:#b8710a; --loy:#6a47cc; --web:#1d68c9; --rev:#c0365f; --pho:#2b8248; --bad:#d0262b; --bad-soft:#fde7e7;
+  --ok:#21824a; --warn:#b26a00;
+  --wall:#e3e8ee; --floor:#d2d9e0; --wood:#c9a477; --skin:#c98f63; --skin2:#a8724c;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif; --f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --fs:15px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e141a; --panel:#16202a; --panel2:#1b2733; --ink:#e4ebf1; --muted:#97a6b5; --line:#2a3846;
+  --brand:#5cc3c1; --brand-soft:#173a3d;
+  --pos:#f0a43a; --loy:#a58bff; --web:#5ea5ff; --rev:#ff6f98; --pho:#5ccf86; --bad:#ff5a5f; --bad-soft:#3a1c1f;
+  --ok:#4fd087; --warn:#f1a43a;
+  --wall:#1d2935; --floor:#24323f; --wood:#7d6244; --skin:#c98f63; --skin2:#a8724c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a; --panel:#16202a; --panel2:#1b2733; --ink:#e4ebf1; --muted:#97a6b5; --line:#2a3846;
+  --brand:#5cc3c1; --brand-soft:#173a3d;
+  --pos:#f0a43a; --loy:#a58bff; --web:#5ea5ff; --rev:#ff6f98; --pho:#5ccf86; --bad:#ff5a5f; --bad-soft:#3a1c1f;
+  --ok:#4fd087; --warn:#f1a43a;
+  --wall:#1d2935; --floor:#24323f; --wood:#7d6244; --skin:#c98f63; --skin2:#a8724c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:18px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;text-wrap:balance;letter-spacing:-.01em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+
+/* header */
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2.1rem);line-height:1.15;margin-top:4px}
+.role{margin-top:6px;color:var(--muted);font-size:.95em;max-width:60ch}
+.role b{color:var(--ink);font-weight:600}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;font-size:.88em;font-weight:500;cursor:pointer;min-height:36px}
+.btn:hover{border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand);color:var(--ink)}
+.btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:7px 10px;font-size:.82em;cursor:pointer;min-height:34px;font-family:var(--f-mono)}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+
+/* stage */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+@media (max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
+.scenebox{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.scroll{overflow-x:auto}
+.swipe{display:none;font:.75rem var(--f-mono);color:var(--muted);padding:6px 14px 0}
+@media (max-width:660px){.swipe{display:block}}
+#scene{display:block;width:100%;min-width:620px;height:auto;background:var(--panel2)}
+.caption{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-top:1px solid var(--line);min-height:76px}
+.ava{width:42px;height:42px;flex:none;border-radius:50%;background:var(--brand-soft);overflow:hidden}
+.ava svg{width:100%;height:100%}
+.captext{flex:1;min-width:0}
+.captext .who{font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.captext p{margin:2px 0 0;font-size:.98em}
+.tour{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+
+/* decision panel */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:14px;min-width:0}
+.panel h2{font-size:1.02rem}
+.sub{font-size:.8em;color:var(--muted)}
+.mix{display:grid;gap:9px}
+.row{display:grid;grid-template-columns:72px minmax(0,1fr) 78px;gap:8px;align-items:center;font-size:.9em}
+.row .nm{font-weight:500}
+.bar{position:relative;height:16px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--brand);border-radius:3px;transition:width .5s ease}
+.bar .pin,.bar .truth{position:absolute;top:-4px;bottom:-4px;width:0;border-left:2px dashed var(--muted)}
+.bar .truth{border-left:3px solid var(--ok)}
+.row .v{font:600 .85em var(--f-mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row .v small{display:block;font-weight:400;color:var(--muted);font-size:.85em}
+.conf{display:grid;gap:6px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.conf .top{display:flex;justify-content:space-between;font-size:.88em}
+.conf .top b{font-family:var(--f-mono)}
+.lim{font-size:.82em;color:var(--muted)}
+.lim b{color:var(--warn)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.72em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 .95em var(--f-mono);font-variant-numeric:tabular-nums}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:10px;padding:10px}
+.say p{margin:0;font-size:.9em}
+.say .ava{width:38px;height:38px;background:var(--panel)}
+.prow{display:flex;gap:6px;flex-wrap:wrap}
+
+/* workbench */
+.bench{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:14px}
+@media (max-width:980px){.bench{grid-template-columns:minmax(0,1fr)}}
+.vbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}
+.tab{border:0;background:none;padding:12px 6px;cursor:pointer;display:grid;gap:2px;justify-items:center;border-bottom:3px solid transparent}
+.tab b{font-family:var(--f-disp);font-size:1rem}
+.tab span{font-size:.72em;color:var(--muted)}
+.tab[aria-selected="true"]{border-bottom-color:var(--brand);background:var(--panel2)}
+.vp{padding:16px;display:grid;gap:14px}
+.vp[hidden]{display:none}
+.def{border-left:3px solid var(--brand);padding:2px 0 2px 12px;font-size:.92em}
+.def b{font-family:var(--f-disp)}
+.notice{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.88em}
+.notice b{display:block;font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.slider{display:grid;gap:6px}
+.slider label{display:flex;justify-content:space-between;font-size:.9em;font-weight:500}
+.slider output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand)}
+.ticks{display:flex;justify-content:space-between;font:.72rem var(--f-mono);color:var(--muted)}
+.srcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.src{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:var(--panel);cursor:pointer}
+.src .sw{grid-row:span 2;width:30px;height:30px;border-radius:7px;display:grid;place-items:center;border:2px solid currentColor;opacity:.45}
+.src .sw svg{width:18px;height:18px}
+.src b{font-size:.88em}
+.src span{font-size:.74em;color:var(--muted)}
+.src[aria-pressed="true"]{border-color:currentColor;background:var(--panel2)}
+.src[aria-pressed="true"] .sw{opacity:1}
+.src b,.src span{color:var(--ink)}
+.src span{color:var(--muted)}
+.tag{display:inline-block;font:600 .64rem var(--f-mono);padding:1px 5px;border-radius:4px;border:1px solid var(--line);margin-left:4px;vertical-align:1px}
+.feed{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:10px;align-content:start;min-width:0}
+.feed h2{font-size:1rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:inl .35s ease}
+.feed li .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);color:var(--ink);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}
+@keyframes inl{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+.feed .empty{font-size:.86em;color:var(--muted)}
+
+/* key points */
+.keys{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px}
+.keys h2{font-size:1.15rem}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.defs blockquote{margin:0;padding:10px 14px;border-left:3px solid var(--brand);background:var(--panel2);border-radius:0 8px 8px 0;font-size:.92em}
+.defs cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.vs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.vs div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.vs b{font-family:var(--f-disp);display:block}
+.vs p{margin:4px 0 0;font-size:.88em}
+.vs em{display:block;margin-top:6px;font-style:normal;font-size:.8em;color:var(--muted)}
+details.about{font-size:.88em;color:var(--muted)}
+details.about summary{cursor:pointer;color:var(--ink);font-weight:500}
+details.about ul{margin:6px 0 0;padding-left:18px}
+
+/* scene svg */
+.t{fill:var(--ink);font-family:var(--f-body)}
+.tm{fill:var(--muted);font-family:var(--f-mono)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted);text-transform:uppercase}
+.zone{transition:opacity .35s}
+#scene[data-focus] .zone{opacity:.18}
+#scene[data-focus="store"] .zone[data-z~="store"],#scene[data-focus="pos"] .zone[data-z~="pos"],#scene[data-focus="loy"] .zone[data-z~="loy"],
+#scene[data-focus="web"] .zone[data-z~="web"],#scene[data-focus="rev"] .zone[data-z~="rev"],#scene[data-focus="eng"] .zone[data-z~="eng"],
+#scene[data-focus="out"] .zone[data-z~="out"]{opacity:1}
+.pipe{fill:none;stroke-width:6;stroke-linecap:round;opacity:.22}
+.pipe.off{opacity:.06;stroke-dasharray:2 8}
+.shopper{transition:transform .55s ease,opacity .4s}
+.ring{transform-box:fill-box;transform-origin:center;animation:spin var(--spin,6s) linear infinite;animation-play-state:var(--play,paused)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flash{animation:fl .5s ease}
+@keyframes fl{0%{opacity:1}100%{opacity:0}}
+.cursor{transition:transform .45s ease}
+.node{transition:fill .3s}
+@media (prefers-reduced-motion:reduce){.shopper,.cursor,.bar i,.meter i{transition:none}.ring{animation:none}.feed li{animation:none}}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Big data simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 1.1 Big data and the four Vs</div>
+      <h1>Winter Stock Decision Centre</h1>
+      <p class="role"><b>Your role:</b> adviser to Anita Shrestha, CEO of Everest Fashion Ltd. Winter stock must be ordered in three days. Watch where the data comes from, then change it and see how the recommendation responds.</p>
+    </div>
+    <div class="tools" role="toolbar" aria-label="Simulation controls">
+      <button class="btn pri" id="bRun" type="button"><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg><span>Start</span></button>
+      <button class="btn" id="bStory" type="button"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Story</button>
+      <button class="btn" id="bReset" type="button"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Reset</button>
+      <div class="seg" role="group" aria-label="Speed"><button type="button" data-sp="0.5" aria-pressed="false">0.5x</button><button type="button" data-sp="1" aria-pressed="true">1x</button><button type="button" data-sp="2" aria-pressed="false">2x</button></div>
+      <button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button>
+      <button class="btn" id="bFull" type="button"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Full screen</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="scenebox">
+      <div class="scroll">
+      <svg id="scene" viewBox="0 0 800 500" role="img" aria-label="Everest Fashion Ltd store, website, forum and social photos sending data packets along pipes into an analytics engine">
+        <defs>
+          <symbol id="person" viewBox="0 0 24 46"><circle cx="12" cy="7" r="6" fill="var(--skin)"/><path d="M3 44V22a9 9 0 0 1 18 0v22z"/></symbol>
+          <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="var(--bad-soft)"/><line x1="0" y1="0" x2="0" y2="5" stroke="var(--bad)" stroke-width="2"/></pattern>
+        </defs>
+
+        <!-- pipes -->
+        <g id="pipes"></g>
+
+        <!-- WEBSITE -->
+        <g class="zone" data-z="web">
+          <rect x="16" y="22" width="190" height="128" rx="8" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
+          <rect x="16" y="22" width="190" height="20" rx="8" fill="var(--wall)"/>
+          <circle cx="28" cy="32" r="3" fill="var(--rev)"/><circle cx="38" cy="32" r="3" fill="var(--pos)"/><circle cx="48" cy="32" r="3" fill="var(--pho)"/>
+          <rect x="60" y="26" width="138" height="12" rx="6" fill="var(--panel)"/>
+          <text x="66" y="35.5" class="tm" font-size="8">everestfashion.example / winter</text>
+          <g id="tiles"></g>
+          <path d="M6 150h210l-8 12H14z" fill="var(--line)"/>
+          <g id="cursor" class="cursor"><path d="M0 0l0 13 4-3 3 6 3-1.5-3-6 5 0z" fill="var(--ink)" stroke="var(--panel)" stroke-width="1"/></g>
+          <text x="16" y="14" class="tl">Website · click log</text>
+        </g>
+
+        <!-- FORUM -->
+        <g class="zone" data-z="rev">
+          <rect x="226" y="22" width="170" height="140" rx="8" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
+          <text x="238" y="40" class="t" font-size="11" font-weight="600">Customer forum</text>
+          <g id="reviews"></g>
+          <text x="226" y="14" class="tl">Reviews · text</text>
+        </g>
+
+        <!-- SOCIAL PHOTO PHONE -->
+        <g class="zone" data-z="rev">
+          <rect x="320" y="206" width="66" height="112" rx="10" fill="var(--ink)"/>
+          <rect x="325" y="216" width="56" height="92" rx="4" fill="var(--panel)"/>
+          <g id="photo"><rect x="330" y="224" width="46" height="46" rx="3" fill="var(--pho)" opacity=".25"/><path d="M332 266l12-16 9 10 7-7 14 13z" fill="var(--pho)"/><circle cx="366" cy="234" r="4" fill="var(--pos)"/></g>
+          <path id="heart" d="M353 293c-6-4-9-7-9-10a4 4 0 0 1 9-1 4 4 0 0 1 9 1c0 3-3 6-9 10z" fill="var(--rev)" opacity=".25"/>
+          <text x="310" y="336" class="tl">Photos · image</text>
+        </g>
+
+        <!-- STORE -->
+        <g class="zone" data-z="store pos loy">
+          <rect x="16" y="214" width="284" height="236" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+          <rect x="16" y="430" width="284" height="20" fill="var(--floor)"/>
+          <rect x="16" y="204" width="284" height="22" fill="var(--brand)"/>
+          <text x="158" y="219.5" text-anchor="middle" font-family="var(--f-disp)" font-size="12" font-weight="700" fill="var(--panel)" letter-spacing="3">EVEREST FASHION</text>
+          <!-- racks -->
+          <line x1="36" y1="252" x2="160" y2="252" stroke="var(--muted)" stroke-width="3"/>
+          <g id="rack"></g>
+          <rect x="36" y="330" width="56" height="50" fill="var(--wood)" rx="3"/>
+          <rect x="44" y="318" width="40" height="12" rx="3" fill="var(--loy)" opacity=".6"/>
+          <rect x="104" y="330" width="56" height="50" fill="var(--wood)" rx="3"/>
+          <path d="M110 330l8-16h20l8 16z" fill="var(--pos)" opacity=".6"/>
+          <!-- door -->
+          <rect x="16" y="360" width="10" height="70" fill="var(--brand)" opacity=".5"/>
+          <!-- counter -->
+          <rect x="196" y="372" width="96" height="58" fill="var(--wood)" rx="3"/>
+          <g class="zone" data-z="pos">
+            <rect x="214" y="344" width="40" height="28" rx="3" fill="var(--ink)"/>
+            <rect id="posScr" x="217" y="347" width="34" height="18" rx="2" fill="var(--pos)" opacity=".35"/>
+            <text id="posTxt" x="234" y="359" text-anchor="middle" font-family="var(--f-mono)" font-size="7" fill="var(--ink)">READY</text>
+            <!-- cashier -->
+            <use href="#person" x="240" y="322" width="22" height="42" fill="var(--brand)"/>
+          </g>
+          <g class="zone" data-z="loy">
+            <rect x="266" y="358" width="20" height="14" rx="2" fill="var(--ink)"/>
+            <rect id="card" x="268" y="346" width="16" height="10" rx="2" fill="var(--loy)" opacity="0"/>
+          </g>
+          <g id="queue"></g>
+          <text x="16" y="470" class="tl">Store · till and loyalty card</text>
+        </g>
+
+        <!-- ENGINE -->
+        <g class="zone" data-z="eng out">
+          <g id="tray" hidden>
+            <rect x="476" y="190" width="40" height="150" rx="6" fill="var(--panel)" stroke="var(--warn)" stroke-width="2" stroke-dasharray="5 4"/>
+            <text x="496" y="180" text-anchor="middle" class="tm" font-size="9">waiting</text>
+            <rect id="trayFill" x="480" y="336" width="32" height="0" rx="3" fill="var(--warn)" opacity=".35"/>
+            <text id="trayN" x="496" y="270" text-anchor="middle" font-family="var(--f-mono)" font-size="11" font-weight="600" fill="var(--ink)">0</text>
+          </g>
+          <rect x="520" y="166" width="184" height="196" rx="14" fill="var(--panel)" stroke="var(--brand)" stroke-width="2.5"/>
+          <text x="612" y="188" text-anchor="middle" font-family="var(--f-disp)" font-size="12" font-weight="600" fill="var(--ink)">Analytics engine</text>
+          <g id="gate" opacity="0"><rect x="514" y="196" width="12" height="130" rx="3" fill="var(--ok)" opacity=".25"/><path d="M516 204h8M516 214h8M516 224h8M516 234h8M516 244h8M516 254h8M516 264h8M516 274h8M516 284h8M516 294h8M516 304h8M516 314h8" stroke="var(--ok)" stroke-width="1.5"/></g>
+          <circle class="ring" cx="612" cy="254" r="36" fill="none" stroke="var(--brand)" stroke-width="5" stroke-dasharray="14 9"/>
+          <circle class="ring" cx="612" cy="254" r="24" fill="none" stroke="var(--brand)" stroke-width="3" stroke-dasharray="6 6" style="animation-direction:reverse"/>
+          <text id="engPct" x="612" y="258" text-anchor="middle" font-family="var(--f-mono)" font-size="11" font-weight="600" fill="var(--ink)">0%</text>
+          <text id="parse" x="612" y="308" text-anchor="middle" class="tm" font-size="9">idle</text>
+          <g id="nodes"></g>
+          <text x="612" y="354" text-anchor="middle" class="tm" font-size="8">servers in use</text>
+          <!-- output -->
+          <path d="M704 264h70" stroke="var(--brand)" stroke-width="4" stroke-linecap="round"/>
+          <path d="M770 256l12 8-12 8z" fill="var(--brand)"/>
+          <circle id="outPulse" cx="704" cy="264" r="6" fill="var(--brand)" opacity="0"/>
+          <text x="742" y="252" text-anchor="middle" class="tl">insight</text>
+        </g>
+
+        <!-- BIN -->
+        <g id="bin" opacity="0">
+          <path d="M572 410h80l-8 60h-64z" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/>
+          <text x="612" y="432" text-anchor="middle" font-family="var(--f-mono)" font-size="9" fill="var(--bad)" font-weight="600">REMOVED</text>
+          <text id="binN" x="612" y="452" text-anchor="middle" font-family="var(--f-mono)" font-size="12" fill="var(--ink)" font-weight="600">0</text>
+        </g>
+
+        <!-- CLOCK -->
+        <g>
+          <rect x="586" y="22" width="198" height="54" rx="10" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
+          <text id="clk" x="600" y="46" font-family="var(--f-mono)" font-size="15" font-weight="600" fill="var(--ink)">Day 1 · 09:00</text>
+          <text id="mode" x="600" y="64" class="tm" font-size="9.5">Report: nightly at 00:00</text>
+          <g id="weather" opacity="0"><circle cx="760" cy="40" r="10" fill="var(--web)" opacity=".25"/><path d="M760 31v18M752 35l16 10M752 45l16-10" stroke="var(--web)" stroke-width="2" stroke-linecap="round"/></g>
+        </g>
+
+        <g id="packets"></g>
+        <text x="16" y="494" class="tm" font-size="9" id="legend">Each dot stands for about 0 records (illustrative)</text>
+      </svg>
+      </div>
+      <div class="swipe">Swipe the scene sideways to see the analytics engine.</div>
+      <div class="caption" aria-live="polite">
+        <div class="ava" id="capAva"></div>
+        <div class="captext"><div class="who" id="capWho">Nisha Gurung · Data analyst</div><p id="capTxt">Press <b>Story</b> to watch one jacket sale turn into data, or <b>Start</b> to run Everest Fashion's data flows.</p></div>
+        <div class="tour" id="tourNav" hidden><span class="ct" id="tourCt">1 / 7</span><button class="btn" id="tBack" type="button">Back</button><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div>
+      </div>
+    </div>
+
+    <aside class="panel" aria-label="Recommendation">
+      <div>
+        <h2>Winter stock recommendation</h2>
+        <div class="sub">Order of 2,000 units, split by category (illustrative)</div>
+      </div>
+      <div class="mix" id="mix"></div>
+      <div class="conf">
+        <div class="top"><span>How far Anita can trust it</span><b id="confV">0%</b></div>
+        <div class="meter"><i id="confM"></i></div>
+        <div class="lim" id="lim"></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span>Records received</span><b id="sRec">0</b></div>
+        <div class="stat"><span>Storage used</span><b id="sSto">0 MB</b></div>
+        <div class="stat"><span>Processing demand</span><b id="sLoad">0%</b></div>
+        <div class="stat"><span>Data age</span><b id="sAge">-</b></div>
+      </div>
+      <div class="prow">
+        <button class="btn" id="bPin" type="button" aria-pressed="false">Pin this mix</button>
+        <button class="btn" id="bTruth" type="button" aria-pressed="false">Reveal actual winter sales</button>
+      </div>
+      <div class="say"><div class="ava" id="anitaAva"></div><p id="anita"><b>Anita:</b> I need a number I can sign off. Show me what the data says.</p></div>
+    </aside>
+  </div>
+
+  <div class="bench">
+    <div class="vbox">
+      <div class="tabs" role="tablist" aria-label="The four Vs">
+        <button class="tab" role="tab" id="tab-vol" aria-controls="vp-vol" aria-selected="true" type="button"><b>Volume</b><span>how much</span></button>
+        <button class="tab" role="tab" id="tab-var" aria-controls="vp-var" aria-selected="false" tabindex="-1" type="button"><b>Variety</b><span>how many kinds</span></button>
+        <button class="tab" role="tab" id="tab-vel" aria-controls="vp-vel" aria-selected="false" tabindex="-1" type="button"><b>Velocity</b><span>how fast</span></button>
+        <button class="tab" role="tab" id="tab-ver" aria-controls="vp-ver" aria-selected="false" tabindex="-1" type="button"><b>Veracity</b><span>how true</span></button>
+      </div>
+
+      <div class="vp" id="vp-vol" role="tabpanel" aria-labelledby="tab-vol">
+        <p class="def"><b>Volume.</b> The amount of accessible data is vast. It is available far more easily than even a few years ago.</p>
+        <div class="slider">
+          <label for="rate">Till transactions per minute, across all stores <output id="rateO">60</output></label>
+          <input id="rate" type="range" min="10" max="600" step="10" value="60">
+          <div class="ticks"><span>10 · one quiet shop</span><span>600 · peak season</span></div>
+        </div>
+        <div class="notice"><b>What to notice</b>More records arrive, the dots crowd the pipes and the engine needs more servers. With very little data the bars jump about; with lots of data they settle. Watch Processing demand pass what one ordinary database server could handle.</div>
+      </div>
+
+      <div class="vp" id="vp-var" role="tabpanel" aria-labelledby="tab-var" hidden>
+        <p class="def"><b>Variety.</b> Data is available about a huge variety of issues. Because it comes from many sources it is largely unstructured and must be analysed before use.</p>
+        <div class="srcs" id="srcs"></div>
+        <div class="notice"><b>What to notice</b>Each source sees winter demand from one angle and is slightly wrong on its own. Turn sources off until only the till is left, then press <b>Reveal actual winter sales</b>. Add them back one at a time and watch the bars close the gap. Text and images make the engine work harder because they must be analysed first.</div>
+      </div>
+
+      <div class="vp" id="vp-vel" role="tabpanel" aria-labelledby="tab-vel" hidden>
+        <p class="def"><b>Velocity.</b> Data is streamed into the business at great speed. Sales, inventory and other data are available in real time, with no need to wait for periodic, summarised reports.</p>
+        <div class="prow" role="group" aria-label="Reporting mode">
+          <button class="btn" id="mBatch" type="button" aria-pressed="true">Nightly report</button>
+          <button class="btn" id="mLive" type="button" aria-pressed="false">Live streaming</button>
+          <button class="btn" id="bCold" type="button" aria-pressed="false">Weather alert: cold snap</button>
+        </div>
+        <div class="notice"><b>What to notice</b>In nightly mode, data piles up in the amber tray and the recommendation only moves at 00:00. Trigger the cold snap in each mode. Live streaming moves the mix toward jackets within seconds; the nightly report leaves Anita deciding on yesterday's picture.</div>
+      </div>
+
+      <div class="vp" id="vp-ver" role="tabpanel" aria-labelledby="tab-ver" hidden>
+        <p class="def"><b>Veracity.</b> Relates to the trustworthiness and accuracy of big data. All datasets contain inaccuracies, bias, anomalies and noise. Dirty data must be cleaned before it can be relied upon.</p>
+        <div class="prow">
+          <button class="btn" id="bBad" type="button" aria-pressed="false">Inject fake reviews and duplicate receipts</button>
+          <button class="btn" id="bClean" type="button" aria-pressed="false">Clean the data</button>
+        </div>
+        <div class="notice"><b>What to notice</b>Red striped dots are dirty data: five-star scarf reviews written by one account and till receipts sent twice. Pin the mix first. Inject the bad data and watch scarves and knitwear swell and trust fall. Then clean it: the filter at the engine door moves bad records to the bin and the mix recovers.</div>
+      </div>
+    </div>
+
+    <section class="feed" aria-label="What just happened">
+      <h2>What just happened</h2>
+      <ol id="feed"><li class="empty" style="animation:none;background:none;border:0;padding:0">Each change you make is explained here.</li></ol>
+    </section>
+  </div>
+</section>
+
+<section class="keys" aria-label="Key points">
+  <h2>Key points to remember</h2>
+  <div class="defs">
+    <blockquote><cite>Big data · McKinsey</cite>Datasets whose size is beyond the ability of typical database software to capture, store, manage and analyse.</blockquote>
+    <blockquote><cite>Big data · Gartner</cite>High-volume, high-velocity and high-variety information assets that demand cost-effective, innovative forms of information processes for enhanced insight and decision making.</blockquote>
+  </div>
+  <div class="vs">
+    <div><b>Volume</b><p>The amount of accessible data is vast.</p><em>In the simulator: more transactions, more storage, more servers.</em></div>
+    <div><b>Velocity</b><p>Data is streamed in at great speed and is available in real time.</p><em>Real-time streaming is velocity, not variety.</em></div>
+    <div><b>Variety</b><p>Data about a huge variety of issues from many sources, largely unstructured.</p><em>A wide range of sources and areas is variety.</em></div>
+    <div><b>Veracity</b><p>Trustworthiness and accuracy. Dirty data must be cleaned.</p><em>Errors, anomalies and misinterpretation are veracity, not velocity.</em></div>
+  </div>
+  <details class="about"><summary>About this simulation</summary>
+    <ul>
+      <li>It is a simplified teaching model. Everest Fashion Ltd is a made-up business based on the study note's fashion retailer case; Anita, Nisha, all figures, prices, store data and the website address are illustrative.</li>
+      <li>Each source is given a small built-in bias so that combining sources visibly improves the estimate. Real data sources are not biased in such tidy ways.</li>
+      <li>Processing demand, storage and server counts are shown on a simple scale to make volume visible. They are not real capacity figures.</li>
+      <li>A real analytics system cleans data with many more checks than the two shown here.</li>
+    </ul>
+  </details>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const NS="http://www.w3.org/2000/svg";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const CATS=["Jackets","Knitwear","Boots","Scarves"];
+const TRUTH0=[34,30,22,14], TRUTH_COLD=[45,27,19,9];
+const SRC={
+  web:{name:"Website clicks",fmt:"Click log",kind:"Structured",col:"--web",from:[200,150],to:205,c1:[250,196],bias:[5,-5,3,-3],cx:1.5},
+  rev:{name:"Forum reviews",fmt:"Text",kind:"Unstructured",col:"--rev",from:[396,110],to:232,bias:[-5,3,-2,4],cx:2.5},
+  pho:{name:"Social photos",fmt:"Image",kind:"Unstructured",col:"--pho",from:[386,262],to:259,bias:[2,-2,1,-1],cx:4},
+  pos:{name:"Till sales (POS)",fmt:"Table row",kind:"Structured",col:"--pos",from:[300,390],to:286,bias:[-6,6,2,-2],cx:1},
+  loy:{name:"Loyalty cards",fmt:"Customer record",kind:"Structured",col:"--loy",from:[300,440],to:313,bias:[4,-2,-4,2],cx:1}
+};
+const KEYS=Object.keys(SRC);
+const BAD_REV=[8,12,8,72], BAD_POS=[20,58,12,10];
+
+let S;
+function fresh(){
+  S={running:false,speed:1,rate:60,on:{web:true,rev:true,pho:true,pos:true,loy:true},live:false,bad:false,clean:false,cold:false,coldAt:-1,lastBatch:0,
+     truthShow:false,pin:null,sim:9,records:0,est:{},estC:{},buf:[],acc:{},removed:0,tour:-1,mixShown:[25,25,25,25],noiseT:0};
+  KEYS.forEach(k=>{S.est[k]=[25,25,25,25];S.estC[k]=[25,25,25,25];S.acc[k]=Math.random();
+    for(let i=0;i<40;i++){const o=obs(k,false,TRUTH0,8);apply(S.est[k],o,.12);apply(S.estC[k],o,.12);}});
+}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function truth(){return S.cold?TRUTH_COLD:TRUTH0;}
+function volF(){return Math.max(0,Math.min(1,Math.log10(S.rate/10)/Math.log10(60)));}
+function obs(k,bad,tr,sd){
+  const base=bad?(k==="rev"?BAD_REV:BAD_POS):tr.map((t,i)=>t+SRC[k].bias[i]);
+  return base.map(b=>Math.max(1,b+gauss()*sd));
+}
+function apply(e,o,a){for(let i=0;i<4;i++)e[i]+=a*(o[i]-e[i]);}
+
+/* ---------- scene building ---------- */
+const pipes=$("#pipes"), pk=$("#packets");
+const P={};
+function mkPipe(k){
+  const s=SRC[k], [x,y]=s.from, ty=s.to;
+  const c1=s.c1||[x+70,y];const d=`M${x} ${y} C${c1[0]} ${c1[1]}, ${450} ${ty}, 520 ${ty}`;
+  const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("class","pipe");p.setAttribute("stroke",`var(${s.col})`);
+  pipes.appendChild(p);P[k]={el:p,len:p.getTotalLength()};
+}
+KEYS.forEach(mkPipe);
+const binPath=document.createElementNS(NS,"path");binPath.setAttribute("d","M522 330 C540 380, 600 380, 612 440");binPath.setAttribute("fill","none");pipes.appendChild(binPath);
+const binLen=binPath.getTotalLength();
+const trayPath=document.createElementNS(NS,"path");trayPath.setAttribute("d","M500 300 C500 280, 510 260, 520 258");trayPath.setAttribute("fill","none");pipes.appendChild(trayPath);
+const trayLen=trayPath.getTotalLength();
+
+// website tiles
+const tiles=$("#tiles");const TILE=[[26,50],[86,50],[146,50],[26,98],[86,98],[146,98]];
+TILE.forEach(([x,y],i)=>{const g=document.createElementNS(NS,"g");g.innerHTML=`<rect x="${x}" y="${y}" width="52" height="42" rx="4" fill="var(--panel2)" stroke="var(--line)"/><path d="M${x+18} ${y+8}h16l4 8-4 2v14h-16v-14l-4-2z" fill="var(${["--brand","--loy","--pos","--rev","--web","--pho"][i]})" opacity=".55"/>`;tiles.appendChild(g);});
+const cursor=$("#cursor");cursor.setAttribute("transform","translate(110 120)");
+// rack
+const rack=$("#rack");[46,70,94,118,142].forEach((x,i)=>{const g=document.createElementNS(NS,"g");g.innerHTML=`<path d="M${x} 252l-9 10v34h18v-34z" fill="var(${["--brand","--loy","--pos","--brand","--rev"][i]})" opacity=".7"/>`;rack.appendChild(g);});
+// queue
+const QPOS=[[178,390],[146,390],[114,390],[82,390]];
+const queue=$("#queue");const shoppers=[];
+const SHC=["--web","--rev","--pho","--loy","--pos"];
+for(let i=0;i<5;i++){const g=document.createElementNS(NS,"g");g.setAttribute("class","shopper");
+  g.innerHTML=`<use href="#person" width="20" height="40" fill="var(${SHC[i]})"/>`;queue.appendChild(g);shoppers.push({el:g,slot:i});}
+function placeShoppers(){shoppers.forEach(s=>{if(s.slot===99)return;if(s.slot<4){const[x,y]=QPOS[s.slot];s.el.style.transform=`translate(${x}px,${y}px)`;s.el.style.opacity=1;}else{s.el.style.transform=`translate(30px,390px)`;s.el.style.opacity=0;}});}
+function advanceQueue(){
+  const out=shoppers.find(s=>s.slot===0);
+  shoppers.forEach(s=>{if(s.slot>0&&s.slot<90)s.slot--;});
+  if(out){out.slot=99;out.el.style.transform="translate(20px,390px)";out.el.style.opacity=0;
+    setTimeout(()=>{out.el.style.transition="none";out.slot=4;placeShoppers();void out.el.getBoundingClientRect();out.el.style.transition="";},reduce?0:560);}
+  placeShoppers();
+}
+placeShoppers();
+// reviews feed
+const REVS=[["Warm, light jacket","★★★★★"],["Boots run a size small","★★★☆☆"],["Lovely knit, itchy collar","★★★★☆"],["Puffer kept me dry","★★★★★"],["Scarf colour faded","★★☆☆☆"],["Great fit for winter","★★★★★"]];
+const FAKE=["BEST SCARF EVER!!!","Scarves!!! Buy 10!!!","Amazing scarf 5/5!!"];
+const revG=$("#reviews");let revList=[];
+function pushReview(bad){
+  const txt=bad?[FAKE[Math.floor(Math.random()*3)],"★★★★★"]:REVS[Math.floor(Math.random()*REVS.length)];
+  revList.unshift({t:txt,bad});revList=revList.slice(0,3);
+  revG.innerHTML=revList.map((r,i)=>{const y=52+i*36;return `<g><rect x="234" y="${y}" width="154" height="30" rx="5" fill="${r.bad?"url(#hatch)":"var(--panel2)"}" stroke="${r.bad?"var(--bad)":"var(--line)"}"/><text x="242" y="${y+13}" class="t" font-size="9">${r.t[0]}</text><text x="242" y="${y+25}" font-size="8.5" fill="${r.bad?"var(--bad)":"var(--pos)"}">${r.t[1]}</text></g>`;}).join("");
+}
+pushReview(false);pushReview(false);pushReview(false);
+// nodes
+const nodesG=$("#nodes");const NODE=[];
+for(let i=0;i<6;i++){const r=document.createElementNS(NS,"rect");r.setAttribute("x",560+i*9.5*1.15);r.setAttribute("y",324);r.setAttribute("width",9);r.setAttribute("height",12);r.setAttribute("rx",2);r.setAttribute("class","node");r.setAttribute("fill","var(--line)");nodesG.appendChild(r);NODE.push(r);}
+nodesG.setAttribute("transform","translate(14 0)");
+
+/* ---------- packets ---------- */
+let packets=[];
+function shapeFor(k,bad){
+  const c=bad?"url(#hatch)":`var(${SRC[k].col})`, st=bad?"var(--bad)":`var(${SRC[k].col})`;
+  switch(k){
+    case "pos":return `<rect x="-8" y="-5" width="16" height="10" rx="1.5" fill="${c}" stroke="${st}"/><path d="M-5 -1h10M-5 2h10" stroke="var(--panel)" stroke-width="1.2"/>`;
+    case "loy":return `<rect x="-8" y="-5.5" width="16" height="11" rx="3" fill="${c}" stroke="${st}"/><rect x="-8" y="-3" width="16" height="2.5" fill="var(--panel)" opacity=".7"/>`;
+    case "web":return `<circle r="5.5" fill="${c}" stroke="${st}"/><circle r="2" fill="var(--panel)"/>`;
+    case "rev":return `<path d="M-8 -6h16v9h-9l-4 4v-4h-3z" fill="${c}" stroke="${st}"/><path d="M-5 -3h10M-5 0h7" stroke="var(--panel)" stroke-width="1.1"/>`;
+    case "pho":return `<rect x="-6.5" y="-6.5" width="13" height="13" rx="2" fill="${c}" stroke="${st}"/><path d="M-5 4l3.5-4 2.5 2.5 2-2 2.5 3.5z" fill="var(--panel)"/>`;
+  }
+}
+function spawn(k,bad,opt){
+  opt=opt||{};
+  const g=document.createElementNS(NS,"g");g.innerHTML=shapeFor(k,bad);pk.appendChild(g);
+  const p={g,k,bad,t:0,path:P[k].el,len:P[k].len,stage:"pipe",o:obs(k,bad,truth(),14*(1-.65*volF())),tour:!!opt.tour};
+  packets.push(p);placeP(p);
+  // source-side animation
+  if(k==="pos"){advanceQueue();const tx=$("#posTxt");tx.textContent=bad?"DUP x2":"Rs "+(3+Math.floor(Math.random()*6))+",500";flashEl($("#posScr"));}
+  if(k==="loy"){flashEl($("#card"),true);}
+  if(k==="web"){const[x,y]=TILE[Math.floor(Math.random()*6)];cursor.setAttribute("transform",`translate(${x+30} ${y+26})`);}
+  if(k==="rev")pushReview(bad);
+  if(k==="pho"){flashEl($("#heart"),true);}
+  return p;
+}
+function flashEl(el,show){if(reduce)return;const rest=parseFloat(el.getAttribute("opacity")||"1");
+  el.animate(show?[{opacity:1},{opacity:1,offset:.6},{opacity:rest}]:[{opacity:1},{opacity:rest}],{duration:600,easing:"ease-out"});}
+function placeP(p){const pt=p.path.getPointAtLength(p.t*p.len);p.g.setAttribute("transform",`translate(${pt.x.toFixed(1)} ${pt.y.toFixed(1)})`);}
+function arrive(p){
+  if(p.stage==="bin"||p.stage==="tray"){kill(p);return;}
+  if(p.bad&&S.clean){S.removed++;$("#binN").textContent=S.removed;p.stage="bin";p.path=binPath;p.len=binLen;p.t=0;return;}
+  if(!S.live&&!p.tour){S.buf.push({k:p.k,o:p.o,bad:p.bad});updTray();kill(p);return;}
+  ingest(p.k,p.o,p.bad);kill(p);parseFlash(p.k);
+}
+function kill(p){p.g.remove();p.dead=true;}
+function ingest(k,o,bad){
+  const a=.05+.09*volF();
+  apply(S.est[k],o,a);
+  if(!bad)apply(S.estC[k],o,a);
+}
+let parseT=0;
+function parseFlash(k){const el=$("#parse");if(k==="rev"){el.textContent="analysing text";parseT=1.2;}else if(k==="pho"){el.textContent="analysing images";parseT=1.2;}}
+function updTray(){
+  $("#trayN").textContent=fmtN(S.buf.length);
+  const h=Math.min(140,S.buf.length*1.4);$("#trayFill").setAttribute("y",336-h);$("#trayFill").setAttribute("height",h);
+}
+function flush(){
+  const n=S.buf.length;
+  S.buf.forEach(b=>ingest(b.k,b.o,b.bad));S.buf=[];S.lastBatch=S.sim;updTray();
+  if(!reduce){for(let i=0;i<Math.min(8,n);i++)setTimeout(()=>{const g=document.createElementNS(NS,"g");g.innerHTML=`<circle r="5" fill="var(--warn)"/>`;pk.appendChild(g);packets.push({g,k:"pos",t:0,path:trayPath,len:trayLen,stage:"tray"});},i*70);}
+  if(n)log("Velocity",`00:00 nightly report. ${n} batches of records released at once, and only now does the recommendation catch up with yesterday.`);
+}
+
+/* ---------- loop ---------- */
+let last=performance.now(), uiT=0;
+function frame(now){
+  let dt=Math.min(.1,(now-last)/1000);last=now;
+  const moving=S.running||S.tour>=0;
+  if(moving){
+    const sdt=dt*S.speed;
+    const pxs=(reduce?520:170)*S.speed;
+    packets.forEach(p=>{if(p.dead)return;p.t+=pxs*dt/p.len*(p.stage==="pipe"?1:.7);if(p.t>=1){p.t=1;placeP(p);arrive(p);}else placeP(p);});
+    packets=packets.filter(p=>!p.dead);
+    if(S.running){
+      const prevDay=Math.floor(S.sim/24);
+      S.sim+=sdt*2;
+      if(Math.floor(S.sim/24)>prevDay&&!S.live)flush();
+      const f=.35+.9*Math.log10(S.rate/10+1);
+      KEYS.forEach(k=>{if(!S.on[k])return;S.acc[k]+=sdt*f*(k==="pho"?.7:1);while(S.acc[k]>=1){S.acc[k]-=1;spawn(k,false);}
+        S.records+=sdt*S.rate*24*(SRC[k].cx>2?.4:1);});
+      if(S.bad){["rev","pos"].forEach(k=>{if(!S.on[k])return;S.acc["b"+k]=(S.acc["b"+k]||0)+sdt*2.2;while(S.acc["b"+k]>=1){S.acc["b"+k]-=1;spawn(k,true);}});}
+    }
+    if(parseT>0){parseT-=dt;if(parseT<=0)$("#parse").textContent="processing";}
+  }
+  uiT-=dt;if(uiT<=0){uiT=.3;ui();}
+  requestAnimationFrame(frame);
+}
+
+/* ---------- outputs ---------- */
+function mix(){
+  const ks=KEYS.filter(k=>S.on[k]);if(!ks.length)return null;
+  const w=k=>(k==="pho"?.7:1)+(S.bad&&!S.clean&&(k==="rev"||k==="pos")?2.2:0);const W=ks.reduce((a,k)=>a+w(k),0);
+  const m=[0,0,0,0];ks.forEach(k=>S.est[k].forEach((v,i)=>m[i]+=v*w(k)/W));
+  const sum=m.reduce((a,b)=>a+b,0);return m.map(v=>v/sum*100);
+}
+function load(){let c=0;KEYS.forEach(k=>{if(S.on[k])c+=SRC[k].cx;});return S.rate*c/15;}
+function confidence(){
+  const n=KEYS.filter(k=>S.on[k]).length;if(!n)return{c:0,lim:"No data sources are switched on."};
+  const variety=n/5, vol=volF();
+  let fresh=S.live?1:.82; if(!S.live&&S.cold&&S.coldAt>S.lastBatch)fresh=.5;
+  let dist=0;KEYS.forEach(k=>{if(S.on[k])S.est[k].forEach((v,i)=>dist+=Math.abs(v-S.estC[k][i])/n);});
+  const ver=Math.max(.3,Math.min(1,1-dist/12));
+  const c=Math.round(100*(.30+.45*variety+.25*vol)*fresh*ver);
+  const loss={Variety:.45*(1-variety),Volume:.25*(1-vol),Velocity:1-fresh,Veracity:1-ver};
+  const top=Object.entries(loss).sort((a,b)=>b[1]-a[1])[0];
+  const why={Variety:`only ${n} of 5 sources feed the engine`,Volume:"too few records to tell a pattern from luck",Velocity:S.cold&&S.coldAt>S.lastBatch?"the cold snap is not in last night's report yet":"the data is up to a day old",Veracity:"dirty records are distorting the mix"};
+  return{c,lim:top[1]<.04?"Nothing major is holding it back.":`Held back most by <b>${top[0]}</b>: ${why[top[0]]}.`,top:top[0],ver,n,vol,fresh};
+}
+const mixEl=$("#mix");
+mixEl.innerHTML=CATS.map((c,i)=>`<div class="row"><span class="nm">${c}</span><div class="bar"><i id="b${i}"></i><span class="pin" id="p${i}" hidden></span><span class="truth" id="tr${i}" hidden></span></div><span class="v" id="v${i}">0%</span></div>`).join("");
+function fmtN(n){n=Math.round(n);return n>=1e6?(n/1e6).toFixed(1)+"m":n>=1e4?Math.round(n/1e3)+"k":n.toLocaleString("en-GB");}
+let lastSay="";
+function ui(){
+  const m=mix();
+  CATS.forEach((c,i)=>{
+    const v=m?m[i]:0;S.mixShown[i]=v;
+    $("#b"+i).style.width=(v*2)+"%";
+    const pin=$("#p"+i);if(S.pin){pin.hidden=false;pin.style.left=(S.pin[i]*2)+"%";}else pin.hidden=true;
+    const tr=$("#tr"+i);if(S.truthShow){tr.hidden=false;tr.style.left=(truth()[i]*2)+"%";}else tr.hidden=true;
+    const d=S.pin?Math.round(v)-Math.round(S.pin[i]):null;
+    $("#v"+i).innerHTML=`${Math.round(v)}% <small>${fmtN(v*20)} units${d!==null&&d!==0?` · ${d>0?"+":""}${d}`:""}</small>`;
+  });
+  const C=confidence();
+  $("#confV").textContent=C.c+"%";const cm=$("#confM");cm.style.width=C.c+"%";cm.style.background=C.c>=75?"var(--ok)":C.c>=50?"var(--warn)":"var(--bad)";
+  let lim=C.lim;
+  if(S.truthShow&&m){const gap=m.reduce((a,v,i)=>a+Math.abs(v-truth()[i]),0)/4;lim+=` Average gap from actual sales: <b style="color:var(--ink)">${gap.toFixed(1)} points</b>.`;}
+  $("#lim").innerHTML=lim;
+  const L=load();
+  $("#sRec").textContent=fmtN(S.records);
+  const mb=S.records*1.4/1024;$("#sSto").textContent=mb>=1024?(mb/1024).toFixed(2)+" GB":mb.toFixed(1)+" MB";
+  $("#sLoad").textContent=Math.round(L)+"%"+(L>100?" of 1 server":"");
+  $("#sAge").textContent=S.live?"live":(()=>{const h=S.sim-S.lastBatch;return h<1?"just now":Math.floor(h)+" h old";})();
+  $("#engPct").textContent=Math.round(L)+"%";
+  const nodes=Math.max(1,Math.min(6,Math.ceil(L/80)));NODE.forEach((n,i)=>n.setAttribute("fill",i<nodes?"var(--brand)":"var(--line)"));
+  document.documentElement.style.setProperty("--spin",(Math.max(.6,6-L/30)).toFixed(2)+"s");
+  document.documentElement.style.setProperty("--play",S.running?"running":"paused");
+  const day=Math.floor(S.sim/24)+1, hr=Math.floor(S.sim%24), mn=Math.floor((S.sim%1)*60/10)*10;
+  $("#clk").textContent=`Day ${day} · ${String(hr).padStart(2,"0")}:${String(mn).padStart(2,"0")}`;
+  $("#mode").textContent=S.live?"Live stream: updates in seconds":"Report: nightly at 00:00";
+  $("#legend").textContent=`Each dot stands for about ${fmtN(S.rate*24/(.35+.9*Math.log10(S.rate/10+1)))} records (illustrative)`;
+  KEYS.forEach(k=>P[k].el.setAttribute("class","pipe"+(S.on[k]?"":" off")));
+  $("#tray").hidden=S.live;
+  $("#gate").setAttribute("opacity",S.clean?1:0);$("#bin").setAttribute("opacity",S.clean||S.removed?1:0);
+  $("#weather").setAttribute("opacity",S.cold?1:0);
+  if(S.running&&!reduce&&m){const op=$("#outPulse");op.animate([{transform:"translate(0,0)",opacity:.9},{transform:"translate(70px,0)",opacity:0}],{duration:600});}
+  // Anita
+  let say;
+  if(!C.n)say="There is nothing on the screen. Which data are we looking at?";
+  else if(C.top==="Veracity"&&C.ver<.85)say=`Scarves at ${Math.round(m[3])}%? Our scarves never sell like that. Can we trust these reviews and receipts?`;
+  else if(!S.live&&S.cold&&S.coldAt>S.lastBatch)say="It turned cold this morning and the report still shows last night. I can't wait until midnight.";
+  else if(C.n===1)say="This tells me one side of the story. What are customers looking at and saying?";
+  else if(C.n<4)say="Better, but I'd like the other sources before I commit 2,000 units.";
+  else if(C.vol<.25)say="So few records. Is this a pattern or just a quiet week?";
+  else if(C.c>=80)say="That is a clear picture. I can sign off this order.";
+  else say="Close. What would make you more certain?";
+  if(say!==lastSay){$("#anita").innerHTML="<b>Anita:</b> "+say;lastSay=say;}
+}
+
+/* ---------- feed ---------- */
+function log(v,txt,bad){
+  const ol=$("#feed");const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(bad)li.className="bad";li.innerHTML=`<span class="vt">${v}</span>${txt}`;ol.prepend(li);
+  while(ol.children.length>5)ol.lastChild.remove();
+}
+
+/* ---------- characters ---------- */
+const NISHA=`<svg viewBox="0 0 42 42"><rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="#2b2420"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="#2b2420"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/></svg>`;
+const ANITA=`<svg viewBox="0 0 42 42"><rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="#1f1a17"/><circle cx="21" cy="8" r="4" fill="#1f1a17"/></svg>`;
+$("#capAva").innerHTML=NISHA;$("#anitaAva").innerHTML=ANITA;
+
+/* ---------- story ---------- */
+const TOUR=[
+ {z:"store",t:"A shopper walks to the till with a winter jacket. On its own this is one sale. Watch what it turns into.",a:()=>advanceQueue()},
+ {z:"pos",t:"The POS records the transaction: item, size, price, store and time. This is structured data, a row in a table.",a:()=>spawn("pos",false,{tour:1})},
+ {z:"loy",t:"Bikash taps his loyalty card, so the sale is linked to everything he has bought before. Now Everest Fashion knows who buys jackets, not only how many.",a:()=>spawn("loy",false,{tour:1})},
+ {z:"web",t:"Before coming in, Bikash browsed jackets and boots on Everest Fashion's website. Every click is logged as he moves around the site.",a:()=>spawn("web",false,{tour:1})},
+ {z:"rev",t:"A review lands on the forum and a customer posts an outfit photo. Text and images have no fixed structure, so they must be analysed before use.",a:()=>{spawn("rev",false,{tour:1});setTimeout(()=>spawn("pho",false,{tour:1}),350);}},
+ {z:"eng",t:"All five flows meet in Everest Fashion's analytics engine. Different formats, different speeds, different reliability: that is why big data needs more than an ordinary database.",a:()=>KEYS.forEach((k,i)=>setTimeout(()=>spawn(k,false,{tour:1}),i*180))},
+ {z:"out",t:"The engine turns the combined data into a winter stock mix for Anita, with a measure of how far she can trust it. Now it's your turn: press Next to run the full system.",a:()=>{}}
+];
+function tourGo(i){
+  S.tour=i;const st=TOUR[i];
+  $("#scene").dataset.focus=st.z;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;
+  $("#capWho").textContent="Nisha Gurung · Data analyst";$("#capTxt").textContent=st.t;$("#tBack").disabled=i===0;
+  $("#tNext").textContent=i===TOUR.length-1?"Run the system":"Next";
+  st.a();
+}
+function tourEnd(run){
+  S.tour=-1;delete $("#scene").dataset.focus;$("#tourNav").hidden=true;
+  $("#capTxt").innerHTML="Use the four V tabs below. Change one thing at a time and watch the scene, the bars and Anita.";
+  if(run)setRun(true);
+}
+$("#bStory").onclick=()=>{setRun(false);tourGo(0);};
+$("#tNext").onclick=()=>{if(S.tour<TOUR.length-1)tourGo(S.tour+1);else tourEnd(true);};
+$("#tBack").onclick=()=>{if(S.tour>0)tourGo(S.tour-1);};
+$("#tSkip").onclick=()=>tourEnd(false);
+
+/* ---------- controls ---------- */
+function setRun(r){S.running=r;$("#bRun span").textContent=r?"Pause":"Start";
+  $("#bRun svg").innerHTML=r?'<path d="M8 5v14M16 5v14"/>':'<path d="M7 5l12 7-12 7z"/>';
+  if(r&&S.tour>=0)tourEnd(false);}
+$("#bRun").onclick=()=>setRun(!S.running);
+$("#bReset").onclick=()=>{packets.forEach(kill);packets=[];fresh();syncControls();setRun(false);tourEnd(false);$("#binN").textContent=0;updTray();
+  $("#feed").innerHTML='<li class="empty" style="animation:none;background:none;border:0;padding:0">Each change you make is explained here.</li>';ui();};
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{S.speed=+b.dataset.sp;document.querySelectorAll(".seg button").forEach(x=>x.setAttribute("aria-pressed",x===b));});
+$("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+$("#bFull").onclick=()=>{const l=$("#lab");try{if(document.fullscreenElement)document.exitFullscreen();else if(l.requestFullscreen)l.requestFullscreen().catch(()=>{});}catch(e){}};
+
+// tabs
+const tabs=[...document.querySelectorAll(".tab")];
+tabs.forEach((t,i)=>{t.onclick=()=>selTab(i);t.onkeydown=e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();const n=(i+(e.key==="ArrowRight"?1:3))%4;selTab(n);tabs[n].focus();}};});
+function selTab(i){tabs.forEach((t,j)=>{t.setAttribute("aria-selected",i===j);t.tabIndex=i===j?0:-1;$("#"+t.getAttribute("aria-controls")).hidden=i!==j;});}
+
+// volume
+const rate=$("#rate");
+rate.oninput=()=>{S.rate=+rate.value;$("#rateO").textContent=S.rate;};
+rate.onchange=()=>{const L=Math.round(load());log("Volume",`${S.rate} transactions a minute. ${L>100?`Processing demand is ${L}% of one ordinary database server, so the engine spreads the work over ${Math.min(6,Math.ceil(L/80))} servers.`:`Processing demand is ${L}% of one server.`} ${volF()<.25?"With this little data the mix keeps jumping.":"More data steadies the mix."}`);};
+
+// variety
+const srcs=$("#srcs");
+const ICON={web:'<circle cx="9" cy="9" r="5"/><circle cx="9" cy="9" r="1.6"/>',rev:'<path d="M3 4h12v8H8l-3 3v-3H3z"/>',pho:'<rect x="3" y="3" width="12" height="12" rx="2"/><path d="M4 13l4-4 3 3 2-2 2 3"/>',pos:'<rect x="2.5" y="5" width="13" height="8" rx="1"/><path d="M5 8h8M5 10.5h8"/>',loy:'<rect x="2.5" y="4.5" width="13" height="9" rx="2"/><path d="M2.5 7.5h13"/>'};
+srcs.innerHTML=["pos","loy","web","rev","pho"].map(k=>`<button class="src" type="button" data-k="${k}" aria-pressed="true" style="color:var(${SRC[k].col})"><span class="sw"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6">${ICON[k]}</svg></span><b>${SRC[k].name}</b><span>${SRC[k].fmt}<span class="tag">${SRC[k].kind}</span></span></button>`).join("");
+srcs.querySelectorAll(".src").forEach(b=>b.onclick=()=>{const k=b.dataset.k;S.on[k]=!S.on[k];b.setAttribute("aria-pressed",S.on[k]);
+  const n=KEYS.filter(x=>S.on[x]).length;
+  log("Variety",S.on[k]?`Added ${SRC[k].name.toLowerCase()} (${SRC[k].fmt.toLowerCase()}, ${SRC[k].kind.toLowerCase()}). ${SRC[k].kind==="Unstructured"?"The engine must analyse it before use, so processing demand rises. ":""}The mix now combines ${n} source${n>1?"s":""}.`:`Removed ${SRC[k].name.toLowerCase()}. The mix now relies on ${n} source${n===1?"":"s"}${n?", seeing demand from fewer angles":""}.`);ui();});
+
+// velocity
+function setLive(l){S.live=l;$("#mBatch").setAttribute("aria-pressed",!l);$("#mLive").setAttribute("aria-pressed",l);
+  if(l&&S.buf.length){S.buf.forEach(b=>ingest(b.k,b.o,b.bad));S.buf=[];updTray();}
+  if(l)S.lastBatch=S.sim;
+  log("Velocity",l?"Live streaming on. Sales and other data now reach the engine as they happen, and the mix updates within seconds.":"Back to a nightly report. Today's data waits in the tray until 00:00.");ui();}
+$("#mBatch").onclick=()=>{if(S.live)setLive(false);};
+$("#mLive").onclick=()=>{if(!S.live)setLive(true);};
+$("#bCold").onclick=e=>{S.cold=!S.cold;S.coldAt=S.sim;e.currentTarget.setAttribute("aria-pressed",S.cold);
+  log("Velocity",S.cold?(S.live?"A cold snap hits (illustrative). Jacket sales and searches jump, and live data pulls the mix toward jackets within seconds.":"A cold snap hits (illustrative). Jacket sales jump today, but the nightly report will only show them after 00:00."):"Weather back to normal. Demand drifts back as new data arrives.");
+  if(!S.running&&S.tour<0)setRun(true);ui();};
+
+// veracity
+$("#bBad").onclick=e=>{S.bad=!S.bad;e.currentTarget.setAttribute("aria-pressed",S.bad);
+  log("Veracity",S.bad?"Dirty data is entering: one account posting five-star scarf reviews, and till receipts sent twice. Nothing on screen tells Anita yet.":"No new dirty data is arriving, but the records already analysed still distort the mix until they are cleaned.",S.bad);
+  if(!S.running&&S.tour<0)setRun(true);ui();};
+$("#bClean").onclick=e=>{S.clean=!S.clean;e.currentTarget.setAttribute("aria-pressed",S.clean);
+  if(S.clean){KEYS.forEach(k=>S.est[k]=S.estC[k].slice());S.buf=S.buf.filter(b=>!b.bad);updTray();}
+  log("Veracity",S.clean?"Cleaning on. Duplicates and fake reviews are filtered at the engine door and moved to the bin, and the analysis is rebuilt from clean records.":"Cleaning off. Any dirty records that arrive will now be analysed as if they were true.",!S.clean);ui();};
+
+// pin / truth
+$("#bPin").onclick=e=>{const m=mix();if(S.pin){S.pin=null;e.currentTarget.setAttribute("aria-pressed",false);e.currentTarget.textContent="Pin this mix";}
+  else if(m){S.pin=m.slice();e.currentTarget.setAttribute("aria-pressed",true);e.currentTarget.textContent="Unpin";log("Compare","Mix pinned as a dashed line. Change one V and compare the new bars against it.");}ui();};
+$("#bTruth").onclick=e=>{S.truthShow=!S.truthShow;e.currentTarget.setAttribute("aria-pressed",S.truthShow);
+  if(S.truthShow)log("Compare",`Green lines show what actually sold this winter (illustrative${S.cold?", cold-snap season":""}). The closer the bars, the better the data did.`);ui();};
+
+function syncControls(){rate.value=S.rate;$("#rateO").textContent=S.rate;
+  srcs.querySelectorAll(".src").forEach(b=>b.setAttribute("aria-pressed",S.on[b.dataset.k]));
+  $("#mBatch").setAttribute("aria-pressed",!S.live);$("#mLive").setAttribute("aria-pressed",S.live);
+  ["bCold","bBad","bClean","bTruth","bPin"].forEach(id=>$("#"+id).setAttribute("aria-pressed",false));$("#bPin").textContent="Pin this mix";}
+
+fresh();ui();requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

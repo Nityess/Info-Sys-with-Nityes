@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Pay Without a Bank</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: two payment tracks racing (card vs crypto), comparison cards, then a four-part risk lab with its own animation each */
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 16px 16px}
+@media (max-width:620px){.cmp{grid-template-columns:minmax(0,1fr)}}
+.cmp .c{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.cmp dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:6px 0 0;font-size:.86em}
+.cmp dt{color:var(--muted)}.cmp dd{margin:0;font-family:var(--f-mono);font-weight:600}
+.risks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.risks{grid-template-columns:minmax(0,1fr)}}
+.rk{border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;align-content:start}
+.rk h3{font-size:.98rem}
+.rk svg{width:100%;height:auto;background:var(--panel2);border-radius:10px}
+.rk .out{font-size:.86em;min-height:2.6em}
+.rk.hit{border-color:var(--bad)}
+.verdict{display:grid;gap:6px}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Crypto currency simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.7 Crypto currencies</div>
+      <h1>Pay Without a Bank</h1>
+      <p class="role">Bikash wants to pay Everest Fashion Rs 6,500 in crypto. Ramesh, the finance manager, has to decide whether the shop should accept it. Send the payment both ways, then test the risks.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card">
+    <div class="scroll">
+      <svg class="scene" viewBox="0 0 960 300" role="img" aria-label="Top track: card payment through a payment processor and a bank. Bottom track: crypto payment from wallet to wallet over a network." style="min-width:600px">
+        <rect width="960" height="300" fill="var(--panel2)"/>
+        <text x="20" y="28" class="tl">CARD PAYMENT</text><text x="20" y="178" class="tl">CRYPTO PAYMENT</text>
+        <g id="trk"></g><g id="dots"></g>
+      </svg>
+    </div>
+    <div class="row" style="padding:12px 16px"><button class="btn" id="bCard" type="button">Pay by card</button><button class="btn pri" id="bCrypto" type="button">Pay with crypto</button><button class="btn" id="bBoth" type="button">Race them</button></div>
+    <div class="cmp" id="cmp"></div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="ramesh"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Ramesh · Finance manager, Everest Fashion</div><p id="capTxt">Tap Watch the story, or race the two payments.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+
+  <section class="card pad" aria-label="Risk lab">
+    <div><h2 style="font-size:1.05rem">Risk lab: what could go wrong for the shop?</h2><p class="note">Pay with crypto first, then trigger each risk.</p></div>
+    <div class="risks" id="risks"></div>
+    <div class="verdict"><div class="row" style="justify-content:space-between"><b>Ramesh's comfort accepting crypto</b><b id="vNum" style="font-family:var(--f-mono)">70%</b></div><div class="meter"><i id="vBar" style="width:70%"></i></div><p class="note" id="vNote">Cheaper and more private. But he hasn't seen the risks yet.</p></div>
+  </section>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Crypto currencies</cite>Digital tokens that allow users to trade with each other online. An alternative to traditional currencies.</div>
+    <div class="spots">
+      <div><b>No third party</b><p>Paying in crypto does not involve a bank or payment company. In that way it is like paying cash: lower transaction costs and more privacy.</p></div>
+      <div><b>Not the same as cash</b><p>It has no physical form, so it cannot be used in the same way as traditional physical currency.</p></div>
+    </div>
+    <div class="tw"><table style="min-width:420px"><thead><tr><th>Risk</th><th>Explanation</th></tr></thead><tbody>
+      <tr><td><b>Volatility</b></td><td>The price is subject to large swings.</td></tr>
+      <tr><td><b>Hacking</b></td><td>Online digital wallets where the currency is stored can be hacked.</td></tr>
+      <tr><td><b>Intrinsic value uncertainty</b></td><td>It is hard to say what it is really worth. Its value comes from the market.</td></tr>
+      <tr><td><b>Criminal use</b></td><td>The privacy of payments could help criminals avoid money laundering rules.</td></tr>
+    </tbody></table></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion, Bikash and Ramesh are illustrative; the coin, prices, fees and times are made up. Real crypto networks do charge network fees and take time to confirm.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const CARD=[["Bikash",80,90],["Payment processor",320,90],["Card bank",560,90],["Everest Fashion",820,90]];
+const CRY=[["Bikash's wallet",80,240],["Crypto network",450,240],["Everest's wallet",820,240]];
+function drawTracks(){let g="";const node=(n,col)=>`<g><rect x="${n[1]-70}" y="${n[2]-26}" width="140" height="52" rx="10" fill="var(--panel)" stroke="${col}" stroke-width="2"/><text x="${n[1]}" y="${n[2]+5}" text-anchor="middle" style="font:600 12px var(--f-body);fill:var(--ink)">${n[0]}</text></g>`;
+  for(let i=0;i<3;i++)g+=`<line x1="${CARD[i][1]+70}" y1="90" x2="${CARD[i+1][1]-70}" y2="90" stroke="var(--steel)" stroke-width="3"/>`;
+  for(let i=0;i<2;i++)g+=`<line x1="${CRY[i][1]+70}" y1="240" x2="${CRY[i+1][1]-70}" y2="240" stroke="var(--violet)" stroke-width="3"/>`;
+  g+=CARD.map(n=>node(n,"var(--steel)")).join("")+CRY.map(n=>node(n,"var(--violet)")).join("");
+  g+=`<text id="cardT" x="480" y="140" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--muted)"></text><text id="cryT" x="480" y="290" text-anchor="middle" style="font:600 12px var(--f-mono);fill:var(--muted)"></text>`;
+  $("#trk").innerHTML=g;}
+let paid=false,busy=false,comfort=70,hits=new Set();
+function cmp(showCard,showCry){const box=(t,o,s)=>`<div class="c"><b>${t}</b><dl>${Object.entries(o).map(([k,v])=>`<dt>${k}</dt><dd>${s?v:"?"}</dd>`).join("")}</dl></div>`;
+  $("#cmp").innerHTML=box("Card",{"Middlemen":"2 (processor, bank)","Fee to the shop":"Rs 130 (2%)","Money arrives":"in 2 days","Who sees the details":"processor and bank"},showCard)+box("Crypto",{"Middlemen":"none","Fee":"Rs 20 network fee","Money arrives":"in about 10 minutes","Who sees the details":"only a wallet address"},showCry);}
+let shown={c:false,k:false};
+async function payCard(){$("#cardT").textContent="checking card...";for(let i=0;i<3;i++){await movePath(`M${CARD[i][1]+70} 90 L${CARD[i+1][1]-70} 90`,"var(--steel)",REDUCE?40:900,8);$("#cardT").textContent=["processor takes its cut","bank settles in 2 days","Rs 6,370 received"][i];}shown.c=true;cmp(shown.c,shown.k);}
+async function payCrypto(){$("#cryT").textContent="wallet to wallet...";for(let i=0;i<2;i++){await movePath(`M${CRY[i][1]+70} 240 L${CRY[i+1][1]-70} 240`,"var(--violet)",REDUCE?40:800,8);}$("#cryT").textContent="0.05 coin received (worth Rs 6,500 today)";shown.k=true;paid=true;cmp(shown.c,shown.k);renderRisks();}
+async function run(which){if(busy)return;busy=true;$$("#bCard,#bCrypto,#bBoth").forEach(b=>b.disabled=true);
+  if(which==="card")await payCard();else if(which==="crypto")await payCrypto();else await Promise.all([payCard(),payCrypto()]);
+  cap(which==="card"?"Two third parties handled the card payment, took a fee and took days.":which==="crypto"?"No bank, no payment company: wallet to wallet, like handing over cash. Cheaper and more private.":"Same Rs 6,500. Crypto skipped the middlemen; the card went through two of them.");
+  log("Payment",which==="card"?"Card: processor and bank in between, 2% fee.":which==="crypto"?"Crypto: no third party involved.":"Crypto arrived first, with no middlemen.");
+  busy=false;$$("#bCard,#bCrypto,#bBoth").forEach(b=>b.disabled=false);}
+$("#bCard").onclick=()=>run("card");$("#bCrypto").onclick=()=>run("crypto");$("#bBoth").onclick=()=>run("both");
+/* risks */
+const RK=[
+ {k:"vol",n:"Volatility",btn:"Fast-forward one week",svg:'<path id="volP" fill="none" stroke="var(--violet)" stroke-width="2.5"/><line x1="10" y1="60" x2="290" y2="60" stroke="var(--line)" stroke-dasharray="4 4"/><text x="14" y="54" style="font:10px var(--f-mono);fill:var(--muted)">Rs 6,500</text><text id="volT" x="290" y="20" text-anchor="end" style="font:700 12px var(--f-mono);fill:var(--ink)"></text>',
+  run:async()=>{const p=$("#volP");let y=60,pts=[[10,60]];for(let i=1;i<=28;i++){y=Math.max(14,Math.min(110,y+(Math.random()-.42)*22));pts.push([10+i*10,y]);p.setAttribute("d",pts.map((q,j)=>(j?"L":"M")+q[0]+" "+q[1]).join(""));await sleep(60);}
+    const val=Math.round(6500*(1-(y-60)/100));$("#volT").textContent="now Rs "+val.toLocaleString("en-IN");$("#volT").setAttribute("style",`font:700 12px var(--f-mono);fill:${val<6500?"var(--bad)":"var(--ok)"}`);
+    return `The jacket was paid with coins worth Rs 6,500. A week later they are worth Rs ${val.toLocaleString("en-IN")}. The price swings, so the shop never knows what its takings are worth.`;}},
+ {k:"hack",n:"Hacking",btn:"Attack the shop's wallet",svg:'<rect x="110" y="20" width="80" height="80" rx="10" fill="var(--panel)" stroke="var(--ink)" stroke-width="3"/><circle cx="150" cy="60" r="14" fill="none" stroke="var(--ink)" stroke-width="3"/><g id="coins"></g><circle cx="270" cy="30" r="14" fill="var(--bad)"/><text id="hackT" x="150" y="114" text-anchor="middle" style="font:700 11px var(--f-mono);fill:var(--bad)"></text>',
+  run:async()=>{const g=$("#coins");for(let i=0;i<6;i++){g.insertAdjacentHTML("beforeend",`<circle cx="${130+i*8}" cy="${80-i%2*6}" r="6" fill="var(--amber)" id="cn${i}"/>`);}await sleep(300);
+    for(let i=0;i<6;i++){const c=$("#cn"+i);c.animate([{transform:"none"},{transform:`translate(${130-i*8}px,-50px)`,opacity:0}],{duration:REDUCE?20:500,fill:"forwards"});await sleep(120);}$("#hackT").textContent="WALLET EMPTIED";
+    return "The online wallet was hacked and the coins are gone. There is no bank to call and no way to reverse the payment.";}},
+ {k:"val",n:"Intrinsic value uncertainty",btn:"Ask: what is one coin really worth?",svg:'<path d="M150 30v70" stroke="var(--ink)" stroke-width="3"/><path id="beam" d="M70 40h160" stroke="var(--ink)" stroke-width="4" style="transform-origin:150px 40px;transition:transform .5s"/><rect x="50" y="46" width="44" height="30" rx="4" fill="var(--violet-soft)" stroke="var(--violet)"/><text x="72" y="66" text-anchor="middle" style="font:700 11px var(--f-mono);fill:var(--violet)">1 coin</text><rect x="206" y="46" width="44" height="30" rx="4" fill="var(--panel)" stroke="var(--line)"/><text id="valQ" x="228" y="66" text-anchor="middle" style="font:700 14px var(--f-mono);fill:var(--muted)">?</text>',
+  run:async()=>{const q=$("#valQ"),b=$("#beam");const guesses=["Rs 1.3 lakh","Rs 90k","Rs 2 lakh","Rs 40k","?"];q.setAttribute("style","font:700 10px var(--f-mono);fill:var(--ink)");for(const g of guesses){q.textContent=g;b.style.transform=`rotate(${(Math.random()-.5)*16}deg)`;await sleep(420);}q.setAttribute("style","font:700 14px var(--f-mono);fill:var(--bad)");
+    return "No company, gold or government stands behind it. A coin is worth whatever buyers will pay today, so its true value is hard to pin down.";}},
+ {k:"crime",n:"Criminal use",btn:"Follow an anonymous transfer",svg:'<g id="hops"></g><g id="flag" opacity="0"><path d="M240 30v50" stroke="var(--bad)" stroke-width="3"/><path d="M240 30h40l-10 10 10 10h-40z" fill="var(--bad)"/></g><text id="crT" x="150" y="114" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--muted)"></text>',
+  run:async()=>{const g=$("#hops");const xs=[30,90,150,210];for(let i=0;i<4;i++){g.insertAdjacentHTML("beforeend",`<circle cx="${xs[i]}" cy="60" r="18" fill="var(--panel)" stroke="var(--steel)" stroke-width="2"/><text x="${xs[i]}" y="63" text-anchor="middle" style="font:600 7px var(--f-mono);fill:var(--muted)">0x${(Math.random()*4096|0).toString(16)}</text>`);if(i)g.insertAdjacentHTML("afterbegin",`<line x1="${xs[i-1]}" y1="60" x2="${xs[i]}" y2="60" stroke="var(--steel)" stroke-dasharray="3 3"/>`);await sleep(300);}
+    $("#flag").setAttribute("opacity",1);$("#crT").textContent="who sent it? who received it?";
+    return "Money hops between anonymous wallet addresses. The same privacy that helps honest users can help criminals avoid money laundering rules.";}}
+];
+function renderRisks(){$("#risks").innerHTML=RK.map(r=>`<div class="rk${hits.has(r.k)?" hit":""}" id="rk-${r.k}"><h3>${r.n}</h3><svg id="sv-${r.k}" viewBox="0 0 300 120" aria-hidden="true">${r.svg}</svg><button class="btn" type="button" data-k="${r.k}" ${paid?"":"disabled"}>${paid?r.btn:"Pay with crypto first"}</button><p class="out" id="o-${r.k}"></p></div>`).join("");
+  $$(".rk .btn").forEach(b=>b.onclick=async()=>{const r=RK.find(x=>x.k===b.dataset.k);b.disabled=true;$("#sv-"+r.k).innerHTML=r.svg;const msg=await r.run();$("#o-"+r.k).textContent=msg;$("#rk-"+r.k).classList.add("hit");
+    if(!hits.has(r.k)){hits.add(r.k);comfort=Math.max(10,comfort-15);}b.disabled=false;verdict();log(r.n,msg,"bad");});}
+function verdict(){$("#vNum").textContent=comfort+"%";const b=$("#vBar");b.style.width=comfort+"%";b.style.background=comfort>=60?"var(--ok)":comfort>=35?"var(--amber)":"var(--bad)";
+  $("#vNote").textContent=hits.size===4?"Ramesh: \"Cheap and fast, but the shop would carry all four risks. We'd only accept it if it's converted to rupees straight away, and we'd need checks for money laundering.\"":hits.size?`Ramesh has seen ${hits.size} of 4 risks. His comfort is falling.`:"Cheaper and more private. But he hasn't seen the risks yet.";}
+const endTour=tourSetup([
+ {t:"Bikash wants to pay Rs 6,500 for a jacket in crypto. Watch it race a normal card payment.",a:()=>run("both")},
+ {t:"No bank, no payment company: crypto went wallet to wallet, like cash. That's the key difference from traditional currency.",a:()=>{}},
+ {t:"But the shop now holds coins, not rupees. Watch what a week of price swings does.",a:async()=>{const b=$("#rk-vol .btn");if(b&&!b.disabled)b.click();}},
+ {t:"Your turn. Trigger the other three risks and see where Ramesh ends up.",a:()=>{}}
+],"Race the payments, then try the four risks.");
+$("#bReset").onclick=()=>{if(busy)return;paid=false;comfort=70;hits.clear();shown={c:false,k:false};drawTracks();cmp(false,false);renderRisks();verdict();feedReset();endTour();};
+shellSetup();drawTracks();cmp(false,false);renderRisks();
+})();
+</script>
+
+</body>
+</html>

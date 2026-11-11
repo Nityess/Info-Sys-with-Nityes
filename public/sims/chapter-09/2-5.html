@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Build Your Own Blockchain</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: network of five nodes on top, transaction composer and validation settings, the chain of block cards below with editable data */
+.compose{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;padding:14px 16px;border-top:1px solid var(--line)}
+.compose label{display:grid;gap:4px;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.compose select,.blk input{font:inherit;font-size:.9rem;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;min-height:40px;padding:0 8px}
+.chainwrap{overflow-x:auto;padding:16px;border-top:1px solid var(--line)}
+.chain{display:flex;gap:0;align-items:stretch;min-width:min-content}
+.blk{width:230px;flex:none;border:2px solid var(--ok);border-radius:14px;padding:10px;display:grid;gap:6px;background:var(--ok-soft);transition:background .3s,border-color .3s}
+.blk.bad{border-color:var(--bad);background:var(--bad-soft)}
+.blk.new{animation:slide .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes slide{from{transform:translateX(60px);opacity:0}to{transform:none;opacity:1}}
+.blk h3{font-size:.95rem;display:flex;justify-content:space-between}
+.blk h3 span{font:600 .66rem var(--f-mono);padding:2px 8px;border-radius:999px;background:var(--panel)}
+.blk .k{font:600 .62rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.blk .h{font:600 .78rem var(--f-mono);background:var(--panel);border-radius:6px;padding:4px 6px;word-break:break-all}
+.blk .h.mis{color:var(--bad);outline:2px solid var(--bad)}
+.blk input{width:100%;min-height:36px}
+.blk .val{font-size:.74em;color:var(--muted)}
+a.btn{text-decoration:none;color:var(--ink)}
+.link{width:34px;flex:none;display:grid;place-items:center}
+.link svg{width:34px;height:20px}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Blockchain simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.5 Blockchain</div>
+      <h1>Build Your Own Blockchain</h1>
+      <p class="role">You are one of five members of a payment network. Everest Fashion wants to pay Himal Textiles for fabric. Add the payment as a block, get it validated, then try to cheat.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><a class="btn" href="https://andersbrownworth.com/blockchain/" target="_blank" rel="noopener">Try the full hash demo ↗</a><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card">
+    <div class="scroll">
+      <svg class="scene" viewBox="0 0 960 250" role="img" aria-label="Five network members who receive and check each new block" style="min-width:560px">
+        <rect width="960" height="250" fill="var(--panel2)"/>
+        <g id="net"></g><g id="dots"></g>
+        <text id="netMsg" x="480" y="238" text-anchor="middle" style="font:600 13px var(--f-body);fill:var(--ink)"></text>
+      </svg>
+    </div>
+    <div class="compose">
+      <label>Who pays<select id="from"><option>Everest Fashion</option><option>Himal Textiles</option><option>Sajilo Bank</option></select></label>
+      <label>Who receives<select id="to"><option>Himal Textiles</option><option>Everest Fashion</option><option>Sajilo Bank</option></select></label>
+      <label>Amount<select id="amt"><option>Rs 3,20,000</option><option>Rs 75,000</option><option>Rs 1,50,000</option></select></label>
+      <label>Validations needed (this demo)<select id="need"><option>2</option><option selected>3</option><option>4</option></select></label>
+      <button class="btn" id="bCheat" type="button" aria-pressed="false">Cheat: change the amount after hashing</button>
+      <button class="btn pri" id="bAdd" type="button">Broadcast the block</button>
+    </div>
+    <div class="chainwrap"><div class="chain" id="chain"></div></div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="kabita"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Kabita · cybersecurity specialist</div><p id="capTxt">Tap Watch the story, or broadcast a payment. Then edit an old block and watch the chain break.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Blockchain</cite>A process used in many distributed ledger systems to ensure that only valid transactions are recorded.</div>
+    <div class="tw"><table style="min-width:420px"><thead><tr><th>Step</th><th>What happens</th></tr></thead><tbody>
+      <tr><td>1</td><td>A member records a new block (transaction) onto the ledger.</td></tr>
+      <tr><td>2</td><td>The block must be validated by an agreed number of other members.</td></tr>
+      <tr><td>3</td><td>Validation means checking a mathematical code on the block, the hash, which is based on the data in the transaction.</td></tr>
+      <tr><td>4</td><td>Other members check the hash is correct for the data in the block.</td></tr>
+      <tr><td>5</td><td>Once enough members validate, the block is accepted.</td></tr>
+      <tr><td>6</td><td>Each block's opening hash equals the closing hash of the block before it.</td></tr>
+      <tr><td>7</td><td>Changing a recorded block changes its closing hash and breaks the chain, so it is very hard to change.</td></tr>
+    </tbody></table></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion and Himal Textiles are made-up businesses; Sajilo Bank and Kabita are illustrative. The hash here is a short teaching hash, not a real cryptographic one. Real blockchains use different validation and consensus rules; the "validations needed" number is only this demo's rule. For a fuller hands-on hash demo, use the link at the top.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+function hash(s){let h1=0x811c9dc5,h2=0x1b873593;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,16777619);h2=Math.imul(h2^c,2246822519)^(h2>>>13);}return((h1>>>0).toString(16).padStart(8,"0")+(h2>>>0).toString(16).padStart(8,"0")).slice(0,12);}
+const NODES=[{n:"You",x:120},{n:"Everest Fashion",x:300},{n:"Himal Textiles",x:480},{n:"Sajilo Bank",x:660},{n:"Auditor",x:840}];
+let chain=[],cheat=false,busy=false;
+function mk(i,data,open){return{i,data,open,close:hash(open+"|"+i+"|"+data),orig:data,vals:0};}
+function init(){chain=[mk(0,"Genesis: network starts","000000000000")];chain.push(mk(1,"Sajilo Bank pays Everest Fashion Rs 75,000",chain[0].close));chain[0].vals=chain[1].vals=3;}
+function drawNet(states){$("#net").innerHTML=NODES.map((n,i)=>{const s=(states||[])[i];const col=s==="ok"?"var(--ok)":s==="no"?"var(--bad)":"var(--ink)";
+  return `<circle cx="${n.x}" cy="110" r="34" fill="var(--panel)" stroke="${col}" stroke-width="${s?4:2}"/><circle cx="${n.x}" cy="100" r="10" fill="var(--skin${i%2?"2":""})"/><path d="M${n.x-16} 132a16 16 0 0 1 32 0z" fill="${i===0?"var(--violet)":"var(--steel)"}"/>
+  <text x="${n.x}" y="62" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">${n.n}</text>
+  ${s?`<text x="${n.x}" y="172" text-anchor="middle" style="font:700 12px var(--f-mono);fill:${col}">${s==="ok"?"✓ hash OK":"✗ hash wrong"}</text>`:""}`;}).join("");}
+function recompute(){for(let k=0;k<chain.length;k++){const b=chain[k];b.close=hash(b.open+"|"+b.i+"|"+b.data);}}
+function validity(){const v=[];let broken=false;for(let k=0;k<chain.length;k++){const b=chain[k];const okData=b.data===b.orig;const linkOk=k===0||b.open===chain[k-1].close;if(!okData||!linkOk)broken=true;v.push(!broken);}return v;}
+function renderChain(newIdx){recompute();const v=validity();
+  $("#chain").innerHTML=chain.map((b,k)=>{const mis=k>0&&b.open!==chain[k-1].close;return (k?`<div class="link" aria-hidden="true"><svg viewBox="0 0 34 20"><path d="M2 10h28M24 4l6 6-6 6" fill="none" stroke="${v[k]?"var(--ok)":"var(--bad)"}" stroke-width="2.5"/></svg></div>`:"")+
+  `<div class="blk${v[k]?"":" bad"}${newIdx===k?" new":""}"><h3>Block ${b.i}<span>${v[k]?"valid":"invalid"}</span></h3>
+   <div class="k">Opening hash (previous block's closing)</div><div class="h${mis?" mis":""}">${b.open}</div>
+   <div class="k">Data</div><input aria-label="Data in block ${b.i}" data-k="${k}" value="${b.data.replace(/"/g,"&quot;")}" ${k===0?"readonly":""}>
+   <div class="k">Closing hash</div><div class="h">${b.close}</div>
+   <div class="val">${b.vals} member${b.vals===1?"":"s"} validated</div></div>`;}).join("");
+  $$(".blk input").forEach(inp=>inp.oninput=()=>{const k=+inp.dataset.k;chain[k].data=inp.value;const pos=inp.selectionStart;renderChain();const again=$(`.blk input[data-k="${k}"]`);again.focus();try{again.setSelectionRange(pos,pos);}catch(e){}tamperMsg(k);});
+}
+let tamperLogged=false;
+function tamperMsg(k){const v=validity();const bad=v.filter(x=>!x).length;
+  if(bad){cap(`Block ${k}'s data changed, so its closing hash changed. Block ${k+1<chain.length?k+1:k} no longer links to it, and ${bad} block${bad>1?"s are":" is"} now invalid.`);
+    if(!tamperLogged){log("Tamper",`Editing block ${k} changed its hash and broke every block after it.`,"bad");tamperLogged=true;}}
+  else{cap("Chain restored: every opening hash matches the previous closing hash.");tamperLogged=false;}}
+async function add(){
+  if(busy)return;const from=$("#from").value,to=$("#to").value,amt=$("#amt").value,need=+$("#need").value;
+  if(from===to){cap("Pick two different members.");return;}
+  if(validity().some(x=>!x)){cap("The chain is broken. Repair it (Reset, or undo your edit) before adding new blocks.");return;}
+  busy=true;$("#bAdd").disabled=true;
+  const data=`${from} pays ${to} ${amt}`,prev=chain[chain.length-1];
+  const blk=mk(chain.length,data,prev.close);
+  let shown=data;if(cheat){shown=data.replace(amt,amt==="Rs 3,20,000"?"Rs 32,00,000":"Rs 9,99,000");}
+  $("#netMsg").textContent=`New block: "${shown}" · hash ${blk.close}`;drawNet([]);
+  await Promise.all(NODES.slice(1).map(n=>movePath(`M120 110 C${(120+n.x)/2} 20, ${(120+n.x)/2} 20, ${n.x} 110`,"var(--violet)",700,6)));
+  const states=["ok"];let ok=1;drawNet(states);
+  const real=hash(blk.open+"|"+blk.i+"|"+shown)===blk.close;
+  for(let i=1;i<5;i++){await sleep(450);states[i]=real?"ok":"no";if(real)ok++;drawNet(states);if(real&&ok>=need)break;}
+  if(!real){$("#netMsg").textContent="Rejected: the hash does not match the data in the block.";
+    cap("Every member re-calculated the hash from the data. The amount was changed after hashing, so the codes don't match. The block is refused.");
+    log("Validation","A block whose data didn't match its hash was rejected by every member.","good");}
+  else{blk.vals=ok;chain.push(blk);renderChain(chain.length-1);$("#netMsg").textContent=`Accepted after ${ok} validations. Its opening hash is block ${blk.i-1}'s closing hash.`;
+    cap(`${ok} members checked the hash against the data and agreed. The block joins the chain, linked by the previous block's closing hash.`);
+    log("Block "+blk.i,`${data}. Validated by ${ok} members (demo rule: ${need}).`,"good");setTimeout(()=>{const w=$(".chainwrap");w.scrollLeft=w.scrollWidth;},50);}
+  busy=false;$("#bAdd").disabled=false;
+}
+$("#bAdd").onclick=add;
+$("#bCheat").onclick=e=>{cheat=!cheat;e.currentTarget.setAttribute("aria-pressed",cheat);cap(cheat?"Cheat mode: the sender will change the amount after the hash is made. Broadcast and watch.":"Honest mode.");};
+const endTour=tourSetup([
+ {t:"A payment network with five members. Nobody is in charge, so how do they agree what really happened?",a:()=>{}},
+ {t:"You record a new block: Everest Fashion pays Himal Textiles Rs 3,20,000. Its hash is calculated from the data.",a:async()=>{$("#from").value="Everest Fashion";$("#to").value="Himal Textiles";$("#amt").value="Rs 3,20,000";cheat=false;$("#bCheat").setAttribute("aria-pressed",false);await add();}},
+ {t:"See the link: this block's opening hash is exactly the last block's closing hash. That is the chain.",a:()=>{}},
+ {t:"Now someone quietly changes an old payment. Its hash changes, and every later block breaks.",a:()=>{const k=1;chain[k].data="Sajilo Bank pays Everest Fashion Rs 7,50,000";renderChain();tamperMsg(k);}},
+ {t:"Your turn. Undo the edit (or Reset), try cheat mode, and use the full hash demo link for a deeper look.",a:()=>{}}
+],"Broadcast a payment, then edit an old block and watch the chain break.");
+$("#bReset").onclick=()=>{if(busy)return;init();cheat=false;$("#bCheat").setAttribute("aria-pressed",false);tamperLogged=false;drawNet([]);$("#netMsg").textContent="";renderChain();feedReset();endTour();};
+shellSetup();init();drawNet([]);renderChain();
+})();
+</script>
+
+</body>
+</html>

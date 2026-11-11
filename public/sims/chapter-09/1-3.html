@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Data Source Discovery Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: street scene with tappable data sources feeding a data store, side panel for the tapped source, source switches and the insights that depend on them */
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;--brand:#0d5f63;--brand-soft:#d9eeee;
+  --pr:#1d68c9;--pr-soft:#e3eefb;--op:#1f7d46;--op-soft:#e3f3e9;--hu:#c0365f;--hu-soft:#fbe6ed;--ma:#a86400;--ma-soft:#fbefd9;
+  --bad:#d0262b;--bad-soft:#fde7e7;--sky:#e6eef6;--ground:#dfe5ea;--road:#9aa6b2;--wall:#f3f5f8;--roof:#c8d1da;--glass:#cfe0ef;--wood:#c9a477;
+  --skin:#c98f63;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --pr:#5ea5ff;--pr-soft:#16283f;--op:#4fd087;--op-soft:#173326;--hu:#ff6f98;--hu-soft:#3a1a26;--ma:#f1a43a;--ma-soft:#3a2c14;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--sky:#121c26;--ground:#1a2531;--road:#2c3946;--wall:#223040;--roof:#2e3d4d;--glass:#25405a;--wood:#7d6244;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --pr:#5ea5ff;--pr-soft:#16283f;--op:#4fd087;--op-soft:#173326;--hu:#ff6f98;--hu-soft:#3a1a26;--ma:#f1a43a;--ma-soft:#3a2c14;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--sky:#121c26;--ground:#1a2531;--road:#2c3946;--wall:#223040;--roof:#2e3d4d;--glass:#25405a;--wood:#7d6244;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools{display:flex;flex-wrap:wrap;gap:6px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500}
+.btn:hover{border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0;overflow:hidden}
+@media (max-width:980px){.stage{grid-template-columns:minmax(0,1fr)}}
+.scroll{overflow-x:auto;min-width:0}
+#scene{display:block;width:100%;min-width:640px;height:auto}
+.hot{cursor:pointer}
+.hot .ring{fill:none;stroke:var(--ink);stroke-width:2;stroke-dasharray:4 4;opacity:.45;transform-box:fill-box;transform-origin:center;animation:breathe 2.2s ease-in-out infinite}
+.hot.found .ring{opacity:0;animation:none}
+.hot:hover .ring,.hot:focus .ring{opacity:1}
+.hot:focus{outline:none}
+.hot:focus-visible .sel{opacity:1}
+.hot .sel{opacity:0;fill:none;stroke:var(--brand);stroke-width:3}
+.hot.cur .sel{opacity:1}
+.hot.cut{opacity:.35}
+@keyframes breathe{50%{transform:scale(1.15)}}
+.side{border-left:1px solid var(--line);padding:16px;display:grid;gap:12px;align-content:start;min-width:0}
+@media (max-width:980px){.side{border-left:0;border-top:1px solid var(--line)}}
+.side h2{font-size:1.02rem}
+.info{border-radius:12px;padding:12px;display:grid;gap:6px;animation:pop .35s ease}
+.info .cat{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+.info h3{font-size:1.02rem}
+.info .sample{font:500 .8rem var(--f-mono);background:var(--panel);border-radius:8px;padding:6px 8px;white-space:pre-wrap}
+.info p{margin:0;font-size:.9em}
+.progress{display:flex;justify-content:space-between;font-size:.86em}
+.progress b{font-family:var(--f-mono)}
+.sw{display:grid;gap:6px}
+.swb{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:52px;background:var(--panel)}
+.swb .dot{width:14px;height:14px;border-radius:4px}
+.swb small{display:block;font-size:.74em;color:var(--muted)}
+.swb .st{font:600 .7rem var(--f-mono);padding:2px 8px;border-radius:999px}
+.swb[aria-pressed="false"] .st{background:var(--bad-soft);color:var(--bad)}
+.swb[aria-pressed="true"] .st{background:var(--op-soft);color:var(--op)}
+.swb[aria-pressed="false"]{background:var(--panel2)}
+.swb[aria-pressed="false"] .dot{opacity:.3}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px;grid-column:1/-1}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.ins{padding:16px;display:grid;gap:12px}
+.ins h2{font-size:1.05rem}
+.igrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.ic{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:6px;transition:background .3s,border-color .3s,opacity .3s}
+.ic b{font-family:var(--f-disp);font-size:.95em}
+.ic .need{display:flex;gap:4px;flex-wrap:wrap}
+.ic .need span{font:600 .64rem var(--f-mono);padding:1px 6px;border-radius:4px}
+.ic .stt{font:600 .7rem var(--f-mono);letter-spacing:.04em}
+.ic.lost{background:var(--bad-soft);border-color:var(--bad)}
+.ic.lost .stt{color:var(--bad)}
+.ic.live .stt{color:var(--op)}
+.ic p{margin:0;font-size:.84em}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.lens{padding:16px;display:grid;gap:10px}
+.lens h2{font-size:1.05rem}
+.lrow{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);gap:6px;font-size:.84em;align-items:center}
+.lrow.h{font:600 .66rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.lrow span{border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.lrow.h span{border:0;padding:0 8px}
+.keys{padding:18px;display:grid;gap:12px}
+.keys h2{font-size:1.15rem}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em;min-width:520px}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.note{font-size:.86em;color:var(--muted);margin:0}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Sources of big data simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 1.3 Sources of big data</div>
+      <h1>Data Source Discovery Map</h1>
+      <p class="role">Sujan is building Everest Fashion's data store. Where does all the data actually come from? Tap anything on the street that gives off data, then cut a source and see what Anita loses.</p>
+    </div>
+    <div class="tools">
+      <button class="btn pri" id="bStory" type="button">Watch the story</button>
+      <button class="btn" id="bLive" type="button" aria-pressed="false">Run the street live</button>
+      <button class="btn" id="bReset" type="button">Reset</button>
+      <button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button>
+      <button class="btn" id="bFull" type="button">Full screen</button>
+    </div>
+  </div>
+
+  <div class="card stage">
+    <div class="scroll">
+      <svg id="scene" viewBox="0 0 960 540" role="group" aria-label="A street with Everest Fashion's head office, store, a bus stop, a government building, a shopper and a delivery van. Each data source can be activated.">
+        <rect width="960" height="540" fill="var(--sky)"/>
+        <rect y="400" width="960" height="140" fill="var(--ground)"/>
+        <rect y="440" width="960" height="52" fill="var(--road)"/>
+        <path d="M0 466h960" stroke="var(--panel)" stroke-width="3" stroke-dasharray="26 22" opacity=".6"/>
+        <!-- pipes layer -->
+        <g id="pipes"></g>
+        <!-- head office -->
+        <rect x="30" y="140" width="170" height="262" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+        <rect x="30" y="126" width="170" height="16" fill="var(--roof)"/>
+        <text x="115" y="164" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--muted)">HEAD OFFICE</text>
+        <rect x="50" y="180" width="130" height="80" rx="4" fill="var(--glass)"/>
+        <rect x="50" y="290" width="58" height="60" rx="4" fill="var(--glass)"/><rect x="122" y="290" width="58" height="60" rx="4" fill="var(--glass)"/>
+        <rect x="96" y="362" width="38" height="40" fill="var(--wood)"/>
+        <!-- store -->
+        <rect x="230" y="220" width="300" height="182" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+        <rect x="230" y="204" width="300" height="24" fill="var(--brand)"/>
+        <text x="380" y="221" text-anchor="middle" style="font:700 13px var(--f-disp);letter-spacing:3px;fill:var(--panel)">EVEREST FASHION</text>
+        <rect x="250" y="300" width="56" height="102" fill="var(--glass)" stroke="var(--line)"/>
+        <rect x="330" y="250" width="180" height="70" rx="4" fill="var(--glass)" opacity=".6"/>
+        <path d="M345 258v40M375 258v40M405 258v40M435 258v40" stroke="var(--muted)" stroke-width="2"/>
+        <rect x="390" y="350" width="110" height="52" rx="3" fill="var(--wood)"/>
+        <!-- bus stop -->
+        <rect x="570" y="300" width="6" height="102" fill="var(--muted)"/>
+        <rect x="560" y="290" width="90" height="10" fill="var(--muted)"/>
+        <rect x="582" y="312" width="58" height="40" rx="4" fill="var(--ink)"/>
+        <!-- government building -->
+        <path d="M650 160l70-34 70 34z" fill="var(--roof)"/>
+        <rect x="660" y="160" width="120" height="242" fill="var(--wall)" stroke="var(--line)" stroke-width="2"/>
+        <path d="M676 180v200M700 180v200M740 180v200M764 180v200" stroke="var(--line)" stroke-width="7"/>
+        <text x="720" y="398" text-anchor="middle" style="font:600 9px var(--f-mono);fill:var(--muted)">GOVT OPEN DATA</text>
+        <!-- data store -->
+        <g id="store">
+          <rect x="822" y="22" width="126" height="196" rx="16" fill="var(--panel)" stroke="var(--brand)" stroke-width="2.5"/>
+          <text x="885" y="42" text-anchor="middle" style="font:600 11px var(--f-disp);fill:var(--ink)">Data store</text>
+          <g id="comps"></g>
+          <text id="storeN" x="885" y="210" text-anchor="middle" style="font:600 10px var(--f-mono);fill:var(--muted)">0 records</text>
+        </g>
+        <!-- shopper -->
+        <g transform="translate(838 312)"><circle cx="12" cy="8" r="8" fill="var(--skin)"/><path d="M0 88V30a12 12 0 0 1 24 0v58z" fill="var(--hu)"/><rect x="20" y="36" width="12" height="20" rx="3" fill="var(--ink)"/></g>
+        <text x="850" y="420" text-anchor="middle" style="font:600 9px var(--f-mono);fill:var(--muted)">Bikash</text>
+        <!-- hotspots -->
+        <g id="hots"></g>
+        <g id="van"></g>
+        <g id="dots"></g>
+      </svg>
+    </div>
+    <aside class="side" aria-label="Selected source">
+      <div class="progress"><span>Sources found</span><b id="foundN">0 / 12</b></div>
+      <div id="info"><div class="info" style="background:var(--panel2)"><h3>Tap something on the street</h3><p>Anything with a dashed ring gives off data. Tap it, or use Tab and Enter.</p></div></div>
+      <h2>Switch sources on and off</h2>
+      <div class="sw" id="sw"></div>
+    </aside>
+    <div class="caption" aria-live="polite">
+      <svg class="ava" viewBox="0 0 42 42" aria-hidden="true"><rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--pr)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/></svg>
+      <div style="flex:1 1 260px;min-width:0"><div class="who">Sujan · Everest Fashion IT manager</div><p id="capTxt">Tap Watch the story, or start tapping the street. 12 data sources are hiding in plain sight.</p></div>
+      <div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="card ins" aria-label="What Anita gets from the data store">
+  <h2>What Anita gets from the data store</h2>
+  <p class="note">Each answer needs certain sources. Switch one off above and watch which answers disappear.</p>
+  <div class="igrid" id="ins"></div>
+</section>
+
+<div class="lower">
+  <section class="card lens" aria-label="Sources versus types">
+    <h2>Source is not the same as type</h2>
+    <p class="note">Two different questions. Source asks <b>where it comes from</b>. Type (topic 1.2) asks <b>how it was obtained</b>.</p>
+    <div class="lrow h"><span>Data</span><span>Source</span><span>Type</span></div>
+    <div class="lrow"><span>Bikash's tweet about Everest Fashion</span><span>Human-sourced</span><span>User-generated</span></div>
+    <div class="lrow"><span>Website click log</span><span>Machine-generated</span><span>Transacted</span></div>
+    <div class="lrow"><span>Sales in the finance system</span><span>Processed</span><span>Transacted</span></div>
+  </section>
+  <section class="card keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="tw"><table>
+      <thead><tr><th>Source</th><th>Description</th><th>Examples</th></tr></thead>
+      <tbody>
+        <tr><td><b style="color:var(--pr)">Processed data</b></td><td>From databases held by traditional businesses and other organisations.</td><td>Internal financial systems, ERP databases.</td></tr>
+        <tr><td><b style="color:var(--op)">Open data</b></td><td>Release of large amounts of primarily public sector data.</td><td>Geo-spatial data, transport data, government financial data, public service data.</td></tr>
+        <tr><td><b style="color:var(--hu)">Human-sourced data</b></td><td>From social networks, blogs, emails, text messages and internet searches.</td><td>Twitter feeds, customer reviews, WhatsApp messages.</td></tr>
+        <tr><td><b style="color:var(--ma)">Machine-generated data</b></td><td>From the internet of things (fixed and mobile sensors) and from computer and website logs.</td><td>RFID tags, smart meters, car black boxes, website click logs.</td></tr>
+      </tbody>
+    </table></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion Ltd is a made-up business based on the study note's fashion retailer case. Sujan, Bikash, the street, the government portal and every data sample are illustrative. The four sources and their examples follow the study note.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const NS="http://www.w3.org/2000/svg";
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const CAT={
+ pr:{name:"Processed data",short:"Processed",col:"var(--pr)",soft:"var(--pr-soft)",x:840,desc:"databases the business already keeps"},
+ op:{name:"Open data",short:"Open",col:"var(--op)",soft:"var(--op-soft)",x:868,desc:"public sector data released for anyone"},
+ hu:{name:"Human-sourced data",short:"Human",col:"var(--hu)",soft:"var(--hu-soft)",x:896,desc:"what people write, say and search"},
+ ma:{name:"Machine-generated data",short:"Machine",col:"var(--ma)",soft:"var(--ma-soft)",x:924,desc:"sensors and system logs"}
+};
+const SRC=[
+ {k:"erp",c:"pr",x:115,y:220,r:30,title:"ERP computer in head office",sample:"stock: puffer M  112\nPO-884 Himal Textiles fabric  Rs 3,20,000",use:"Stock, purchases and payroll already sit in Everest Fashion's ERP database.",draw:'<rect x="-24" y="-18" width="48" height="32" rx="3" fill="var(--ink)"/><rect x="-20" y="-14" width="40" height="24" rx="2" fill="var(--pr-soft)"/><path d="M-12 -6h24M-12 0h18M-12 6h20" stroke="var(--pr)" stroke-width="2"/><rect x="-4" y="14" width="8" height="8" fill="var(--ink)"/>'},
+ {k:"fin",c:"pr",x:150,y:320,r:24,title:"Finance system",sample:"GL 4000 Sales  Rs 18,40,000\nmonth: November  posted",use:"Sales, costs and cash already recorded in the accounting system.",draw:'<rect x="-18" y="-16" width="36" height="30" rx="3" fill="var(--panel)" stroke="var(--pr)" stroke-width="2"/><path d="M-10 6v-6M-3 6v-12M4 6v-8M11 6v-14" stroke="var(--pr)" stroke-width="3"/>'},
+ {k:"till",c:"pr",x:445,y:340,r:24,title:"The till, feeding the sales database",sample:"11:30  jacket M  Rs 6,500\nstore: Pokhara  card: loyalty",use:"Each sale is stored in Everest Fashion's own sales database.",draw:'<rect x="-18" y="-14" width="36" height="22" rx="3" fill="var(--ink)"/><rect x="-14" y="-10" width="28" height="12" rx="2" fill="var(--pr)"/><rect x="-20" y="8" width="40" height="8" rx="2" fill="var(--steel,#8a97a5)"/>'},
+ {k:"bus",c:"op",x:611,y:332,r:28,title:"Bus timetable and passenger counts",sample:"route 4  stops: Lakeside\npassengers Sat: 2,380",use:"Public transport data, released free, tells Everest Fashion when people pass the store.",draw:'<rect x="-27" y="-18" width="54" height="36" rx="3" fill="var(--ink)"/><text x="0" y="-4" text-anchor="middle" style="font:600 8px var(--f-mono);fill:var(--op)">BUS 4</text><text x="0" y="8" text-anchor="middle" style="font:600 8px var(--f-mono);fill:var(--op)">3 min</text>'},
+ {k:"map",c:"op",x:720,y:240,r:32,title:"Government map and population data",sample:"district: Kaski  pop: 6.0 lakh\nward 17  new housing +12%",use:"Geo-spatial and public service data help choose where to open the next store.",draw:'<rect x="-26" y="-20" width="52" height="40" rx="4" fill="var(--panel)" stroke="var(--op)" stroke-width="2"/><path d="M-20 10l12-12 10 8 16-16" fill="none" stroke="var(--op)" stroke-width="2.5"/><circle cx="10" cy="-6" r="3" fill="var(--op)"/>'},
+ {k:"wa",c:"hu",x:790,y:270,r:22,title:"WhatsApp message to the store",sample:"\"Do you have the green puffer\nin M? Can you hold one?\"",use:"Messages show what customers want before they buy.",draw:'<path d="M-18 -14h36v22h-22l-8 8v-8h-6z" fill="var(--hu)"/><path d="M-10 -6h20M-10 0h12" stroke="var(--panel)" stroke-width="2"/>'},
+ {k:"rev",c:"hu",x:860,y:258,r:22,title:"Review and tweet about Everest Fashion",sample:"\"Warm, but sleeves too long\n★★★★☆ #everestfashion\"",use:"Social networks and reviews reveal how people feel about products.",draw:'<path d="M-18 -14h36v22h-22l-8 8v-8h-6z" fill="var(--hu)"/><text x="0" y="0" text-anchor="middle" style="font:700 10px var(--f-body);fill:var(--panel)">★★★★</text>'},
+ {k:"mail",c:"hu",x:926,y:300,r:22,title:"Email and internet search",sample:"search: \"puffer jacket pokhara\"\nemail: \"refund for order 1042\"",use:"Emails and searches show intent and complaints in people's own words.",draw:'<rect x="-18" y="-12" width="36" height="24" rx="3" fill="var(--hu)"/><path d="M-18 -12l18 14 18-14" fill="none" stroke="var(--panel)" stroke-width="2"/>'},
+ {k:"rfid",c:"ma",x:278,y:330,r:28,title:"RFID gate at the store door",sample:"tag 7E21-0093  OUT 11:31\nfootfall today: 412",use:"RFID tags track each garment and count people at the door.",draw:'<rect x="-30" y="-40" width="8" height="74" fill="var(--ma)"/><rect x="22" y="-40" width="8" height="74" fill="var(--ma)"/><path d="M-14 -10a16 16 0 0 1 28 0M-8 -2a8 8 0 0 1 16 0" fill="none" stroke="var(--ma)" stroke-width="2.5"/>'},
+ {k:"meter",c:"ma",x:515,y:250,r:20,title:"Smart meter on the store wall",sample:"kWh today: 46.2\npeak 18:00  heater on",use:"The meter sends energy use over the internet every half hour.",draw:'<rect x="-14" y="-16" width="28" height="32" rx="4" fill="var(--panel)" stroke="var(--ma)" stroke-width="2"/><text x="0" y="3" text-anchor="middle" style="font:600 8px var(--f-mono);fill:var(--ma)">46.2</text>'},
+ {k:"web",c:"ma",x:180,y:108,r:22,title:"Website servers and click logs",sample:"GET /jackets/puffer 200\n10:14:07  session a91f",use:"Every page view on Everest Fashion's website is logged automatically.",draw:'<rect x="-16" y="-18" width="32" height="34" rx="3" fill="var(--ink)"/><path d="M-10 -10h20M-10 -2h20M-10 6h20" stroke="var(--ma)" stroke-width="2.5"/>'},
+ {k:"van",c:"ma",x:0,y:448,r:30,title:"Delivery van black box",sample:"van BA 2 KHA 4471\nspeed 38 km/h  harsh brake: 0",use:"The van's black box sends location and driving data as it moves.",draw:'<rect x="-36" y="-22" width="54" height="30" rx="4" fill="var(--brand)"/><path d="M18 -14h12l8 10v12H18z" fill="var(--brand)"/><circle cx="-22" cy="10" r="6" fill="var(--ink)"/><circle cx="24" cy="10" r="6" fill="var(--ink)"/><rect x="-28" y="-16" width="16" height="10" rx="2" fill="var(--ma)"/>'}
+];
+const INS=[
+ {t:"Saturday footfall forecast",need:["op","ma"],text:"Bus passenger counts plus door counts predict how busy the store will be."},
+ {t:"Stock reorder list",need:["pr","ma"],text:"ERP stock levels plus RFID tag reads show exactly what to reorder."},
+ {t:"How customers feel this week",need:["hu"],text:"Reviews, tweets and messages show what people love and what annoys them."},
+ {t:"Where to open the next store",need:["op","pr"],text:"Population maps plus sales by area point to the best new location."},
+ {t:"Energy saving plan",need:["ma"],text:"Smart meter readings show when heating can be turned down."}
+];
+let on={pr:true,op:true,hu:true,ma:true}, found=new Set(), level={pr:0,op:0,hu:0,ma:0}, records=0, cur=null, live=false;
+
+/* store compartments */
+function renderStore(){
+  let g="";Object.entries(CAT).forEach(([k,c])=>{const h=Math.min(130,level[k]),y=196-h;
+    g+=`<rect x="${c.x-12}" y="58" width="24" height="138" rx="5" fill="var(--panel2)" stroke="${on[k]?c.col:"var(--bad)"}" stroke-dasharray="${on[k]?"none":"3 3"}"/>
+      <rect x="${c.x-10}" y="${y}" width="20" height="${h}" rx="3" fill="${c.col}" opacity="${on[k]?.8:.25}" style="transition:y .5s,height .5s"/>
+      <text x="${c.x}" y="54" text-anchor="middle" style="font:600 7px var(--f-mono);fill:${c.col}">${({pr:"PROC",op:"OPEN",hu:"HUM",ma:"MACH"})[k]}</text>`;});
+  $("#comps").innerHTML=g;$("#storeN").textContent=records.toLocaleString("en-IN")+" records";
+}
+/* hotspots */
+const hots=$("#hots");
+SRC.forEach(s=>{
+  const g=document.createElementNS(NS,"g");g.setAttribute("class","hot");g.setAttribute("tabindex","0");g.setAttribute("role","button");g.setAttribute("aria-label",s.title);g.dataset.k=s.k;
+  g.innerHTML=`${s.draw}<circle class="ring" r="${s.r+8}"/><circle class="sel" r="${s.r+12}"/>`;
+  if(s.k!=="van"){g.setAttribute("transform",`translate(${s.x} ${s.y})`);hots.appendChild(g);}else{$("#van").appendChild(g);}
+  s.el=g;
+  g.addEventListener("click",()=>tap(s.k));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tap(s.k);}});
+});
+let vanX=-60;
+function srcPos(s){return s.k==="van"?[vanX,s.y]:[s.x,s.y];}
+/* pulses */
+function pulse(s,quiet){return new Promise(res=>{
+  const c=CAT[s.c],[x,y]=srcPos(s),tx=c.x,ty=60;
+  const d=`M${x} ${y-10} C${x} ${y-120}, ${tx-60} ${ty-30}, ${tx} ${ty}`;
+  const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");p.setAttribute("stroke",c.col);p.setAttribute("stroke-width",quiet?1.5:3);p.setAttribute("opacity",quiet?.25:.5);
+  if(!on[s.c])p.setAttribute("stroke-dasharray","4 6");$("#pipes").appendChild(p);
+  const L=p.getTotalLength(),dot=document.createElementNS(NS,"circle");dot.setAttribute("r",quiet?4:7);dot.setAttribute("fill",c.col);dot.setAttribute("stroke","var(--panel)");dot.setAttribute("stroke-width",2);$("#dots").appendChild(dot);
+  const stop=on[s.c]?1:.45,t0=performance.now(),dur=reduce?50:(quiet?1300:1100);
+  const step=now=>{const k=Math.min(1,(now-t0)/dur)*stop;const pt=p.getPointAtLength(k*L);dot.setAttribute("cx",pt.x);dot.setAttribute("cy",pt.y);
+    if(k<stop)requestAnimationFrame(step);else{
+      if(on[s.c]){level[s.c]+=quiet?2:14;records+=quiet?Math.round(200+Math.random()*900):Math.round(4000+Math.random()*9000);renderStore();dot.remove();}
+      else{dot.setAttribute("fill","var(--bad)");setTimeout(()=>dot.remove(),500);}
+      setTimeout(()=>p.remove(),quiet?100:900);res();}};
+  requestAnimationFrame(step);});}
+/* tap */
+async function tap(k){
+  const s=SRC.find(x=>x.k===k),c=CAT[s.c];cur=k;
+  SRC.forEach(x=>x.el.classList.toggle("cur",x.k===k));
+  const isNew=!found.has(k);found.add(k);s.el.classList.add("found");
+  $("#foundN").textContent=found.size+" / 12";renderSw();
+  $("#info").innerHTML=`<div class="info" style="background:${c.soft}"><span class="cat" style="color:${c.col}">${c.name}</span><h3>${s.title}</h3><div class="sample">${s.sample}</div><p>${s.use}</p>${on[s.c]?"":`<p style="color:var(--bad);font-weight:500">This source is switched off, so its data never reaches the store.</p>`}</div>`;
+  if(tour<0)$("#capTxt").textContent=isNew?`${c.name}: ${c.desc}. ${12-found.size?`${12-found.size} sources left to find.`:"You've found all 12. Now switch a source off below."}`:`${s.title}: ${c.name.toLowerCase()}.`;
+  await pulse(s,false);
+}
+/* switches */
+function renderSw(){
+  $("#sw").innerHTML=Object.entries(CAT).map(([k,c])=>{const n=SRC.filter(s=>s.c===k).length,f=SRC.filter(s=>s.c===k&&found.has(s.k)).length;
+    return `<button type="button" class="swb" data-k="${k}" aria-pressed="${on[k]}"><span class="dot" style="background:${c.col}"></span><span><b style="font-size:.9em">${c.name}</b><small>${c.desc} · found ${f} of ${n}</small></span><span class="st">${on[k]?"ON":"CUT"}</span></button>`;}).join("");
+  document.querySelectorAll(".swb").forEach(b=>b.onclick=()=>toggle(b.dataset.k));
+}
+function toggle(k){on[k]=!on[k];SRC.forEach(s=>s.el.classList.toggle("cut",!on[s.c]));
+  if(!on[k])level[k]=Math.max(0,level[k]*.3);renderStore();renderSw();renderIns();
+  const lost=INS.filter(i=>i.need.includes(k)).map(i=>i.t.toLowerCase());
+  $("#capTxt").textContent=on[k]?`${CAT[k].name} reconnected. Those answers come back.`:`${CAT[k].name} cut. Anita loses: ${lost.join(", ")}.`;}
+function renderIns(){
+  $("#ins").innerHTML=INS.map(i=>{const miss=i.need.filter(k=>!on[k]);const ok=!miss.length;
+    return `<div class="ic ${ok?"live":"lost"}"><b>${i.t}</b><div class="need">${i.need.map(k=>`<span style="background:${CAT[k].soft};color:${CAT[k].col}">${CAT[k].short}</span>`).join("")}</div><p>${i.text}</p><span class="stt">${ok?"AVAILABLE":"LOST · missing "+miss.map(k=>CAT[k].short.toLowerCase()).join(" and ")}</span></div>`;}).join("");
+}
+/* loop: van + live */
+let last=performance.now(),acc=0;
+function frame(now){const dt=Math.min(.1,(now-last)/1000);last=now;
+  if(!reduce){vanX+=dt*40;if(vanX>1000)vanX=-60;}else vanX=620;
+  const v=SRC.find(s=>s.k==="van");v.el.setAttribute("transform",`translate(${vanX} ${v.y})`);
+  if(live){acc+=dt;if(acc>.35){acc=0;const s=SRC[Math.floor(Math.random()*SRC.length)];pulse(s,true);}}
+  requestAnimationFrame(frame);}
+/* story */
+const TOUR=[
+ {t:"Everest Fashion wants one data store that knows everything useful. First, Sujan maps where the data actually comes from.",a:()=>{}},
+ {t:"Inside the business: the ERP, the finance system, the till. Records Everest Fashion already keeps. That's processed data.",a:()=>tap("erp")},
+ {t:"From the government, free: bus passenger counts, maps, population. That's open data.",a:()=>tap("bus")},
+ {t:"From people: WhatsApp messages, reviews, tweets, emails, searches. That's human-sourced data.",a:()=>tap("wa")},
+ {t:"From machines: RFID tags, the smart meter, the van's black box, website logs. That's machine-generated data.",a:()=>tap("rfid")},
+ {t:"Your turn. Find all 12 sources, then cut one and see which answers Anita loses.",a:()=>{}}
+];
+let tour=-1;
+function goTour(i){tour=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;$("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";TOUR[i].a();renderSw();}
+$("#bStory").onclick=()=>goTour(0);
+$("#tNext").onclick=()=>{if(tour<TOUR.length-1)goTour(tour+1);else endTour();};
+$("#tSkip").onclick=endTour;
+function endTour(){tour=-1;$("#tourNav").hidden=true;$("#capTxt").textContent="Tap anything with a dashed ring. Then try cutting a source.";}
+/* controls */
+$("#bLive").onclick=e=>{live=!live;e.currentTarget.setAttribute("aria-pressed",live);e.currentTarget.textContent=live?"Stop the street":"Run the street live";
+  $("#capTxt").textContent=live?"Every source now sends data all the time. Watch which compartments fill fastest, then cut one.":"Street paused.";};
+$("#bReset").onclick=()=>{on={pr:true,op:true,hu:true,ma:true};found.clear();level={pr:0,op:0,hu:0,ma:0};records=0;cur=null;live=false;
+  $("#bLive").setAttribute("aria-pressed","false");$("#bLive").textContent="Run the street live";
+  SRC.forEach(s=>s.el.classList.remove("found","cur","cut"));$("#foundN").textContent="0 / 12";
+  $("#info").innerHTML='<div class="info" style="background:var(--panel2)"><h3>Tap something on the street</h3><p>Anything with a dashed ring gives off data. Tap it, or use Tab and Enter.</p></div>';
+  renderStore();renderSw();renderIns();endTour();};
+$("#bClass").onclick=e=>{const o=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",o);};
+$("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+renderStore();renderSw();renderIns();requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

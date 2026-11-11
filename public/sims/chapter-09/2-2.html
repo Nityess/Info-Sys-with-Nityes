@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Smart Factory Control Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: loom with sensors, internet, data processor and phone; controls; rule and link card; device cards; key points */
+:root{--pos:#b06a06;--pho:#2b8248;--floor:#d2d9e0;--web:var(--blue);--loy:var(--violet);--rev:var(--rose);--warn:var(--amber);--warn-soft:var(--amber-soft)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pos:#f0a43a;--pho:#5ccf86;--floor:#24323f}}
+:root[data-theme="dark"]{--pos:#f0a43a;--pho:#5ccf86;--floor:#24323f}
+.stage{position:relative;min-width:620px}
+.stage .scene{background:var(--panel2)}
+#pk{position:absolute;inset:0;pointer-events:none}
+#pk span{position:absolute;transform:translate(-50%,-50%);color:var(--panel);font:600 10px var(--f-mono);padding:1px 6px;border-radius:9px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.chip{font:600 .75rem var(--f-mono);padding:3px 9px;border-radius:999px;color:var(--ink)}
+.rng{display:flex;justify-content:space-between;font:.72rem var(--f-mono);color:var(--muted)}
+.hrow{display:flex;justify-content:space-between;font-size:.88em}
+.rl{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.rl{grid-template-columns:minmax(0,1fr)}}
+.limits{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.netrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.dev{border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--panel2);min-width:0}
+.dev b{font-family:var(--f-disp);font-size:.95em}
+.dev svg{width:100%;height:auto}
+.dev p{margin:0;font-size:.84em;min-height:3.6em}
+.spot{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:.9em}
+.spot b{font-family:var(--f-disp)}
+.tx2{font-family:var(--f-mono)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Smart factory simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.2 Internet of things</div>
+      <h1>Smart Factory Control Room</h1>
+      <p class="role">You are on the night shift at Himal Textiles, a textile maker. The looms talk to a computer. Push a loom too hard and see what the system does on its own.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn pri" id="bRun" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path id="runIc" d="M7 5l12 7-12 7z"></path></svg><span id="runLb">Start</span></button><div class="seg" id="spd" role="group" aria-label="Speed"><button type="button" data-v="0.5" aria-pressed="false">0.5x</button><button type="button" data-v="1" aria-pressed="true">1x</button><button type="button" data-v="2" aria-pressed="false">2x</button></div><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card split">
+    <div style="min-width:0">
+      <div class="scroll">
+        <div class="stage">
+          <svg class="scene" viewBox="0 0 800 460" role="img" aria-label="A loom with temperature and vibration sensors sending readings over the internet to a data processor, which sends commands back and alerts a phone">
+            <path id="pTUp" fill="none" stroke="var(--web)" stroke-width="4" stroke-linecap="round" opacity=".25"></path>
+            <path id="pVUp" fill="none" stroke="var(--loy)" stroke-width="4" stroke-linecap="round" opacity=".25"></path>
+            <path id="pDown" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round" opacity=".18"></path>
+            <path id="pCmd" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round" opacity=".22" stroke-dasharray="6 6"></path>
+            <path id="pAlert" fill="none" stroke="var(--bad)" stroke-width="3" stroke-linecap="round" opacity=".25" stroke-dasharray="4 4"></path>
+
+            <rect x="300" y="18" width="190" height="46" rx="10" fill="var(--panel)" stroke="var(--line)" stroke-width="2"></rect>
+            <text x="314" y="38" style="font:600 9px 'JetBrains Mono',monospace;letter-spacing:.06em;fill:var(--muted)">NIGHT SHIFT</text>
+            <text id="clk" x="314" y="56" style="font:600 14px 'JetBrains Mono',monospace;fill:var(--ink)">02:00</text>
+
+            <g id="gLoom" class="fade">
+              <text x="40" y="40" style="font:600 11px 'JetBrains Mono',monospace;letter-spacing:.06em;fill:var(--muted)">LOOM 3 · HIMAL TEXTILES</text>
+              <circle id="loomLight" cx="300" cy="36" r="7" fill="var(--ok)"></circle>
+              <rect x="20" y="430" width="320" height="8" fill="var(--floor)"></rect>
+              <g id="shk">
+                <rect x="40" y="70" width="14" height="300" rx="3" fill="var(--steel)"></rect>
+                <rect x="300" y="70" width="14" height="300" rx="3" fill="var(--steel)"></rect>
+                <rect x="40" y="64" width="274" height="18" rx="4" fill="var(--steel)"></rect>
+                <path id="warp" fill="none" stroke="var(--muted)" stroke-width="1.2" opacity=".55"></path>
+                <line id="shLine" x1="62" y1="242" x2="177" y2="242" stroke="var(--pos)" stroke-width="2"></line>
+                <g id="shuttle"><rect x="-18" y="236" width="36" height="12" rx="6" fill="var(--wood)" stroke="var(--ink)" stroke-width="1.2"></rect></g>
+                <rect x="54" y="292" width="246" height="40" fill="var(--brand)" opacity=".75"></rect>
+                <path d="M54 300h246M54 308h246M54 316h246M54 324h246" stroke="var(--panel)" stroke-width="1" opacity=".35"></path>
+                <circle id="roll" cx="177" cy="370" r="14" fill="var(--brand)" opacity=".55" stroke="var(--brand)" stroke-width="2"></circle>
+                <rect x="296" y="150" width="22" height="18" rx="4" fill="var(--loy)"></rect>
+                <path id="vBl" d="M322 152a8 8 0 0 1 0 14M327 148a14 14 0 0 1 0 22" fill="none" stroke="var(--loy)" stroke-width="2" stroke-linecap="round" style="transition:opacity .2s"></path>
+                <text id="vRead" x="296" y="186" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--loy)"></text>
+              </g>
+              <rect x="56" y="380" width="78" height="44" rx="6" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"></rect>
+              <rect id="heat" x="56" y="380" width="78" height="44" rx="6" fill="var(--bad)" style="transition:opacity .4s"></rect>
+              <circle cx="80" cy="402" r="12" fill="none" stroke="var(--ink)" stroke-width="1.5"></circle>
+              <path id="fan" d="M80 390v24M68 402h24" stroke="var(--ink)" stroke-width="1.2" style="transform-box:fill-box;transform-origin:center"></path>
+              <text x="64" y="446" style="font:600 9px 'JetBrains Mono',monospace;fill:var(--muted)">MOTOR</text>
+              <rect x="112" y="362" width="20" height="16" rx="4" fill="var(--web)"></rect>
+              <path id="tBl" d="M136 364a8 8 0 0 1 0 12M141 360a14 14 0 0 1 0 20" fill="none" stroke="var(--web)" stroke-width="2" stroke-linecap="round" style="transition:opacity .2s"></path>
+              <text id="tRead" x="146" y="398" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--web)"></text>
+            </g>
+
+            <g id="gNet" class="fade">
+              <path d="M392 156a18 18 0 0 1 4-34a24 24 0 0 1 44-6a16 16 0 0 1 14 26a14 14 0 0 1-8 14z" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"></path>
+              <text x="424" y="146" text-anchor="middle" style="font:600 10px Inter,sans-serif;fill:var(--ink)">Internet</text>
+              <g id="offG" style="transition:opacity .3s"><path d="M404 112l40 52M444 112l-40 52" stroke="var(--bad)" stroke-width="4" stroke-linecap="round"></path><text x="424" y="182" text-anchor="middle" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--bad)">LINK DOWN</text></g>
+              <text id="lostT" x="424" y="104" text-anchor="middle" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--bad);transition:opacity .3s">reading lost</text>
+            </g>
+
+            <g id="gProc" class="fade">
+              <rect id="procR" x="528" y="196" width="180" height="150" rx="14" fill="var(--panel)" stroke="var(--brand)" stroke-width="2.5"></rect>
+              <text x="618" y="218" text-anchor="middle" style="font:600 12px Sora,sans-serif;fill:var(--ink)">Factory data processor</text>
+              <circle id="dotT" cx="546" cy="238" r="5" fill="var(--ok)"></circle>
+              <text id="procT" x="558" y="242" style="font:10px 'JetBrains Mono',monospace;fill:var(--ink)"></text>
+              <circle id="dotV" cx="546" cy="256" r="5" fill="var(--ok)"></circle>
+              <text id="procV" x="558" y="260" style="font:10px 'JetBrains Mono',monospace;fill:var(--ink)"></text>
+              <line x1="540" y1="270" x2="696" y2="270" stroke="var(--line)"></line>
+              <text x="540" y="286" style="font:9.5px Inter,sans-serif;fill:var(--muted)">One limit crossed: slow to 40%</text>
+              <text x="540" y="300" style="font:9.5px Inter,sans-serif;fill:var(--muted)">Both crossed: stop the loom</text>
+              <rect id="decBg" x="538" y="310" width="160" height="26" rx="6" fill="var(--ok-soft)"></rect>
+              <text id="dec" x="618" y="327" text-anchor="middle" style="font:600 11px 'JetBrains Mono',monospace;fill:var(--ink)">Keep full speed</text>
+            </g>
+
+            <g id="gPhone" class="fade">
+              <rect x="620" y="18" width="160" height="150" rx="14" fill="var(--ink)"></rect>
+              <rect x="627" y="28" width="146" height="132" rx="8" fill="var(--panel)"></rect>
+              <text x="636" y="46" style="font:600 10px Inter,sans-serif;fill:var(--ink)">Sujan · factory alerts</text>
+              <rect id="alR0" x="634" y="54" width="132" height="30" rx="5" fill="var(--panel2)"></rect>
+              <text id="alA0" x="640" y="66" style="font:600 8.5px 'JetBrains Mono',monospace;fill:var(--ink)"></text>
+              <text id="alB0" x="640" y="78" style="font:8.5px Inter,sans-serif;fill:var(--ink)"></text>
+              <rect id="alR1" x="634" y="88" width="132" height="30" rx="5" fill="var(--panel2)"></rect>
+              <text id="alA1" x="640" y="100" style="font:600 8.5px 'JetBrains Mono',monospace;fill:var(--ink)"></text>
+              <text id="alB1" x="640" y="112" style="font:8.5px Inter,sans-serif;fill:var(--ink)"></text>
+              <rect id="alR2" x="634" y="122" width="132" height="30" rx="5" fill="var(--panel2)"></rect>
+              <text id="alA2" x="640" y="134" style="font:600 8.5px 'JetBrains Mono',monospace;fill:var(--ink)"></text>
+              <text id="alB2" x="640" y="146" style="font:8.5px Inter,sans-serif;fill:var(--ink)"></text>
+            </g>
+            <text x="20" y="456" style="font:9px 'JetBrains Mono',monospace;fill:var(--muted)">Readings, limits and times are illustrative</text>
+          </svg>
+          <div id="pk" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="caption" aria-live="polite"><span id="capAva" data-k="sujan"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Sujan · IT manager</div><p id="capTxt">Tap Watch the story, or Start to run the night shift.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+    </div>
+    <aside class="side pad" aria-label="Controls and results">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 style="font-size:1.05rem">Loom 3, live</h2><span class="chip" id="chip">Full speed</span></div>
+      <div class="ctl"><label for="temp"><span>Motor temperature</span><output id="tempV" for="temp">62°C</output></label><input id="temp" type="range" min="40" max="110" step="1" value="62" style="accent-color:var(--web)"><div class="rng"><span>40 · cool night</span><span>110 · fan blocked</span></div></div>
+      <div class="ctl"><label for="vib"><span>Frame vibration</span><output id="vibV" for="vib">3 mm/s</output></label><input id="vib" type="range" min="0" max="10" step="0.5" value="3" style="accent-color:var(--loy)"><div class="rng"><span>0 · smooth</span><span>10 · loose bolt</span></div></div>
+      <div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <div class="stat"><span>Loom speed</span><b id="sSpeed">100%</b></div>
+        <div class="stat"><span>Fabric woven</span><b id="sFab">0.0 m</b></div>
+        <div class="stat"><span>Readings sent</span><b id="sSent">0</b></div>
+        <div class="stat"><span>Readings lost</span><b id="sLost">0</b></div>
+      </div>
+      <div class="ctl"><div class="hrow"><span>Motor health</span><b class="tx2" id="hVal">100%</b></div><div class="meter"><i id="hBar" style="width:100%"></i></div></div>
+      <div class="say"><span data-ava="sujan"></span><p><b>Sujan:</b> <span id="sujan"></span></p></div>
+    </aside>
+  </div>
+  <div class="rl">
+    <section class="card pad" aria-label="Change the rule and the link">
+      <h2 style="font-size:1.05rem">Change the rule and the link</h2>
+      <div class="limits">
+        <div class="ctl"><label for="tlim"><span>Too hot above</span><output id="tlimV" for="tlim">80°C</output></label><input id="tlim" type="range" min="60" max="100" step="5" value="80"></div>
+        <div class="ctl"><label for="vlim"><span>Shaking too much above</span><output id="vlimV" for="vlim">7 mm/s</output></label><input id="vlim" type="range" min="3" max="9" step="0.5" value="7"></div>
+      </div>
+      <div class="netrow"><button class="btn" id="bNet" type="button">Cut the internet link</button><span class="note" id="netNote">Readings reach the processor in about a second.</span></div>
+      <div class="try"><b>Try this</b>Push the temperature past the limit and watch a reading travel, the processor decide and the loom slow down. Then cut the internet link and do it again. The sensor still measures, but nothing reaches the processor, and the motor's health drains.</div>
+    </section>
+    <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  </div>
+  <section class="card pad" aria-label="The same idea, everywhere">
+    <div><h2 style="font-size:1.05rem">The same idea, everywhere</h2><p class="note">Each device sends data over the internet to be processed. Tap one and follow the dot.</p></div>
+    <div class="cards" id="cards"></div>
+  </section>
+</section>
+<div class="lower" style="grid-template-columns:minmax(0,1fr)">
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Internet of things · definition</cite>The increasing number of devices that send data over the internet to a data processor, where the information is processed.</div>
+    <div class="spots">
+      <div><b>Sensors on machines</b><p>Send performance data to a monitor in real time.</p></div>
+      <div><b>RFID tags</b><p>A chip with a unique number, so a product's location can be tracked.</p></div>
+      <div><b>Smart meters and devices</b><p>Read and adjusted remotely over the internet.</p></div>
+      <div><b>Car black boxes</b><p>Monitor driving and send the data to insurers.</p></div>
+      <div><b>Smartphones</b><p>Capture location and send it to apps and services.</p></div>
+    </div>
+    <div class="spot"><b>Spot it:</b> a device collects data, sends it over the internet, and something is processed or adjusted as a result. A home thermostat that an app adjusts using weather data is the internet of things.</div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Himal Textiles Pvt Ltd is a made-up business based on the study note's textile maker case; Sujan, Loom 3, the readings, limits, times, places and the device examples' figures are illustrative. Real factories add gateways, local controllers and safety cut-outs that work even without the internet.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const P_TUP=[[132,370],[250,380],[330,150],[398,140]],P_VUP=[[318,160],[350,160],[370,140],[398,140]],P_DOWN=[[452,140],[490,140],[500,240],[528,240]],P_CMD=[[528,320],[430,330],[300,420],[134,404]],P_ALERT=[[690,196],[700,186],[700,178],[700,168]];
+const LOC=["Himal Textiles factory gate","Kathmandu warehouse","Pokhara store","Pokhara store shelf"];
+const TOUR=[
+ {z:"loom",t:"2 am at Himal Textiles. Loom 3 is weaving curtain fabric. Nobody is watching it."},
+ {z:"loom",t:"A temperature sensor on the motor takes a reading every second."},
+ {z:"loom",t:"A vibration sensor on the frame checks how much it shakes."},
+ {z:"net",t:"Both readings travel over the internet to Himal Textiles's data processor."},
+ {z:"proc",t:"The processor checks them against a rule: too hot, or shaking too much?"},
+ {z:"act",t:"The motor overheats. The processor slows the loom and texts me. Nobody pressed a button."},
+ {z:"out",t:"Devices sending data over the internet to be processed: that is the internet of things. Your turn."}
+];
+function bez(p,t){const u=1-t;return[u*u*u*p[0][0]+3*u*u*t*p[1][0]+3*u*t*t*p[2][0]+t*t*t*p[3][0],u*u*u*p[0][1]+3*u*u*t*p[1][1]+3*u*t*t*p[2][1]+t*t*t*p[3][1]];}
+function blen(p){let L=0,a=bez(p,0);for(let i=1;i<=30;i++){const b=bez(p,i/30);L+=Math.hypot(b[0]-a[0],b[1]-a[1]);a=b;}return L;}
+function pathD(p){return"M"+p[0][0]+" "+p[0][1]+" C"+p[1][0]+" "+p[1][1]+", "+p[2][0]+" "+p[2][1]+", "+p[3][0]+" "+p[3][1];}
+const LEN={tUp:blen(P_TUP),vUp:blen(P_VUP),down:blen(P_DOWN),cmd:blen(P_CMD),alert:blen(P_ALERT)};
+let WARP="";for(let x=66;x<=290;x+=14)WARP+="M"+x+" 82V292";
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const S0=()=>({running:false,speed:1,temp:62,vib:3,tLim:80,vLim:7,net:true,rfid:0,meterOn:true,score:92,phoneHit:false,thermo:false});
+const M0=()=>({sim:120,pk:[],acc:{t:0,v:.5},lastT:62,lastV:3,procTarget:100,cmdTarget:100,speedNow:100,health:100,fabric:0,sent:0,lost:0,lostHot:0,alerts:[],phase:0,procHot:0,tBlink:0,vBlink:0,fired:{},warned:false});
+let S=S0(),m=M0(),tour=-1,lastF=performance.now(),paintAt=0;
+const hhmm=()=>{const t=m.sim,h=Math.floor(t/60)%24,mi=Math.floor(t%60);return String(h).padStart(2,"0")+":"+String(mi).padStart(2,"0");};
+const L=(v,t,bad)=>{log(v,t,bad?"bad":"");const ol=$("#feed");while(ol.children.length>4)ol.lastChild.remove();};
+function spawn(kind,val){const now=performance.now(),v=kind==="t"?Math.round(val):Math.round(val*10)/10;
+  m.pk.push({kind,val:v,stage:"up",t:0,pts:kind==="t"?P_TUP:P_VUP,len:kind==="t"?LEN.tUp:LEN.vUp,label:kind==="t"?v+"°C":v+" mm/s",bg:kind==="t"?"var(--web)":"var(--loy)"});
+  m.sent++;if(kind==="t")m.tBlink=now+300;else m.vBlink=now+300;}
+function evaluate(){const bt=m.lastT>S.tLim,bv=m.lastV>S.vLim;const target=bt&&bv?0:(bt||bv?40:100);
+  if(target===m.procTarget)return;m.procTarget=target;const time=hhmm();let a,b,feed;
+  if(target===0){a=time+" STOPPED";b="Loom 3 too hot and shaking";feed="Both readings crossed their limits, so the processor stopped the loom and alerted Sujan.";}
+  else if(target===40){a=time+" SLOWED";b=bt?"Loom 3 motor at "+m.lastT+"°C":"Loom 3 shaking "+m.lastV+" mm/s";
+    feed=bt?"A reading of "+m.lastT+"°C is over the "+S.tLim+"°C limit. The processor slowed the loom to 40% and texted Sujan. Nobody touched it.":"Vibration of "+m.lastV+" mm/s is over the "+S.vLim+" mm/s limit. The processor slowed the loom to 40% and texted Sujan.";}
+  else{a=time+" BACK TO NORMAL";b="Loom 3 at full speed";feed="Readings are back inside the limits, so the processor sent the loom back to full speed.";}
+  m.pk.push({kind:"cmd",val:target,stage:"cmd",t:0,pts:P_CMD,len:LEN.cmd,label:target===100?"RESUME":target===0?"STOP":"SLOW 40%",bg:"var(--brand)"});
+  m.pk.push({kind:"alert",stage:"alert",t:0,pts:P_ALERT,len:LEN.alert,label:"ALERT",bg:target===100?"var(--ok)":"var(--bad)",msg:{a,b,bad:target!==100}});
+  L("Rule",feed,target!==100);}
+function arrive(p){const now=performance.now();
+  if(p.stage==="up"){if(!S.net){m.lost++;m.lostHot=now+600;p.dead=true;return;}p.stage="down";p.pts=P_DOWN;p.len=LEN.down;p.t=0;return;}
+  if(p.stage==="down"){if(p.kind==="t")m.lastT=p.val;else m.lastV=p.val;m.procHot=now+400;p.dead=true;evaluate();return;}
+  if(p.stage==="cmd"){m.cmdTarget=p.val;p.dead=true;return;}
+  if(p.stage==="alert"){m.alerts.unshift(p.msg);m.alerts=m.alerts.slice(0,3);p.dead=true;return;}
+  p.dead=true;}
+function frame(now){const dt=Math.min(.1,(now-lastF)/1000);lastF=now;const moving=S.running||tour>=0;
+  if(moving){const pxs=(REDUCE?600:190)*S.speed;
+    m.pk.forEach(p=>{if(p.dead)return;p.t+=pxs*dt/p.len;if(p.t>=1){p.t=1;arrive(p);}});
+    m.pk=m.pk.filter(p=>!p.dead);
+    m.speedNow+=(m.cmdTarget-m.speedNow)*Math.min(1,dt*2.5*S.speed);
+    m.phase+=dt*S.speed*(m.speedNow/100)*4;
+    if(S.running){const sdt=dt*S.speed;m.sim+=sdt;
+      m.acc.t+=sdt/1.2;if(m.acc.t>=1){m.acc.t-=1;spawn("t",S.temp+gauss()*.6);}
+      m.acc.v+=sdt/1.2;if(m.acc.v>=1){m.acc.v-=1;spawn("v",Math.max(0,S.vib+gauss()*.2));}
+      if(m.speedNow>60){if(S.temp>S.tLim)m.health-=(S.temp-S.tLim)*.12*sdt;if(S.vib>S.vLim)m.health-=(S.vib-S.vLim)*1.5*sdt;}
+      m.health=Math.max(0,m.health);
+      if(m.health<50&&!m.warned){m.warned=true;L("Damage","Motor health is below 50%. The loom kept running too hot because no reading reached the processor in time.",true);}
+      m.fabric+=sdt*(m.speedNow/100)*.08;}}
+  if(now-paintAt>33){paintAt=now;paint();}
+  requestAnimationFrame(frame);}
+const CARDS=[
+ {id:"rfid",title:"RFID tag on a carton",ic:"M14 20l10-6 10 6v16l-10 6-10-6zM14 20l10 6 10-6M24 26v16",col:"var(--pos)"},
+ {id:"meter",title:"Smart meter",ic:"M12 16h24v24H12zM18 24h12M24 24v10",col:"var(--warn)"},
+ {id:"car",title:"Car black box",ic:"M10 32l4-10h20l4 10v6H10zM16 38v3M32 38v3M14 30h20",col:"var(--rev)"},
+ {id:"phone",title:"Smartphone location",ic:"M18 12h12v32H18zM22 40h4M24 20a4 4 0 1 1 0 8 4 4 0 0 1 0-8z",col:"var(--web)"},
+ {id:"thermo",title:"Smart home thermostat",ic:"M22 14a3 3 0 0 1 6 0v16a6 6 0 1 1-6 0zM25 22v12",col:"var(--pho)"}];
+function cardInfo(id){
+  if(id==="rfid")return{btn:S.rfid<3?"Move it to the next stop":"Start the trip again",idle:"Carton 418 of Everest Fashion jackets waits at "+LOC[0]+".",done:"Tag read at "+LOC[S.rfid]+". Head office can see exactly where carton 418 is.",act:()=>{S.rfid=S.rfid<3?S.rfid+1:0;fire("rfid");}};
+  if(id==="meter")return{btn:S.meterOn?"Switch the heater off from the app":"Switch it back on",idle:"The office meter sends a reading every 30 minutes.",done:S.meterOn?"Heater back on remotely. Meter now reads 3.2 kW.":"Heater switched off from a phone. Meter now reads 0.4 kW.",act:()=>{S.meterOn=!S.meterOn;fire("meter");}};
+  if(id==="car")return{btn:"Brake hard",idle:"The box records speed, braking and cornering.",done:"Harsh brake sent to the insurer. Driving score now "+S.score+".",act:()=>{S.score=Math.max(50,S.score-6);fire("car");}};
+  if(id==="phone")return{btn:"Walk past an Everest Fashion store",idle:"Bikash's phone knows where he is.",done:"Location shared with the Everest Fashion app. A 10% winter offer pops up.",act:()=>{S.phoneHit=true;fire("phone");}};
+  return{btn:S.thermo?"Forecast warms up":"Forecast turns cold",idle:"An app reads the weather forecast.",done:S.thermo?"The app reads the forecast and sets the heating to 22°C on its own.":"Warmer forecast, so the app lowers the heating to 18°C.",act:()=>{S.thermo=!S.thermo;fire("thermo");}};}
+function fire(id){m.fired[id]=performance.now();}
+$("#cards").innerHTML=CARDS.map(c=>`<div class="dev"><b>${c.title}</b><svg viewBox="0 0 220 56" aria-hidden="true"><rect x="4" y="8" width="40" height="40" rx="9" fill="var(--panel)" stroke="var(--line)"></rect><path d="${c.ic}" fill="none" stroke="${c.col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><line x1="48" y1="28" x2="170" y2="28" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 4"></line><path d="M176 38a8 8 0 0 1 2-15a11 11 0 0 1 21-3a8 8 0 0 1 7 12a7 7 0 0 1-4 6z" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"></path><circle id="cd-${c.id}" cx="48" cy="28" r="5" fill="${c.col}" opacity="0"></circle></svg><button class="btn" id="cb-${c.id}" type="button"></button><p id="co-${c.id}"></p></div>`).join("");
+CARDS.forEach(c=>{$("#cb-"+c.id).onclick=()=>cardInfo(c.id).act();});
+function setT(id,v){const e=$(id);if(e.textContent!==v)e.textContent=v;}
+function paint(){const now=performance.now(),tourOn=tour>=0,focus=tourOn?TOUR[tour].z:null,moving=S.running||tourOn;
+  const zo=zs=>!focus||focus==="out"||zs.indexOf(focus)>=0?1:.18;
+  $("#gLoom").style.opacity=zo(["loom","act"]);$("#gNet").style.opacity=zo(["net","act"]);$("#gProc").style.opacity=zo(["proc","act"]);$("#gPhone").style.opacity=zo(["phone","act"]);
+  $("#pk").innerHTML=m.pk.map(p=>{const pt=bez(p.pts,Math.min(1,p.t));return`<span style="left:${(pt[0]/8).toFixed(2)}%;top:${(pt[1]/4.6).toFixed(2)}%;background:${p.bg}">${p.label}</span>`;}).join("");
+  const shX=177+100*Math.sin(m.phase),shake=moving&&!REDUCE?S.vib*.45*Math.sin(now/28)*(m.speedNow/100+.15):0;
+  const bt=m.lastT>S.tLim,bv=m.lastV>S.vLim;
+  const net=S.net?"none":"3 9";["#pTUp","#pVUp","#pDown"].forEach(i=>$(i).setAttribute("stroke-dasharray",net));
+  setT("#clk",hhmm());
+  $("#loomLight").setAttribute("fill",m.speedNow>90?"var(--ok)":m.cmdTarget===0?"var(--bad)":"var(--warn)");
+  $("#shk").style.transform=`translate(${shake.toFixed(2)}px,0px)`;
+  $("#shLine").setAttribute("x2",shX.toFixed(1));$("#shuttle").style.transform=`translate(${shX.toFixed(1)}px,0px)`;
+  $("#roll").setAttribute("r",(14+Math.min(22,m.fabric*1.5)).toFixed(1));
+  $("#heat").style.opacity=Math.max(0,Math.min(.85,(S.temp-50)/60)).toFixed(2);
+  $("#fan").style.transform=`rotate(${Math.round((m.phase*90)%360)}deg)`;
+  $("#tBl").style.opacity=now<m.tBlink?1:.15;$("#vBl").style.opacity=now<m.vBlink?1:.15;
+  setT("#tRead",S.temp+"°C");setT("#vRead",S.vib+" mm/s");
+  $("#offG").style.opacity=S.net?0:1;$("#lostT").style.opacity=now<m.lostHot?1:0;
+  $("#procR").setAttribute("stroke-width",now<m.procHot?4:2.5);
+  setT("#procT","Temp "+m.lastT+"°C");setT("#procV","Shake "+m.lastV+" mm/s");
+  $("#dotT").setAttribute("fill",bt?"var(--bad)":"var(--ok)");$("#dotV").setAttribute("fill",bv?"var(--bad)":"var(--ok)");
+  setT("#dec",m.procTarget===100?"Keep full speed":m.procTarget===0?"Stop the loom":"Slow to 40%");
+  $("#decBg").setAttribute("fill",m.procTarget===100?"var(--ok-soft)":m.procTarget===0?"var(--bad-soft)":"var(--warn-soft)");
+  for(let i=0;i<3;i++){const a=m.alerts[i];$("#alR"+i).setAttribute("fill",a?(a.bad?"var(--bad-soft)":"var(--ok-soft)"):"var(--panel2)");setT("#alA"+i,a?a.a:"");setT("#alB"+i,a?a.b:"");}
+  const chip=m.speedNow>90?["Full speed","var(--ok-soft)"]:m.cmdTarget===0?["Stopped by the system","var(--bad-soft)"]:["Slowed by the system","var(--warn-soft)"];
+  setT("#chip",chip[0]);$("#chip").style.background=chip[1];
+  setT("#sSpeed",Math.round(m.speedNow)+"%");setT("#sFab",m.fabric.toFixed(1)+" m");setT("#sSent",String(m.sent));setT("#sLost",String(m.lost));
+  setT("#hVal",Math.round(m.health)+"%");const hb=$("#hBar");hb.style.width=Math.round(m.health)+"%";hb.style.background=m.health>=70?"var(--ok)":m.health>=40?"var(--warn)":"var(--bad)";
+  const dangerNow=(S.temp>S.tLim||S.vib>S.vLim)&&m.speedNow>60;let say;
+  if(m.health<50)say="That motor is damaged. A repair bill and a lost night of weaving.";
+  else if(!S.net&&dangerNow)say="The motor is cooking and nothing is telling me. Without the internet link those sensors are just thermometers.";
+  else if(!S.net)say="Link is down. The sensors still measure, but nobody hears them.";
+  else if(m.cmdTarget===0)say="Both readings were bad, so it stopped itself. Good call at 2 am.";
+  else if(m.cmdTarget===40)say="It slowed itself down and texted me. I didn't touch a thing.";
+  else say="All normal. The loom reports in every second.";
+  setT("#sujan",say);
+  setT("#capTxt",tourOn?TOUR[tour].t:(S.running?"Drag the temperature or vibration sliders. Watch a reading travel, the processor decide and the loom react.":"Tap Watch the story, or Start to run the night shift."));
+  CARDS.forEach(c=>{const f=m.fired[c.id],p=f?Math.min(1,(now-f)/900):-1,i=cardInfo(c.id);
+    setT("#cb-"+c.id,i.btn);setT("#co-"+c.id,p<0?i.idle:(p<1?"Sending over the internet...":i.done));
+    const d=$("#cd-"+c.id);d.setAttribute("cx",(48+122*Math.max(0,p)).toFixed(1));d.setAttribute("opacity",p>=0&&p<1?1:0);});}
+function syncControls(){
+  $("#runIc").setAttribute("d",S.running?"M8 5v14M16 5v14":"M7 5l12 7-12 7z");setT("#runLb",S.running?"Pause":"Start");
+  $$("#spd button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.v===S.speed));
+  $("#temp").value=S.temp;setT("#tempV",S.temp+"°C");$("#vib").value=S.vib;setT("#vibV",S.vib+" mm/s");
+  $("#tlim").value=S.tLim;setT("#tlimV",S.tLim+"°C");$("#vlim").value=S.vLim;setT("#vlimV",S.vLim+" mm/s");
+  setT("#bNet",S.net?"Cut the internet link":"Restore the internet link");$("#bNet").style.background=S.net?"var(--panel)":"var(--bad-soft)";
+  setT("#netNote",S.net?"Readings reach the processor in about a second.":"Readings are lost on the way. Nothing is processed.");}
+function wake(){if(!S.running&&tour<0){S.running=true;syncControls();}}
+function advance(i){if(i===1)spawn("t",S.temp);else if(i===2)spawn("v",S.vib);else if(i===3){spawn("t",S.temp);setTimeout(()=>spawn("v",S.vib),250);}else if(i===5){S.temp=88;syncControls();spawn("t",88);}}
+$("#pTUp").setAttribute("d",pathD(P_TUP));$("#pVUp").setAttribute("d",pathD(P_VUP));$("#pDown").setAttribute("d",pathD(P_DOWN));$("#pCmd").setAttribute("d",pathD(P_CMD));$("#pAlert").setAttribute("d",pathD(P_ALERT));$("#warp").setAttribute("d",WARP);
+$("#bRun").onclick=()=>{S.running=!S.running;tourEnd();syncControls();};
+$$("#spd button").forEach(b=>b.onclick=()=>{S.speed=+b.dataset.v;syncControls();});
+$("#temp").oninput=e=>{S.temp=+e.target.value;syncControls();wake();};
+$("#vib").oninput=e=>{S.vib=+e.target.value;syncControls();wake();};
+const tempDone=()=>L("Sensor","Motor now at "+S.temp+"°C. "+(S.temp>S.tLim?"That is over the "+S.tLim+"°C limit. Watch the next reading reach the processor.":"Still inside the "+S.tLim+"°C limit."));
+const vibDone=()=>L("Sensor","Frame vibration now "+S.vib+" mm/s. "+(S.vib>S.vLim?"Over the "+S.vLim+" mm/s limit.":"Inside the "+S.vLim+" mm/s limit."));
+const isNav=e=>["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End","PageUp","PageDown"].includes(e.key);
+$("#temp").onpointerup=tempDone;$("#temp").onkeyup=e=>{if(isNav(e))tempDone();};
+$("#vib").onpointerup=vibDone;$("#vib").onkeyup=e=>{if(isNav(e))vibDone();};
+$("#tlim").oninput=e=>{S.tLim=+e.target.value;syncControls();};
+$("#vlim").oninput=e=>{S.vLim=+e.target.value;syncControls();};
+$("#bNet").onclick=()=>{S.net=!S.net;syncControls();wake();
+  L("Link",S.net?"Internet link back. Readings reach the processor again and the rule can act.":"Internet link cut. The sensors still measure, but no data reaches the processor, so nothing happens automatically.",!S.net);};
+/* guided story (with Back, as in the design) */
+const back=document.createElement("button");back.className="btn";back.id="tBack";back.type="button";back.textContent="Back";$("#tNext").before(back);
+function tourGo(i){tour=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;back.disabled=i<=0;$("#tNext").textContent=i===TOUR.length-1?"Run it":"Next";}
+function tourEnd(){tour=-1;$("#tourNav").hidden=true;}
+$("#bStory").onclick=()=>{S.running=false;syncControls();tourGo(0);advance(0);};
+$("#tNext").onclick=()=>{if(tour<TOUR.length-1){tourGo(tour+1);advance(tour);}else{tourEnd();S.running=true;syncControls();}};
+back.onclick=()=>{if(tour>0)tourGo(tour-1);};
+$("#tSkip").onclick=tourEnd;
+$("#bReset").onclick=()=>{m=M0();S=S0();tourEnd();feedReset();syncControls();};
+shellSetup();syncControls();requestAnimationFrame(t=>{lastF=t;paint();requestAnimationFrame(frame);});
+})();
+</script>
+
+</body>
+</html>

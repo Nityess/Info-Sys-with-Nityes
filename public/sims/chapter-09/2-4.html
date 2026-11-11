@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Diamond Ledger Network</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: ring of participants each holding a ledger copy around a diamond; side panel with view switch, transfers, tamper and fake tests */
+.node-l{transition:fill .3s, stroke .3s}
+.diamond{transition:transform .9s cubic-bezier(.3,.7,.2,1)}
+.idcard{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font:500 .8rem var(--f-mono);background:var(--panel2)}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Distributed ledger simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.4 Distributed ledger technology</div>
+      <h1>Diamond Ledger Network</h1>
+      <p class="role">Five strangers trade one diamond: a cutter, a gem trader, a jewellery shop, a buyer and an insurer. None of them trusts the others. Can a shared record still keep everyone honest?</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card split">
+    <div style="min-width:0">
+      <div class="scroll">
+        <svg class="scene" id="scene" viewBox="0 0 960 520" role="img" aria-label="Five participants in a ring, each with a copy of the diamond's ledger, around the diamond">
+          <rect width="960" height="520" fill="var(--panel2)"/>
+          <g id="links"></g>
+          <g id="central" opacity="0" class="fade"><rect x="430" y="190" width="100" height="80" rx="10" fill="var(--steel)"/><text x="480" y="226" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--panel)">CENTRAL</text><text x="480" y="242" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--panel)">DATABASE</text><text id="cenX" x="480" y="290" text-anchor="middle" style="font:700 12px var(--f-mono);fill:var(--bad)"></text></g>
+          <g id="nodes"></g>
+          <g id="dia" class="diamond"><path d="M-16 -6l8-10h16l8 10-16 22z" fill="var(--blue)" stroke="var(--panel)" stroke-width="2"/><path d="M-16 -6h32M-8 -16l8 32M8 -16l-8 32" stroke="var(--panel)" stroke-width="1" opacity=".7"/></g>
+          <text id="banner" x="480" y="506" text-anchor="middle" style="font:600 13px var(--f-body);fill:var(--ink)"></text>
+          <g id="dots"></g>
+        </svg>
+      </div>
+      <div class="caption" aria-live="polite"><span id="capAva" data-k="kabita"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Kabita · cybersecurity specialist</div><p id="capTxt">Tap Watch the story, or register the diamond and start trading it.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+    </div>
+    <aside class="side pad" aria-label="Controls">
+      <div class="ctl"><span class="lbl">How the record is kept</span><div class="seg" role="group" aria-label="View"><button type="button" data-v="dist" aria-pressed="true">Distributed ledger</button><button type="button" data-v="cent" aria-pressed="false">Central database</button></div></div>
+      <div class="idcard" id="idcard">Diamond ID: not registered yet</div>
+      <button class="btn pri" id="bNext" type="button">Register the diamond</button>
+      <div><b style="font-size:.92em">Test the record</b></div>
+      <button class="btn warn" id="bTamper" type="button">Trader secretly edits his copy</button>
+      <button class="btn warn" id="bFake" type="button">Trader sells a fake diamond</button>
+      <button class="btn warn" id="bDown" type="button">Central database goes down</button>
+      <div id="res" aria-live="polite"></div>
+    </aside>
+  </div>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Distributed ledger technology (DLT)</cite>Technology that allows people who do not know each other to trust a shared record of events.</div>
+    <div class="spots">
+      <div><b>No central store</b><p>Replicated, synchronised data is shared across the whole network, however spread out. Everyone has equal access to the same information.</p></div>
+      <div><b>What the record gives</b><p>Clarity about ownership of assets, proof that obligations exist, and an easier transfer of ownership.</p></div>
+      <div><b>Real example: Everledger</b><p>Records each diamond's unique specification and every trade, so ownership and history can be traced and fraud prevented.</p></div>
+      <div><b>DLT and blockchain</b><p>Blockchain is a process used in many distributed ledgers to make sure only valid transactions are recorded (topic 2.5).</p></div>
+    </div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model of the Everledger example in the study note. The participants, names, ID number and diamond details are illustrative. Real ledgers use cryptography and consensus rules not shown here.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const C=[480,230],R=170;
+const N=[
+ {k:"cut",n:"Diamond cutter",a:-90},{k:"trader",n:"Gem trader",a:-18},{k:"shop",n:"Jewellery shop",a:54},{k:"buyer",n:"Bikash (buyer)",a:126},{k:"ins",n:"Insurer",a:198}
+].map(o=>{const r=o.a*Math.PI/180;return Object.assign(o,{x:C[0]+R*1.45*Math.cos(r),y:C[1]+R*Math.sin(r)});});
+const SPEC="1.02 ct · F colour · VS1 · laser no. 4471";
+const STEPS=[
+ {by:"cut",to:"cut",row:"Registered: "+SPEC.split(" · ")[0]+", F, VS1",tag:"ownership",btn:"Cutter → Gem trader"},
+ {by:"cut",to:"trader",row:"Cutter → Gem trader",tag:"transfer",btn:"Gem trader → Jewellery shop"},
+ {by:"trader",to:"shop",row:"Gem trader → Jewellery shop",tag:"transfer",btn:"Jewellery shop → Bikash"},
+ {by:"shop",to:"buyer",row:"Jewellery shop → Bikash",tag:"transfer",btn:"Insure it"},
+ {by:"ins",to:"buyer",row:"Insured for Bikash by insurer",tag:"obligation",btn:"All trades recorded"}
+];
+let view="dist",step=0,ledger=[],tampered=null,owner=null,down=false,busy=false;
+function draw(){
+  $("#links").innerHTML=N.map((n,i)=>view==="dist"?N.slice(i+1).map(m=>`<line x1="${n.x}" y1="${n.y}" x2="${m.x}" y2="${m.y}" stroke="var(--blue)" stroke-width="1.5" opacity=".25"/>`).join(""):`<line x1="${n.x}" y1="${n.y}" x2="480" y2="230" stroke="${down?"var(--bad)":"var(--steel)"}" stroke-width="2" ${down?'stroke-dasharray="5 6"':""}/>`).join("");
+  $("#central").setAttribute("opacity",view==="cent"?1:0);$("#cenX").textContent=down?"OFFLINE":"";
+  $("#nodes").innerHTML=N.map(n=>{const bad=tampered===n.k,hasCopy=view==="dist",rows=hasCopy?(bad?ledger.map((r,i)=>i===1?{t:"Cutter → trader's cousin",tag:r.tag}:r):ledger):[];
+    const lx=n.x-82,ly=n.y+30;
+    return `<g><circle cx="${n.x}" cy="${n.y}" r="22" fill="var(--panel)" stroke="${owner===n.k?"var(--blue)":"var(--ink)"}" stroke-width="${owner===n.k?4:2}"/>
+      <circle cx="${n.x}" cy="${n.y-6}" r="7" fill="var(--skin)"/><path d="M${n.x-11} ${n.y+14}a11 11 0 0 1 22 0z" fill="var(--steel)"/>
+      <text x="${n.x}" y="${n.y-30}" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">${n.n}</text>
+      ${hasCopy?`<rect class="node-l" x="${lx}" y="${ly}" width="164" height="${18+Math.max(1,rows.length)*14}" rx="6" fill="${bad?"var(--bad-soft)":"var(--panel)"}" stroke="${bad?"var(--bad)":"var(--line)"}"/>
+      <text x="${lx+8}" y="${ly+13}" style="font:600 8.5px var(--f-mono);fill:var(--muted)">LEDGER COPY</text>
+      ${rows.length?rows.map((r,i)=>`<text x="${lx+8}" y="${ly+27+i*14}" style="font:500 8.5px var(--f-mono);fill:${bad&&i===1?"var(--bad)":"var(--ink)"}">${i+1}. ${r.t}</text>`).join(""):`<text x="${lx+8}" y="${ly+27}" style="font:500 8.5px var(--f-mono);fill:var(--muted)">empty</text>`}`
+      :`<text x="${n.x}" y="${n.y+44}" text-anchor="middle" style="font:500 9px var(--f-mono);fill:var(--muted)">${down?"no access":"asks the centre"}</text>`}</g>`;}).join("");
+  const o=N.find(n=>n.k===owner);const dx=o?o.x+30:480,dy=o?o.y-4:230;$("#dia").setAttribute("transform",`translate(${dx} ${dy})`);$("#dia").style.opacity=owner?1:.25;
+}
+async function broadcast(fromK){if(view!=="dist")return;const f=N.find(n=>n.k===fromK);await Promise.all(N.filter(n=>n.k!==fromK).map(n=>movePath(`M${f.x} ${f.y} L${n.x} ${n.y}`,"var(--blue)",650,5)));}
+async function next(){
+  if(busy||step>=STEPS.length)return;if(view==="cent"&&down){$("#res").innerHTML='<div class="result bad">The central database is down. Nobody can record anything.</div>';return;}
+  busy=true;$("#bNext").disabled=true;const s=STEPS[step];
+  if(step===0){owner="cut";$("#idcard").innerHTML=`<b>Diamond ID EL-4471</b><br>${SPEC}`;}
+  if(view==="dist"){await broadcast(s.by);}else{const f=N.find(n=>n.k===s.by);await movePath(`M${f.x} ${f.y} L480 230`,"var(--steel)",500,5);}
+  ledger.push({t:s.row,tag:s.tag});if(step>0&&step<4)owner=s.to;draw();
+  const msg={ownership:"The diamond's identity is recorded once: who owns it is now clear to everyone.",transfer:"Ownership moves, and every copy updates at the same moment.",obligation:"The insurer's promise to cover it is recorded too: the record proves an obligation exists."}[s.tag];
+  cap(`${s.row}. ${msg}`);log(s.tag[0].toUpperCase()+s.tag.slice(1),`${s.row}. ${view==="dist"?"All five copies updated.":"Only the central database updated."}`);
+  step++;$("#bNext").textContent=step<STEPS.length?STEPS[step-1].btn:"All trades recorded";$("#bNext").disabled=step>=STEPS.length;busy=false;
+}
+$("#bNext").onclick=next;
+$("#bTamper").onclick=async()=>{
+  if(ledger.length<2){$("#res").innerHTML='<div class="result mid">Record at least two trades first.</div>';return;}
+  if(view==="cent"){$("#res").innerHTML='<div class="result bad"><b>Central database:</b> whoever controls the one database can change it, and nobody else has a copy to compare. The edit goes unnoticed.</div>';log("Tamper","With one central record, an edit cannot be checked against anything.","bad");return;}
+  tampered="trader";draw();await sleep(500);
+  await Promise.all(N.filter(n=>n.k!=="trader").map(n=>movePath(`M${n.x} ${n.y} L${N[1].x} ${N[1].y}`,"var(--ok)",600,5)));
+  $("#res").innerHTML='<div class="result ok"><b>Caught.</b> Four copies say "Cutter → Gem trader". One says "Gem trader\'s cousin". The odd copy is rejected and replaced, because everyone holds the same record.</div>';
+  log("Tamper","The edited copy disagreed with the other four and was rejected.","good");cap("Nobody had to trust the trader. The other copies proved his edit was false.");
+  await sleep(1400);tampered=null;draw();};
+$("#bFake").onclick=async()=>{
+  if(!ledger.length){$("#res").innerHTML='<div class="result mid">Register the diamond first.</div>';return;}
+  const t=N[1];$("#res").innerHTML=`<div class="idcard" style="border-color:var(--bad)"><b>Diamond offered</b><br>0.96 ct · H colour · SI1 · laser no. 4471</div>`;await sleep(700);
+  $("#res").insertAdjacentHTML("beforeend",`<div class="result bad" style="margin-top:8px"><b>Fake.</b> The laser number is real, but the carat, colour and clarity do not match the identity on the ledger: ${SPEC}. The buyer walks away.</div>`);
+  log("Identity check","A counterfeit failed: its specification did not match the ledger's record.","good");cap("Everledger does this for real: each diamond's specification is recorded, so a copy cannot pass as the original.");};
+$("#bDown").onclick=()=>{
+  if(view==="dist"){$("#res").innerHTML='<div class="result ok">There is no central database in this view. Even if one participant goes offline, four other complete copies remain.</div>';log("Outage","No single point of failure in a distributed ledger.","good");return;}
+  down=!down;draw();$("#res").innerHTML=down?'<div class="result bad"><b>Everyone is stuck.</b> The only record is on one server. Nobody can check who owns the diamond or record a sale.</div>':'<div class="result ok">Central database back online.</div>';
+  log("Outage",down?"One central record means one point of failure.":"Server restored.",down?"bad":"");};
+$$("[data-v]").forEach(b=>b.onclick=()=>{view=b.dataset.v;down=false;$$("[data-v]").forEach(x=>x.setAttribute("aria-pressed",x===b));draw();
+  cap(view==="dist"?"Every participant keeps an identical copy. No central store.":"One central database. Participants have to ask it, and trust whoever runs it.");});
+const endTour=tourSetup([
+ {t:"Five strangers will trade one diamond. None of them trusts the others. Each keeps a copy of the same ledger.",a:()=>{}},
+ {t:"The cutter registers the diamond: its exact identity goes onto every copy at once.",a:()=>next()},
+ {t:"It is sold to the gem trader. Ownership moves, and all five copies update together.",a:()=>next()},
+ {t:"Now the trader secretly edits his own copy. Watch what the others do.",a:()=>$("#bTamper").click()},
+ {t:"Your turn. Keep trading, try a fake diamond, and switch to a central database to compare.",a:()=>{}}
+],"Register the diamond, trade it, then try to cheat.");
+$("#bReset").onclick=()=>{if(busy)return;view="dist";step=0;ledger=[];tampered=null;owner=null;down=false;$$("[data-v]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.v==="dist"));
+  $("#bNext").textContent="Register the diamond";$("#bNext").disabled=false;$("#idcard").textContent="Diamond ID: not registered yet";$("#res").innerHTML="";draw();feedReset();endTour();};
+shellSetup();draw();
+})();
+</script>
+
+</body>
+</html>

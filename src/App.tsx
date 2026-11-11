@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react'
 import { useGame } from './state/useGame'
 import { chapters } from './content/chapters'
 import { SettingsMenu } from './components/SettingsMenu'
@@ -6,6 +6,9 @@ import { BUILT_TOPICS } from './components/rail/builtTopics'
 import { useProgress } from './state/progress'
 import { boardIdForRoute, boardLabel, topicForRoute } from './components/board/boardRoute'
 import { Chapter10Page } from './components/chapter10/Chapter10Page'
+import { Chapter9Hub } from './components/chapter9/Chapter9Hub'
+import { SimPage } from './components/chapter9/SimPage'
+import { findSim, simProgressId } from './content/chapter9/topics'
 import { TEXT_PX } from './state/settings'
 import { useRoute } from './state/useRoute'
 import { useSettings } from './state/useSettings'
@@ -29,7 +32,7 @@ function initialDark(): boolean {
 }
 
 export default function App() {
-  const { done, markDone, markStarted } = useProgress()
+  const { done, started, markDone, markStarted } = useProgress()
   const game = useGame()
   const { raw, settings, set } = useSettings()
   const route = useRoute()
@@ -61,10 +64,24 @@ export default function App() {
   // Chapter 7 sections and Chapter 8 sections are the topic boards
   const boardId = boardIdForRoute(route)
 
+  const sim = route.view === 'sim' ? findSim(route.slug) : undefined
+  const simReady = sim?.ready ? sim : undefined
+  const openSim = useCallback((slug: string) => markStarted(simProgressId(slug)), [markStarted])
+
   useEffect(() => {
-    const what = unit ? unit.title : boardId ? boardLabel(boardId) : route.view === 'chapter10' ? 'Chapter 10 Data security' : null
+    const what = unit
+      ? unit.title
+      : boardId
+        ? boardLabel(boardId)
+        : simReady
+          ? `${simReady.number} ${simReady.title}`
+          : route.view === 'chapter9'
+            ? 'Chapter 9 Financial technology'
+            : route.view === 'chapter10'
+              ? 'Chapter 10 Data security'
+              : null
     document.title = what ? `${what} | ${SITE}` : `${SITE} | ICAN Foundation Information Systems`
-  }, [unit, boardId, route.view])
+  }, [unit, boardId, simReady, route.view])
 
   const unitId = unit?.topic ? unit.id : null
   useEffect(() => {
@@ -81,6 +98,14 @@ export default function App() {
     )
   }
 
+  if (route.view === 'chapter9') {
+    return <Chapter9Hub started={started} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
+  }
+
+  if (simReady) {
+    return <SimPage topic={simReady} dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} onOpen={openSim} />
+  }
+
   if (route.view === 'chapter10') {
     return <Chapter10Page dark={dark} onToggleDark={() => setDark((d) => !d)} settingsSlot={settingsMenu} />
   }
@@ -91,6 +116,7 @@ export default function App() {
         <Landing
           chapters={shown}
           done={done}
+          started={started}
           dark={dark}
           onToggleDark={() => setDark((d) => !d)}
           settingsSlot={<SettingsMenu raw={raw} onChange={set} dark={dark} onToggleDark={() => setDark((d) => !d)} onDark />}

@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Anita's Boardroom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: boardroom scene with a big screen that plays one short scene per benefit, benefit buttons, then an evidence-matching board pack */
+.bens{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px 16px;border-top:1px solid var(--line)}
+@media (max-width:700px){.bens{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ben{border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-height:56px;background:var(--panel);text-align:left;display:grid;gap:1px}
+.ben b{font-family:var(--f-disp);font-size:.95em}
+.ben span{font-size:.76em;color:var(--muted)}
+.ben[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.ben.seen b::after{content:" ✓";color:var(--ok)}
+.pack{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:14px}
+@media (max-width:860px){.pack{grid-template-columns:minmax(0,1fr)}}
+.ev{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-height:48px;background:var(--panel);text-align:left;font-size:.86em;width:100%}
+.ev[aria-pressed="true"]{border-color:var(--amber);background:var(--hl)}
+.ev.used{display:none}
+.slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.slots{grid-template-columns:minmax(0,1fr)}}
+.slot{border:2px dashed var(--line);border-radius:12px;padding:8px 10px;min-height:76px;background:var(--panel2);text-align:left;display:grid;gap:4px;align-content:start}
+.slot b{font-family:var(--f-disp);font-size:.9em}
+.slot.ready{border-color:var(--amber)}
+.slot.full{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.slot .got{font-size:.8em}
+.slot.shake{animation:shake .4s}
+.bin{border:2px dashed var(--bad);background:var(--bad-soft)}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Benefits of big data simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 1.6 Benefits of big data, data science and analytics</div>
+      <h1>Anita's Boardroom</h1>
+      <p class="role">The board of Everest Fashion asks Anita one question: what has all this data actually done for us? Play each benefit on the big screen, then build her board pack.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card">
+    <div class="scroll">
+      <svg class="scene" viewBox="0 0 960 420" role="img" aria-label="A boardroom with a large screen, Anita presenting, and six board members at a table">
+        <rect width="960" height="420" fill="var(--panel2)"/>
+        <rect x="230" y="20" width="500" height="270" rx="12" fill="var(--ink)"/>
+        <rect x="240" y="30" width="480" height="250" rx="6" fill="var(--panel)"/>
+        <g id="screen"></g>
+        <text id="scrTitle" x="480" y="54" text-anchor="middle" style="font:600 14px var(--f-disp);fill:var(--ink)">Everest Fashion · what data did for us</text>
+        <!-- Anita -->
+        <g transform="translate(150 190)"><circle cx="20" cy="14" r="13" fill="var(--skin2)"/><path d="M8 12c0-10 6-14 12-14s12 4 12 14c-3-5-6-7-12-7s-9 2-12 7z" fill="var(--hair)"/><path d="M0 120V48a20 20 0 0 1 40 0v72z" fill="#7a2b3a"/><path d="M36 60l40-30" stroke="#7a2b3a" stroke-width="8" stroke-linecap="round"/></g>
+        <text x="170" y="330" text-anchor="middle" class="tm" font-size="10">Anita</text>
+        <!-- table + board -->
+        <path d="M200 360h560l40 50H160z" fill="var(--wood)"/>
+        <g id="board"></g>
+        <g id="dots"></g>
+      </svg>
+    </div>
+    <div class="bens" id="bens"></div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="anita"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Anita · CEO, Everest Fashion</div><p id="capTxt">Tap Watch the story, or pick a benefit to play it on the big screen.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+
+  <section class="card pad" aria-label="Board pack">
+    <div><h2 style="font-size:1.05rem">Build Anita's board pack</h2><p class="note">Tap an evidence card, then tap the benefit it proves. One card is a trap.</p></div>
+    <div class="pack">
+      <div style="display:grid;gap:6px;align-content:start" id="evs"></div>
+      <div class="slots" id="slots"></div>
+    </div>
+    <div id="packRes" aria-live="polite"></div>
+  </section>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="tw"><table style="min-width:480px"><thead><tr><th>Benefit</th><th>What it means</th></tr></thead><tbody>
+      <tr><td><b>Enhancing transparency</b></td><td>Creates insights into issues not previously fully understood, such as customer buying patterns or market price fluctuations.</td></tr>
+      <tr><td><b>Performance improvement</b></td><td>Real-time, analysed information allows managers to make better decisions, resulting in better profitability.</td></tr>
+      <tr><td><b>Market segmentation and customisation</b></td><td>Insights into customer needs allow the business to tailor product designs and prices to particular customers or groups.</td></tr>
+      <tr><td><b>Decision making</b></td><td>Real-time information allows better day-to-day decisions, for instance on pricing or stocking of goods.</td></tr>
+      <tr><td><b>Innovation</b></td><td>Analysed big data reveals new ideas, resulting in new products and services. It also underlies the growth of virtual ('borderless') organisations.</td></tr>
+      <tr><td><b>Risk management</b></td><td>Data analytics can use big data to help identify, quantify and manage risk.</td></tr>
+    </tbody></table></div>
+    <div class="spots"><div><b>The trap</b><p>Faster processing of high-volume routine transactions is what a transaction processing system does. It is not a benefit of big data.</p></div></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion is a made-up shop based on the study note's fashion retailer case. Anita, the board, products, prices and figures are illustrative.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const SCR=$("#screen");
+const B=[
+ {k:"tr",n:"Enhancing transparency",s:"see what was hidden",say:"We never knew 4 in 10 jackets sell on Saturday evenings. The data lifted the fog."},
+ {k:"pe",n:"Performance improvement",s:"better, faster results",say:"Live stock data means shelves refill in hours, not days. Profit is up."},
+ {k:"se",n:"Segmentation and customisation",s:"right product, right group",say:"Students, office workers, families: each now gets its own range and price."},
+ {k:"de",n:"Decision making",s:"choose with evidence",say:"Two prices on the table. The data tipped it: Rs 5,900 sells more without hurting margin."},
+ {k:"in",n:"Innovation",s:"new ideas from data",say:"Customers kept writing 'rain' and 'kurta'. So we made a rain-proof kurta jacket."},
+ {k:"ri",n:"Risk management",s:"see trouble early",say:"The data flagged a boot stock-out two weeks early. We fixed it before it hurt."}
+];
+const EV=[
+ {t:"Weekend sales data shows 40% of jackets sell on Saturday evenings, which nobody knew.",k:"tr"},
+ {t:"Live stock levels cut shelf refill time from 3 days to 4 hours, lifting profit.",k:"pe"},
+ {t:"Loyalty data splits customers into students, office workers and families, each with its own range.",k:"se"},
+ {t:"Today's sales data settles the price of the winter puffer at Rs 5,900.",k:"de"},
+ {t:"Review words 'rain' and 'kurta' lead to a brand new rain-proof kurta jacket.",k:"in"},
+ {t:"A demand forecast warns of a boot stock-out two weeks ahead.",k:"ri"},
+ {t:"The tills now process 5,000 routine sales an hour faster than before.",k:"trap"}
+];
+/* board members */
+(function(){let g="";[260,340,420,540,620,700].forEach((x,i)=>{g+=`<g transform="translate(${x} 300)"><circle cx="20" cy="12" r="11" fill="var(--skin${i%2?"2":""})"/><path d="M2 70V36a18 18 0 0 1 36 0v34z" fill="${["var(--blue)","var(--steel)","var(--violet)","var(--brand)","var(--amber)","var(--steel)"][i]}"/></g>`;});$("#board").innerHTML=g;})();
+function clear(){SCR.innerHTML="";}
+const el=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||SCR).appendChild(e);return e;};
+const txt=(x,y,t,size,fill,anchor,w)=>{const e=el("text",{x,y,"text-anchor":anchor||"middle",style:`font:${w||500} ${size||12}px var(--f-body);fill:${fill||"var(--ink)"}`});e.textContent=t;return e;};
+const anim=(e,kf,o)=>REDUCE?Promise.resolve():e.animate(kf,Object.assign({fill:"forwards",easing:"cubic-bezier(.3,.7,.2,1)"},o)).finished;
+const PLAY={
+ async tr(){ // fog lifts to reveal pattern
+  const days=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],v=[6,5,7,8,12,40,22];
+  v.forEach((h,i)=>{el("rect",{x:290+i*58,y:250-h*4.2,width:38,height:h*4.2,rx:4,fill:i===5?"var(--rose)":"var(--blue)",opacity:.85});txt(309+i*58,272,days[i],11,"var(--muted)");});
+  txt(480,82,"Jacket sales by day",12,"var(--muted)");
+  const fog=el("rect",{x:240,y:60,width:480,height:220,fill:"var(--steel)",opacity:.92});const ft=txt(480,170,"What sells when? Nobody knows.",15,"var(--panel)","middle",600);
+  await sleep(900);await Promise.all([anim(fog,[{opacity:.92},{opacity:0}],{duration:1400}),anim(ft,[{opacity:1},{opacity:0}],{duration:700})]);
+  const c=txt(605,88,"40% on Saturday",13,"var(--rose)","middle",700);await anim(c,[{opacity:0,transform:"translateY(8px)"},{opacity:1,transform:"none"}],{duration:500});},
+ async pe(){ // restock before/after
+  txt(360,84,"Before: weekly report",12,"var(--muted)");txt(600,84,"After: live data",12,"var(--muted)");
+  const shelf=(x)=>{el("rect",{x:x-80,y:110,width:160,height:90,rx:6,fill:"var(--panel2)",stroke:"var(--line)"});return [0,1,2,3,4].map(i=>el("rect",{x:x-70+i*30,y:140,width:22,height:50,rx:3,fill:"var(--blue)"}));};
+  const a=shelf(360),b=shelf(600);
+  for(let i=0;i<5;i++){a[i].setAttribute("opacity",.15);b[i].setAttribute("opacity",.15);await sleep(160);}
+  const tb=el("rect",{x:520,y:214,width:50,height:24,rx:4,fill:"var(--ok)"});const ta=el("rect",{x:280,y:214,width:50,height:24,rx:4,fill:"var(--steel)"});
+  const l1=txt(360,256,"refill in 3 days",11,"var(--bad)","middle",600),l2=txt(600,256,"refill in 4 hours",11,"var(--ok)","middle",600);
+  await Promise.all([anim(tb,[{transform:"translateX(-60px)"},{transform:"none"}],{duration:500}),anim(ta,[{transform:"translateX(-60px)"},{transform:"none"}],{duration:2200})]);
+  b.forEach(r=>r.setAttribute("opacity",1));await sleep(900);a.forEach(r=>r.setAttribute("opacity",1));
+  txt(480,276,"Profit up: more sales, fewer empty shelves",12,"var(--ink)","middle",600);},
+ async se(){ // crowd splits into 3 groups
+  const groups=[{n:"Students",x:330,c:"var(--blue)",p:"budget hoodies"},{n:"Office workers",x:480,c:"var(--violet)",p:"smart coats"},{n:"Families",x:630,c:"var(--amber)",p:"kids' bundles"}];
+  const dots=[];for(let i=0;i<24;i++){const g=groups[i%3];dots.push({e:el("circle",{cx:400+Math.random()*160,cy:110+Math.random()*90,r:8,fill:"var(--steel)"}),g});}
+  txt(480,84,"One crowd of customers",12,"var(--muted)");await sleep(800);
+  dots.forEach((d,i)=>{const tx=d.g.x-20+(i%4)*12,ty=130+Math.floor(i/12)*16+(i%2)*14;d.e.style.transition="cx .9s, cy .9s, fill .9s";d.e.setAttribute("cx",tx);d.e.setAttribute("cy",ty);d.e.setAttribute("fill",d.g.c);});
+  await sleep(1000);groups.forEach(g=>{txt(g.x,210,g.n,12,g.c,"middle",700);txt(g.x,230,g.p,11,"var(--muted)");});},
+ async de(){ // scale tips toward the evidence
+  txt(480,84,"Winter puffer price: which one?",12,"var(--muted)");
+  el("path",{d:"M480 220l-18 26h36z",fill:"var(--steel)"});
+  const beam=el("g",{});beam.style.transformOrigin="480px 220px";beam.style.transition="transform 1s cubic-bezier(.3,.7,.2,1)";
+  el("rect",{x:330,y:216,width:300,height:8,rx:4,fill:"var(--ink)"},beam);
+  el("rect",{x:330,y:170,width:90,height:46,rx:6,fill:"var(--blue-soft)",stroke:"var(--blue)"},beam);el("rect",{x:540,y:170,width:90,height:46,rx:6,fill:"var(--ok-soft)",stroke:"var(--ok)"},beam);
+  const t1=document.createElementNS(NS,"text");t1.setAttribute("x",375);t1.setAttribute("y",198);t1.setAttribute("text-anchor","middle");t1.setAttribute("style","font:700 13px var(--f-body);fill:var(--ink)");t1.textContent="Rs 6,500";beam.appendChild(t1);
+  const t2=t1.cloneNode();t2.setAttribute("x",585);t2.textContent="Rs 5,900";beam.appendChild(t2);
+  const ev=["sales at 5,900 last week +38%","margin still 41%","rivals at 6,000"];
+  for(let i=0;i<3;i++){const c=el("rect",{x:555,y:152-i*14,width:60,height:12,rx:3,fill:"var(--ok)"},beam);txt(714,100+i*18,ev[i],10,"var(--ok)","end",600);
+    await anim(c,[{transform:"translateY(-70px)",opacity:0},{transform:"none",opacity:1}],{duration:500});beam.style.transform=`rotate(${(i+1)*3}deg)`;await sleep(250);}
+  txt(480,268,"Decision: Rs 5,900, made on today's data",12,"var(--ink)","middle",700);},
+ async in(){ // words fly into product
+  const words=["rain","kurta","rain","light","kurta","pocket","rain","festival"];
+  const ws=words.map((w,i)=>txt(280+(i%4)*130,100+Math.floor(i/4)*40,w,13,"var(--violet)","middle",600));
+  txt(480,80,"Words customers kept writing in reviews",12,"var(--muted)");await sleep(900);
+  await Promise.all(ws.map((w,i)=>{const bb=w.getBBox();return anim(w,[{transform:"none",opacity:1},{transform:`translate(${480-(bb.x+bb.width/2)}px,${200-bb.y}px) scale(.4)`,opacity:0}],{duration:900,delay:i*60});}));
+  const p=el("rect",{x:400,y:170,width:160,height:70,rx:10,fill:"var(--violet-soft)",stroke:"var(--violet)","stroke-width":2});
+  const t=txt(480,200,"NEW: Rain-proof",14,"var(--ink)","middle",700),t2=txt(480,222,"kurta jacket",14,"var(--ink)","middle",700);
+  await anim(p,[{opacity:0,transform:"scale(.8)"},{opacity:1,transform:"none"}],{duration:500});txt(480,268,"Data can also run a shop with no building at all: a virtual, borderless business",10.5,"var(--muted)");},
+ async ri(){ // stock vs demand with early flag
+  txt(480,84,"Boots: stock vs forecast demand",12,"var(--muted)");
+  const X=i=>280+i*38,stock=[90,82,75,66,58,49,40,31,22,14,6],dem=[30,32,35,38,42,46,50,54,58,62,66];
+  const sp=el("path",{d:stock.map((v,i)=>(i?"L":"M")+X(i)+" "+(260-v*1.6)).join(""),fill:"none",stroke:"var(--blue)","stroke-width":3});
+  const dp=el("path",{d:dem.map((v,i)=>(i?"L":"M")+X(i)+" "+(260-v*1.6)).join(""),fill:"none",stroke:"var(--rose)","stroke-width":3,"stroke-dasharray":"6 5"});
+  [sp,dp].forEach(p=>{const L=p.getTotalLength();p.style.strokeDasharray=p===dp?"6 5":L;if(p===sp){p.style.strokeDashoffset=L;anim(p,[{strokeDashoffset:L},{strokeDashoffset:0}],{duration:1400});}});
+  txt(700,260-6*1.6-6,"stock",10,"var(--blue)","end",600);txt(700,260-66*1.6-6,"demand",10,"var(--rose)","end",600);
+  await sleep(1300);const fx=X(4);const f=el("path",{d:`M${fx} 110v-34l22 8-22 8`,fill:"var(--amber)",stroke:"var(--amber)","stroke-width":2});
+  await anim(f,[{opacity:0},{opacity:1}],{duration:400});txt(fx+30,124,"warning 2 weeks early: reorder now",11,"var(--amber)","start",700);}
+};
+let cur=null,busy=false,seen=new Set();
+function renderBens(){$("#bens").innerHTML=B.map(b=>`<button type="button" class="ben${seen.has(b.k)?" seen":""}" data-k="${b.k}" aria-pressed="${cur===b.k}"><b>${b.n}</b><span>${b.s}</span></button>`).join("");$$(".ben").forEach(x=>x.onclick=()=>play(x.dataset.k));}
+async function play(k){if(busy)return;busy=true;cur=k;renderBens();$$(".ben").forEach(x=>x.disabled=true);clear();const b=B.find(x=>x.k===k);
+  $("#scrTitle").textContent=b.n;cap("Anita: "+b.say);try{await PLAY[k]();}catch(e){console.error(e);}seen.add(k);log("Benefit",`${b.n}: ${b.say}`);
+  busy=false;renderBens();}
+/* board pack */
+let pick=null,placed={};
+function renderPack(){
+  $("#evs").innerHTML=EV.map((e,i)=>`<button type="button" class="ev${placed[i]?" used":""}" data-i="${i}" aria-pressed="${pick===i}">${e.t}</button>`).join("")+(Object.keys(placed).length>=6?'<p class="note">All six benefits proved. The card left over is the trap.</p>':"");
+  $("#slots").innerHTML=B.map(b=>{const got=Object.entries(placed).find(([i,k])=>k===b.k);return `<button type="button" class="slot${got?" full":""}${pick!==null&&!got?" ready":""}" data-k="${b.k}"><b>${b.n}</b>${got?`<span class="got">${EV[got[0]].t}</span>`:'<span class="note">evidence goes here</span>'}</button>`;}).join("");
+  $$(".ev").forEach(x=>x.onclick=()=>{pick=+x.dataset.i;renderPack();});
+  $$(".slot").forEach(x=>x.onclick=()=>drop(x.dataset.k,x));
+}
+function drop(k,slotEl){
+  if(pick===null){$("#packRes").innerHTML='<div class="result mid">Pick an evidence card first.</div>';return;}
+  const e=EV[pick],b=B.find(x=>x.k===k);
+  if(Object.values(placed).includes(k)){$("#packRes").innerHTML='<div class="result mid">That benefit already has its evidence.</div>';return;}
+  if(e.k==="trap"){$("#packRes").innerHTML=`<div class="result bad"><b>Trap.</b> Processing routine sales faster is what a transaction processing system does. It is not a benefit of big data, so it does not belong in this board pack.</div>`;log("Trap","Faster routine transaction processing is a TPS benefit, not a big data benefit.","bad");slotEl.classList.add("shake");pick=null;setTimeout(renderPack,450);return;}
+  if(e.k!==k){slotEl.classList.add("shake");$("#packRes").innerHTML=`<div class="result bad">Not quite. That evidence fits <b>${B.find(x=>x.k===e.k).n.toLowerCase()}</b> better than ${b.n.toLowerCase()}. Try again.</div>`;pick=null;setTimeout(renderPack,450);return;}
+  placed[pick]=k;pick=null;$("#packRes").innerHTML=`<div class="result ok"><b>${b.n}.</b> ${e.t}</div>`;log("Board pack",`${b.n} proved with real evidence.`,"good");
+  if(Object.keys(placed).length===6)$("#packRes").innerHTML='<div class="result ok"><b>Board pack done.</b> Six benefits, each backed by evidence. The leftover card about faster tills is a TPS benefit, not big data.</div>';
+  renderPack();
+}
+const endTour=tourSetup([
+ {t:"Board meeting at Everest Fashion. The board asks Anita: we spent money on data, so what did we get?",a:()=>{}},
+ {t:"First: transparency. Things nobody understood become visible.",a:()=>play("tr")},
+ {t:"Then segmentation: one crowd of customers becomes groups the shop can serve differently.",a:()=>play("se")},
+ {t:"Your turn. Play the other four benefits, then build the board pack below. Watch out for the trap card.",a:()=>{}}
+],"Pick a benefit to play it, then build the board pack.");
+$("#bReset").onclick=()=>{if(busy)return;cur=null;seen.clear();pick=null;placed={};clear();$("#scrTitle").textContent="Everest Fashion · what data did for us";renderBens();renderPack();$("#packRes").innerHTML="";feedReset();endTour();};
+shellSetup();renderBens();renderPack();
+})();
+</script>
+
+</body>
+</html>

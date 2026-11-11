@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { HOME_HASH, parseHash, chapter10Hash, chapter8Hash, sectionHash, unitHash } from './route'
+import { HOME_HASH, parseHash, chapter10Hash, chapter9Hash, chapter8Hash, sectionHash, unitHash } from './route'
 
 describe('hash route', () => {
   it('treats empty and unknown hashes as home', () => {
@@ -36,5 +36,18 @@ describe('hash route', () => {
   it('rejects ids with odd characters', () => {
     expect(parseHash('#/unit/a/b')).toEqual({ view: 'home' })
     expect(parseHash('#/unit/<script>')).toEqual({ view: 'home' })
+  })
+})
+
+describe('Chapter 9 routes', () => {
+  it('parses the hub and one simulator', () => {
+    expect(parseHash(chapter9Hash())).toEqual({ view: 'chapter9' })
+    expect(parseHash(chapter9Hash('2-5'))).toEqual({ view: 'sim', slug: '2-5' })
+  })
+  it('sends a malformed simulator slug home', () => {
+    expect(parseHash('#/chapter9/')).toEqual({ view: 'home' })
+    expect(parseHash('#/chapter9/3-1')).toEqual({ view: 'home' })
+    expect(parseHash('#/chapter9/1-12')).toEqual({ view: 'home' })
+    expect(parseHash('#/chapter9/<x>')).toEqual({ view: 'home' })
   })
 })

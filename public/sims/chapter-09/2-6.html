@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Bikash's Money Week</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: week strip, phone app on the left, money-flow diagram with old-way vs fintech-way comparison on the right */
+.week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.day{border:1px solid var(--line);border-radius:10px;padding:6px 8px;min-height:54px;background:var(--panel);text-align:left;display:grid}
+.day b{font:600 .7rem var(--f-mono);letter-spacing:.05em;color:var(--muted)}
+.day span{font-size:.8em;line-height:1.25}
+.day[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.day.done b::after{content:" ✓";color:var(--ok)}
+.stage{display:grid;grid-template-columns:260px minmax(0,1fr);gap:16px;padding:16px}
+@media (max-width:820px){.stage{grid-template-columns:minmax(0,1fr)}}
+.phone{background:var(--ink);border-radius:26px;padding:12px;justify-self:center;width:240px}
+.app{background:var(--panel);border-radius:16px;min-height:380px;padding:14px;display:grid;gap:10px;align-content:start}
+.app .bar{display:flex;justify-content:space-between;font:600 .7rem var(--f-mono);color:var(--muted)}
+.app h3{font-size:1rem}
+.app .big{font:700 1.5rem var(--f-disp)}
+.app .pill{font:600 .7rem var(--f-mono);padding:3px 8px;border-radius:999px;background:var(--brand-soft);justify-self:start}
+.flow svg{width:100%;height:auto;background:var(--panel2);border-radius:12px}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cmp .c{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:4px}
+.cmp .c.on{border-color:var(--brand);background:var(--brand-soft)}
+.cmp dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:0;font-size:.84em}
+.cmp dt{color:var(--muted)}.cmp dd{margin:0;font-family:var(--f-mono);font-weight:600}
+.sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sort .c{border:2px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:6px}
+.sort ul{margin:0;padding-left:18px;font-size:.84em}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Fintech simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.6 Fintech</div>
+      <h1>Bikash's Money Week</h1>
+      <p class="role">Five days, five money jobs. Each day Bikash can do it the old bank way or the fintech way. Send the money both ways and compare.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card">
+    <div class="week" id="week"></div>
+    <div class="stage">
+      <div class="phone"><div class="app" id="app"></div></div>
+      <div style="display:grid;gap:12px;min-width:0;align-content:start">
+        <div class="row"><button class="btn" id="bOld" type="button">Do it the old way</button><button class="btn pri" id="bNew" type="button">Do it the fintech way</button></div>
+        <div class="flow"><svg id="flow" viewBox="0 0 560 270" role="img" aria-label="Money flow between participants"><g id="fl"></g><g id="dots"></g></svg></div>
+        <div class="cmp" id="cmp"></div>
+        <div id="extra"></div>
+      </div>
+    </div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="bikash"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Bikash · customer</div><p id="capTxt">Tap Watch the story, or pick a day and send the money both ways.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Fintech</cite>Software and other modern technologies used by businesses that provide automated and improved financial services.</div>
+    <div class="spots">
+      <div><b>Why it grew</b><p>Technology, and the poor reputation of traditional retail banks.</p></div>
+      <div><b>Challenger banks</b><p>Small, often new banks using technology for a lower cost base (often no branches). Fully licensed, with depositor protection.</p></div>
+      <div><b>Standalone banking apps</b><p>Limited services such as payments. Not fully licensed banks, though they may need electronic money licences.</p></div>
+      <div><b>Examples</b><p>Crowd funding, peer-to-peer lending, online currency conversion, digital wallets.</p></div>
+    </div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Bikash, Anita, Everest Fashion, Sajilo Bank and PayEasy are illustrative. All fees, rates, times and amounts are made up to show the idea and vary in real life.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const D=[
+ {d:"MON",t:"Digital wallet",job:"Pay Rs 6,500 for a jacket at Everest Fashion",
+  app:`<h3>Pay at the till</h3><div class="big">Rs 6,500</div><span class="pill">Everest Fashion</span><p class="note">Hold your phone near the reader.</p>`,
+  nodes:[["Bikash",60,115],["Card network",230,60],["Card issuer",400,60],["Everest Fashion",500,170]],
+  old:{path:[[0,1],[1,2],[2,3]],m:{Steps:"insert card, PIN, wait",Time:"about 40 s","Card details seen by shop":"yes"},say:"The card number travels through the shop's system."},
+  neu:{path:[[0,3]],m:{Steps:"tap phone",Time:"about 5 s","Card details seen by shop":"no, a one-time token"},say:"Payments in store or online from a phone, without giving the shop the card details."}},
+ {d:"TUE",t:"Peer-to-peer lending",job:"Borrow Rs 50,000 for a laptop",
+  app:`<h3>Borrow</h3><div class="big">Rs 50,000</div><span class="pill">12 months</span><p class="note">Matched with people who want to lend.</p>`,
+  nodes:[["Saver 1",60,50],["Saver 2",60,125],["Saver 3",60,200],["Bank",280,60],["P2P platform",280,190],["Bikash",500,125]],
+  old:{path:[[0,3],[1,3],[2,3],[3,5]],m:{"Savers earn":"5%","Bikash pays":"15%",Approval:"7 days"},say:"The bank sits in the middle and keeps the gap between the two rates."},
+  neu:{path:[[0,4],[1,4],[2,4],[4,5]],m:{"Savers earn":"9%","Bikash pays":"12%",Approval:"1 day"},say:"Borrowers are matched directly with savers. The platform only makes the match."}},
+ {d:"WED",t:"Currency conversion",job:"Pay US$200 for an online design course",
+  app:`<h3>Send abroad</h3><div class="big">US$ 200</div><span class="pill">to an online school</span><p class="note">Rupees converted to dollars.</p>`,
+  nodes:[["Bikash",60,115],["His bank",210,60],["Partner bank",360,60],["Online school",500,115],["Online converter",280,180]],
+  old:{path:[[0,1],[1,2],[2,3]],m:{Fee:"Rs 1,500","Rate margin":"3%",Time:"3 days"},say:"Two banks each take a cut and the money takes days."},
+  neu:{path:[[0,4],[4,3]],m:{Fee:"Rs 300","Rate margin":"0.7%",Time:"minutes"},say:"Currencies exchanged on a digital platform: cheaper and faster."}},
+ {d:"THU",t:"Crowd funding",job:"Anita raises Rs 20 lakh for a new Everest Fashion store",
+  app:`<h3>Back a new store</h3><div class="big" id="cfAmt">Rs 0</div><div class="meter"><i id="cfBar"></i></div><p class="note">Bikash puts in Rs 5,000 with 399 others.</p>`,
+  nodes:[["Many small investors",80,115],["Bank",280,60],["Everest Fashion",500,115]],
+  old:{path:[[1,2]],m:{"From":"one bank loan",Time:"5 weeks","Cost":"interest every month"},say:"One lender, slow approval, interest to pay."},
+  neu:{path:[[0,2]],crowd:true,m:{"From":"400 people × Rs 5,000",Time:"2 weeks","Cost":"rewards or shares for backers"},say:"Capital raised from many small investors online."}},
+ {d:"FRI",t:"Challenger bank or app?",job:"Keep his Rs 1,20,000 savings safe",sort:true}
+];
+let day=0,done=new Set(),busy=false,lastWay=null;
+function renderWeek(){$("#week").innerHTML=D.map((x,i)=>`<button type="button" class="day${done.has(i)?" done":""}" aria-pressed="${i===day}" data-i="${i}"><b>${x.d}</b><span>${x.t}</span></button>`).join("");$$(".day").forEach(b=>b.onclick=()=>{if(busy)return;day=+b.dataset.i;lastWay=null;show();});}
+function drawFlow(active){const x=D[day];if(x.sort){$("#fl").innerHTML="";return;}
+  const N=x.nodes;let g="";
+  ["old","neu"].forEach(w=>x[w].path.forEach(([a,b])=>{const on=active===w;g+=`<line x1="${N[a][1]}" y1="${N[a][2]}" x2="${N[b][1]}" y2="${N[b][2]}" stroke="${w==="neu"?"var(--brand)":"var(--steel)"}" stroke-width="${on?4:2}" stroke-dasharray="${w==="neu"?"none":"6 5"}" opacity="${active&&!on?.15:.55}"/>`;}));
+  g+=N.map(n=>`<g><circle cx="${n[1]}" cy="${n[2]}" r="22" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/><text x="${n[1]}" y="${n[2]+5}" text-anchor="middle" style="font:700 13px var(--f-disp);fill:var(--ink)">${n[0][0]}</text><text x="${n[1]}" y="${n[2]+38}" text-anchor="middle" style="font:600 10.5px var(--f-body);fill:var(--ink)">${n[0]}</text></g>`).join("");
+  g+=`<text x="548" y="262" text-anchor="end" style="font:600 10px var(--f-mono);fill:var(--muted)">dashed grey: old way · solid teal: fintech way</text>`;$("#fl").innerHTML=g;}
+function renderCmp(){const x=D[day];if(x.sort){$("#cmp").innerHTML="";return;}
+  const box=(w,title)=>`<div class="c${lastWay===w?" on":""}"><b>${title}</b><dl>${Object.entries(x[w].m).map(([k,v])=>`<dt>${k}</dt><dd>${lastWay?v:"?"}</dd>`).join("")}</dl></div>`;
+  $("#cmp").innerHTML=box("old","Old way")+box("neu","Fintech way");}
+function show(){const x=D[day];renderWeek();$("#extra").innerHTML="";
+  $("#app").innerHTML=`<div class="bar"><span>Sajilo Bank</span><span>${x.d}</span></div><p class="note" style="margin:0">${x.job}</p>`+(x.app||`<h3>Where should his savings go?</h3><p class="note">Tap the one that is a fully licensed bank.</p>`);
+  $("#bOld").hidden=$("#bNew").hidden=!!x.sort;
+  if(x.sort){$("#extra").innerHTML=`<div class="sort"><button type="button" class="c" id="pickA" style="text-align:left;background:var(--panel)"><b>Sajilo Bank</b><span class="note">challenger bank, online only</span><ul><li>Full range: savings, loans, cards</li><li>Fully licensed bank</li><li>Depositor protection</li></ul></button><button type="button" class="c" id="pickB" style="text-align:left;background:var(--panel)"><b>PayEasy app</b><span class="note">standalone banking app</span><ul><li>Payments and transfers only</li><li>Electronic money licence</li><li>Not a fully licensed bank</li></ul></button></div><div id="sortRes" aria-live="polite"></div>`;
+    $("#pickA").onclick=()=>{$("#pickA").style.borderColor="var(--ok)";$("#sortRes").innerHTML='<div class="result ok"><b>Right choice for savings.</b> A challenger bank is a fully licensed bank with depositor protection, even with no branches.</div>';done.add(4);renderWeek();log("Friday","Challenger bank: fully licensed, with depositor protection.","good");};
+    $("#pickB").onclick=()=>{$("#pickB").style.borderColor="var(--bad)";$("#sortRes").innerHTML='<div class="result bad"><b>Careful.</b> A standalone banking app is not a fully licensed bank. Fine for payments, but not where you keep savings that need depositor protection.</div>';log("Friday","Standalone apps offer limited services and are not fully licensed banks.","bad");};}
+  drawFlow(null);renderCmp();cap(x.job+". Try both ways.");}
+async function send(w){if(busy)return;busy=true;$("#bOld").disabled=$("#bNew").disabled=true;const x=D[day];lastWay=w;drawFlow(w);renderCmp();
+  const N=x.nodes,col=w==="neu"?"var(--brand)":"var(--steel)",ms=w==="neu"?700:1100;
+  if(x[w].crowd){const amt=$("#cfAmt"),bar=$("#cfBar");for(let k=0;k<20;k++){movePath(`M${N[0][1]+(Math.random()-.5)*60} ${N[0][2]+(Math.random()-.5)*80} L${N[2][1]} ${N[2][2]}`,"var(--brand)",600,4);
+      if(amt){amt.textContent="Rs "+((k+1)).toLocaleString("en-IN")+" lakh";bar.style.width=((k+1)*5)+"%";}await sleep(90);}await sleep(600);}
+  else{const groups={};x[w].path.forEach(p=>{(groups[p[0]]=groups[p[0]]||[]).push(p);});
+    // sequential hops along the chain, parallel for many sources
+    const starts=x[w].path.filter(p=>!x[w].path.some(q=>q[1]===p[0]));
+    for(const s of starts){let cur=s;const chain=[cur];while(true){const nx=x[w].path.find(p=>p[0]===cur[1]);if(!nx)break;chain.push(nx);cur=nx;}
+      (async()=>{for(const [a,b] of chain)await movePath(`M${N[a][1]} ${N[a][2]} L${N[b][1]} ${N[b][2]}`,col,ms,7);})();}
+    await sleep(ms*Math.max(...starts.map(s=>{let c=1,cur=s;while(x[w].path.find(p=>p[0]===cur[1])){cur=x[w].path.find(p=>p[0]===cur[1]);c++;}return c;}))+200);}
+  if(w==="neu")done.add(day);renderWeek();cap((w==="neu"?"Fintech way: ":"Old way: ")+x[w].say);log(x.t,(w==="neu"?"Fintech: ":"Old way: ")+x[w].say,w==="neu"?"good":"");
+  busy=false;$("#bOld").disabled=$("#bNew").disabled=false;}
+$("#bOld").onclick=()=>send("old");$("#bNew").onclick=()=>send("neu");
+const endTour=tourSetup([
+ {t:"Fintech grew because of new technology, and because many people were fed up with traditional banks. Here is one week of Bikash's money.",a:()=>{day=0;show();}},
+ {t:"Monday: he pays for a jacket. With a digital wallet he just taps his phone, and the shop never sees his card number.",a:()=>send("neu")},
+ {t:"Tuesday: he needs Rs 50,000. Watch the bank stand in the middle, then try peer-to-peer.",a:async()=>{day=1;show();await send("old");}},
+ {t:"Your turn. Try every day both ways, and on Friday choose where his savings are safe.",a:()=>{}}
+],"Pick a day and send the money both ways.");
+$("#bReset").onclick=()=>{if(busy)return;day=0;done.clear();lastWay=null;show();feedReset();endTour();};
+shellSetup();show();
+})();
+</script>
+
+</body>
+</html>

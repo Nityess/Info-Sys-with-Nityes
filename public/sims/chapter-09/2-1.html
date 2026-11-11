@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Himal Textiles Office Showdown</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: split scene (traditional vs cloud) driven by event buttons, outcome cards, benefit/risk tally, cloud bill, key points */
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--web:#1d68c9;--web-soft:#e3eefb;--pos:#b06a06;--loy:#6a47cc;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--warn:#a86400;--warn-soft:#fbefd9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;--web:#5ea5ff;--web-soft:#16283f;
+  --pos:#f0a43a;--loy:#a58bff;--bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--warn:#f1a43a;--warn-soft:#3a2c14;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;--web:#5ea5ff;--web-soft:#16283f;
+  --pos:#f0a43a;--loy:#a58bff;--bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--warn:#f1a43a;--warn-soft:#3a2c14;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:wait;opacity:.5}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools{display:flex;flex-wrap:wrap;gap:6px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px}
+.stage{overflow:hidden}
+.scroll{overflow-x:auto}
+#scene{display:block;width:100%;min-width:640px;height:auto}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.events{padding:14px 16px;display:grid;gap:12px;border-top:1px solid var(--line)}
+.evg{display:grid;gap:6px}
+.evg h3{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.evrow{display:flex;flex-wrap:wrap;gap:6px}
+.ev{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:6px 12px;min-height:44px;font-size:.88em;display:inline-flex;align-items:center;gap:8px}
+.ev:hover:not(:disabled){border-color:var(--brand)}
+.ev .dot{width:8px;height:8px;border-radius:50%;background:var(--line);flex:none}
+.ev.done .dot{background:var(--brand)}
+.ev[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:700px){.out{grid-template-columns:minmax(0,1fr)}}
+.oc{border-radius:12px;padding:12px 14px;display:grid;gap:4px;align-content:start;border:1px solid var(--line);background:var(--panel)}
+.oc .side{font:600 .68rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.chip{font:600 .68rem var(--f-mono);padding:1px 8px;border-radius:999px;letter-spacing:.03em}
+.chip.good{background:var(--ok-soft);color:var(--ok)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.mixed{background:var(--warn-soft);color:var(--warn)}
+.oc p{margin:0}
+.oc .tag{font-size:.82em;color:var(--muted)}
+.oc .tag b{color:var(--ink)}
+.oc.fresh{animation:pop .4s ease}
+.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.tally{padding:16px;display:grid;gap:12px}
+.tally h2{font-size:1.05rem}
+.lists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.lists{grid-template-columns:minmax(0,1fr)}}
+.lists h3{font-size:.9rem;display:flex;justify-content:space-between}
+.lists ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.lists li{display:flex;gap:8px;align-items:flex-start;font-size:.86em;padding:4px 8px;border-radius:8px;color:var(--muted);transition:background .3s,color .3s}
+.lists li i{flex:none;width:16px;height:16px;border-radius:4px;border:1.5px solid var(--line);margin-top:2px;display:grid;place-items:center;font-style:normal;font-size:11px;line-height:1}
+.lists .ben li.on{background:var(--ok-soft);color:var(--ink)}
+.lists .ben li.on i{background:var(--ok);border-color:var(--ok);color:var(--panel)}
+.lists .risk li.on{background:var(--bad-soft);color:var(--ink)}
+.lists .risk li.on i{background:var(--bad);border-color:var(--bad);color:var(--panel)}
+.bill{padding:16px;display:grid;gap:12px}
+.bill h2{font-size:1.05rem}
+.ctl{display:grid;gap:5px}
+.ctl label{display:flex;justify-content:space-between;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--web);min-height:30px}
+.costs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 .98rem var(--f-mono);font-variant-numeric:tabular-nums}
+.three{display:grid;gap:6px}
+.three div{display:flex;gap:10px;align-items:flex-start;font-size:.86em;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.three b{font-family:var(--f-disp);min-width:96px}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.warn{color:var(--bad);font-weight:500}
+.keys{padding:18px;display:grid;gap:12px}
+.keys h2{font-size:1.15rem}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500}
+/* svg */
+.t{font-family:var(--f-body);fill:var(--ink)}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.fade{transition:opacity .35s}
+.lnk{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke .3s,opacity .3s}
+#scene .dim{opacity:.18}
+.spin{transform-box:fill-box;transform-origin:center;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Cloud accounting simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.1 Cloud computing and cloud accounting</div>
+      <h1>Himal Textiles Office Showdown</h1>
+      <p class="role">Himal Textiles, a small textile maker, keeps its accounts on one office PC. Should it move to cloud accounting? Throw real-life events at both set-ups and see which one copes.</p>
+    </div>
+    <div class="tools">
+      <button class="btn pri" id="bStory" type="button">Watch the story</button>
+      <button class="btn" id="bReset" type="button">Reset</button>
+      <button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button>
+      <button class="btn" id="bFull" type="button">Full screen</button>
+    </div>
+  </div>
+
+  <div class="card stage">
+    <div class="scroll">
+    <svg id="scene" viewBox="0 0 900 440" role="img" aria-label="Left: an office with one PC, a local server and a USB backup. Right: the same office using a cloud accounting provider linked to an office PC, a home laptop and a phone at a client site.">
+      <defs>
+        <symbol id="person" viewBox="0 0 24 46"><circle cx="12" cy="7" r="6" fill="var(--skin)"/><path d="M3 44V22a9 9 0 0 1 18 0v22z"/></symbol>
+      </defs>
+      <!-- LEFT -->
+      <g id="L" class="fade">
+        <rect x="10" y="10" width="430" height="420" rx="14" fill="var(--panel2)"/>
+        <text x="26" y="36" class="tl">TRADITIONAL SOFTWARE · ONE OFFICE PC</text>
+        <path id="lLh" class="lnk" d="M135 196 C120 260, 80 280, 72 316" stroke="var(--line)" stroke-dasharray="5 6"/>
+        <path id="lLc" class="lnk" d="M135 196 C210 262, 330 270, 352 300" stroke="var(--line)" stroke-dasharray="5 6"/>
+        <path id="lL1" class="lnk" d="M180 156 C230 140, 280 140, 300 160" stroke="var(--line)"/>
+        <path id="lHack" class="lnk" d="M430 52 C390 80, 370 100, 352 128" stroke="var(--bad)" stroke-dasharray="3 5" opacity="0"/>
+        <rect x="50" y="206" width="250" height="12" rx="3" fill="var(--wood)"/>
+        <rect x="90" y="132" width="90" height="62" rx="5" fill="var(--ink)"/>
+        <rect id="lScrS" x="95" y="137" width="80" height="50" rx="2" fill="var(--panel)"/>
+        <text id="lScrT" x="135" y="166" text-anchor="middle" class="t" font-size="9.5" font-weight="600">Ledger</text>
+        <rect x="128" y="194" width="14" height="12" fill="var(--ink)"/>
+        <use href="#person" x="196" y="150" width="28" height="56" fill="var(--loy)"/>
+        <text x="210" y="142" text-anchor="middle" class="tm" font-size="9">Gita</text>
+        <g id="lCrash" opacity="0" class="fade"><rect x="95" y="137" width="80" height="50" rx="2" fill="var(--bad)"/><path d="M120 150l30 24M150 150l-30 24" stroke="var(--panel)" stroke-width="4" stroke-linecap="round"/></g>
+        <g id="lUpd" opacity="0" class="fade"><rect x="95" y="137" width="80" height="50" rx="2" fill="var(--warn-soft)"/><circle class="spin" cx="135" cy="160" r="10" fill="none" stroke="var(--warn)" stroke-width="3" stroke-dasharray="20 12"/><text x="135" y="182" text-anchor="middle" class="t" font-size="8">installing</text></g>
+        <rect id="lSrv" x="300" y="128" width="52" height="92" rx="5" fill="var(--steel)"/>
+        <circle id="lSrvA" cx="312" cy="142" r="3.5" fill="var(--ok)"/><circle id="lSrvB" cx="324" cy="142" r="3.5" fill="var(--ok)"/>
+        <path d="M308 160h36M308 172h36M308 184h36M308 196h36" stroke="var(--panel)" stroke-width="2" opacity=".4"/>
+        <text x="326" y="236" text-anchor="middle" class="tm" font-size="9">server</text>
+        <text id="lSrvT" x="326" y="120" text-anchor="middle" font-family="var(--f-mono)" font-size="10" font-weight="600" fill="var(--bad)" opacity="0">FULL</text>
+        <g id="lSrv2" opacity="0" class="fade"><rect x="362" y="128" width="52" height="92" rx="5" fill="var(--steel)"/><circle cx="374" cy="142" r="3.5" fill="var(--ok)"/><rect x="356" y="96" width="66" height="20" rx="10" fill="var(--bad-soft)" stroke="var(--bad)"/><text x="389" y="110" text-anchor="middle" font-family="var(--f-mono)" font-size="9" font-weight="600" fill="var(--bad)">Rs 4,50,000</text></g>
+        <rect id="lUsb" x="140" y="220" width="30" height="11" rx="2" fill="var(--pos)"/>
+        <text x="176" y="230" class="tm" font-size="9">USB backup · every Friday</text>
+        <g id="lHacker" opacity="0" class="fade"><circle cx="430" cy="42" r="12" fill="var(--bad)"/><path d="M424 40h12M426 46h8" stroke="var(--panel)" stroke-width="2"/></g>
+        <!-- home + client -->
+        <rect x="30" y="318" width="84" height="54" rx="5" fill="var(--ink)"/><rect id="lHomeS" x="35" y="323" width="74" height="44" rx="2" fill="var(--panel)"/>
+        <path d="M22 372h100l-6 8H28z" fill="var(--steel)"/>
+        <text id="lHomeT" x="72" y="349" text-anchor="middle" class="t" font-size="8.5">-</text>
+        <text x="72" y="398" text-anchor="middle" class="tm" font-size="9">Gita's home</text>
+        <rect x="334" y="300" width="38" height="70" rx="6" fill="var(--ink)"/><rect id="lPhS" x="338" y="308" width="30" height="54" rx="2" fill="var(--panel)"/>
+        <text id="lPhT" x="353" y="338" text-anchor="middle" class="t" font-size="7.5">-</text>
+        <text x="353" y="390" text-anchor="middle" class="tm" font-size="9">client site</text>
+        <g id="lXh" opacity="0" class="fade"><circle cx="98" cy="258" r="11" fill="var(--bad)"/><path d="M93 253l10 10M103 253l-10 10" stroke="var(--panel)" stroke-width="2.5"/></g>
+        <g id="lXc" opacity="0" class="fade"><circle cx="246" cy="258" r="11" fill="var(--bad)"/><path d="M241 253l10 10M251 253l-10 10" stroke="var(--panel)" stroke-width="2.5"/></g>
+        <text id="lMsg" x="225" y="418" text-anchor="middle" class="t" font-size="11" font-weight="600"></text>
+      </g>
+
+      <!-- RIGHT -->
+      <g id="R" class="fade">
+        <rect x="460" y="10" width="430" height="420" rx="14" fill="var(--web-soft)"/>
+        <text x="476" y="36" class="tl">CLOUD ACCOUNTING</text>
+        <path id="rLp" class="lnk" d="M640 96 C590 120, 560 150, 545 186" stroke="var(--web)" opacity=".35"/>
+        <path id="rLl" class="lnk" d="M675 112 C675 200, 680 260, 680 300" stroke="var(--web)" opacity=".35"/>
+        <path id="rLh" class="lnk" d="M712 96 C770 118, 820 150, 832 178" stroke="var(--web)" opacity=".35"/>
+        <path id="rHack" class="lnk" d="M880 40 C850 52, 790 58, 726 68" stroke="var(--bad)" stroke-dasharray="3 5" opacity="0"/>
+        <g id="rCloudG">
+          <path id="rCloud" d="M628 110a26 26 0 0 1 6-50a34 34 0 0 1 64-8a24 24 0 0 1 20 38a20 20 0 0 1-12 20z" fill="var(--panel)" stroke="var(--web)" stroke-width="2.5"/>
+          <text x="672" y="88" text-anchor="middle" class="t" font-size="10.5" font-weight="600">Provider</text>
+          <text id="rVer" x="672" y="102" text-anchor="middle" class="tm" font-size="9">ledger v5.1</text>
+        </g>
+        <g id="rBust" opacity="0" class="fade"><rect x="626" y="56" width="92" height="56" rx="8" fill="var(--bad)" opacity=".9"/><text x="672" y="80" text-anchor="middle" font-family="var(--f-mono)" font-size="10" font-weight="600" fill="var(--panel)">PROVIDER</text><text x="672" y="96" text-anchor="middle" font-family="var(--f-mono)" font-size="10" font-weight="600" fill="var(--panel)">CLOSED</text></g>
+        <g id="rAbroad" opacity="0" class="fade"><rect x="728" y="50" width="120" height="40" rx="8" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="788" y="67" text-anchor="middle" class="t" font-size="9" font-weight="600">Servers abroad</text><text x="788" y="81" text-anchor="middle" class="t" font-size="8.5">different privacy laws</text></g>
+        <g id="rShield" opacity="0" class="fade"><path d="M740 50l14 6v10c0 9-6 14-14 17-8-3-14-8-14-17V56z" fill="var(--ok)"/><path d="M734 66l5 5 8-9" fill="none" stroke="var(--panel)" stroke-width="2.5"/></g>
+        <g id="rHacker" opacity="0" class="fade"><circle cx="880" cy="34" r="12" fill="var(--bad)"/><path d="M874 32h12M876 38h8" stroke="var(--panel)" stroke-width="2"/></g>
+        <!-- office pc -->
+        <rect x="500" y="188" width="90" height="62" rx="5" fill="var(--ink)"/><rect id="rPcS" x="505" y="193" width="80" height="50" rx="2" fill="var(--panel)"/>
+        <text id="rPcT" x="545" y="222" text-anchor="middle" class="t" font-size="9.5" font-weight="600">Ledger</text>
+        <rect x="538" y="250" width="14" height="10" fill="var(--ink)"/><rect x="510" y="260" width="70" height="8" rx="2" fill="var(--wood)"/>
+        <g id="rCrash" opacity="0" class="fade"><rect x="505" y="193" width="80" height="50" rx="2" fill="var(--bad)"/><path d="M530 206l30 24M560 206l-30 24" stroke="var(--panel)" stroke-width="4" stroke-linecap="round"/></g>
+        <text x="545" y="284" text-anchor="middle" class="tm" font-size="9">office</text>
+        <!-- laptop -->
+        <rect x="638" y="302" width="84" height="54" rx="5" fill="var(--ink)"/><rect id="rLapS" x="643" y="307" width="74" height="44" rx="2" fill="var(--panel)"/>
+        <path d="M630 356h100l-6 8H636z" fill="var(--steel)"/>
+        <text id="rLapT" x="680" y="333" text-anchor="middle" class="t" font-size="8.5">Ledger</text>
+        <text x="680" y="382" text-anchor="middle" class="tm" font-size="9">Gita's home</text>
+        <!-- phone -->
+        <rect x="814" y="180" width="38" height="70" rx="6" fill="var(--ink)"/><rect id="rPhS" x="818" y="188" width="30" height="54" rx="2" fill="var(--panel)"/>
+        <text id="rPhT" x="833" y="218" text-anchor="middle" class="t" font-size="7.5">Ledger</text>
+        <text x="833" y="270" text-anchor="middle" class="tm" font-size="9">client site</text>
+        <!-- users -->
+        <g id="rUsers"></g>
+        <text id="rUsersT" x="476" y="404" class="tm" font-size="10"></text>
+        <text id="rMsg" x="675" y="418" text-anchor="middle" class="t" font-size="11" font-weight="600"></text>
+      </g>
+      <g id="dots"></g>
+    </svg>
+    </div>
+    <div class="caption" aria-live="polite">
+      <svg class="ava" viewBox="0 0 42 42" aria-hidden="true"><rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--pos)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/></svg>
+      <div style="flex:1 1 260px;min-width:0"><div class="who">Ramesh · advising Himal Textiles</div><p id="capTxt">Tap Watch the story, or pick any event below. Both offices face it at the same time.</p></div>
+      <div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div>
+    </div>
+    <div class="events">
+      <div class="evg"><h3>An ordinary day</h3><div class="evrow" id="evDay"></div></div>
+      <div class="evg"><h3>Something changes or goes wrong</h3><div class="evrow" id="evBad"></div></div>
+      <div class="out" id="out">
+        <div class="oc"><div class="side"><span>Traditional</span></div><p class="note">Pick an event to see what happens here.</p></div>
+        <div class="oc"><div class="side"><span>Cloud</span></div><p class="note">And here.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="grid2">
+  <section class="card tally" aria-label="Benefits and risks found">
+    <h2>What you've uncovered</h2>
+    <p class="note">Every event lights up the cloud accounting benefit or risk it shows. Find all 15.</p>
+    <div class="lists">
+      <div class="ben"><h3><span>Benefits</span><span id="benN" class="tm">0 / 9</span></h3><ul id="benL"></ul></div>
+      <div class="risk"><h3><span>Risks</span><span id="riskN" class="tm">0 / 6</span></h3><ul id="riskL"></ul></div>
+    </div>
+  </section>
+  <section class="card bill" aria-label="Cloud bill">
+    <h2>How the cloud is sold</h2>
+    <div class="ctl"><label for="users">People using the accounts <output id="usersO">4</output></label><input id="users" type="range" min="1" max="20" value="4"></div>
+    <div class="costs">
+      <div class="stat"><span>Traditional · bought up front</span><b id="cLup">Rs 0</b></div>
+      <div class="stat"><span>Traditional · extra costs</span><b id="cLrun">Rs 0</b></div>
+      <div class="stat"><span>Cloud · up front</span><b>Rs 0</b></div>
+      <div class="stat"><span>Cloud · this month</span><b id="cRm">Rs 0</b></div>
+    </div>
+    <p class="note" id="capNote"></p>
+    <div class="three">
+      <div><b>On demand</b><span>Rented by the minute, hour or month. Himal Textiles pays for what it uses.</span></div>
+      <div><b>Elastic</b><span>Move the slider: use as much or as little as needed.</span></div>
+      <div><b>Fully managed</b><span>The provider runs servers, updates and backups. Himal Textiles just needs a computer and internet.</span></div>
+    </div>
+  </section>
+</div>
+
+<section class="card keys" aria-label="Remember this">
+  <h2>Remember this</h2>
+  <div class="def"><cite>Cloud computing</cite>The provision of computer system services by a third party, accessed by the user through the internet. Typical services include data storage, software as a service (SaaS), and infrastructure as a service.</div>
+  <div class="def"><cite>Cloud accounting</cite>An application of cloud computing where accountancy software is provided in the cloud by a service provider.</div>
+  <div class="spots">
+    <div><b>No powerful PCs</b><p>The software runs in the cloud, so an ordinary computer with internet is enough.</p></div>
+    <div><b>Many users at once</b><p>More than one person can use the software at the same time, from anywhere.</p></div>
+    <div><b>Reliance on the provider</b><p>The user keeps no local backups, so it depends fully on the provider's security and backups.</p></div>
+    <div><b>Needs the internet</b><p>No connection, no accounts. Plan for supplier failure too.</p></div>
+  </div>
+  <details><summary>About this simulation</summary><p>A simplified teaching model. Himal Textiles Pvt Ltd is a made-up business based on the study note's textile maker case. Gita, Ramesh, prices, fees, user numbers and invoice counts are illustrative. Real cloud contracts, security and outages vary by provider.</p></details>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const NS="http://www.w3.org/2000/svg";
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,80):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const FEE=2500, CAP=5;
+
+const BEN=["Access from anywhere, at any time","Better security","Automatic software updates","Automatic backups","No upfront costs","Reduced overhead costs","No powerful PCs needed","Easier collaboration","Scalable"];
+const RISK=["Supplier failure","Permanent internet dependency","Security breaches","Legislation risk","Unannounced software changes","Reliance on provider security"];
+let foundB=new Set(), foundR=new Set();
+function renderLists(){
+  $("#benL").innerHTML=BEN.map(b=>`<li class="${foundB.has(b)?"on":""}"><i>${foundB.has(b)?"✓":""}</i>${b}</li>`).join("");
+  $("#riskL").innerHTML=RISK.map(b=>`<li class="${foundR.has(b)?"on":""}"><i>${foundR.has(b)?"!":""}</i>${b}</li>`).join("");
+  $("#benN").textContent=foundB.size+" / 9";$("#riskN").textContent=foundR.size+" / 6";
+}
+
+/* ---------- state ---------- */
+let users=4, lUp=180000, lRun=0, servers=1, busy=false;
+function renderCosts(){
+  $("#cLup").textContent=rs(lUp);$("#cLrun").textContent=rs(lRun);$("#cRm").textContent=rs(users*FEE);
+  $("#usersO").textContent=users;$("#users").value=users;
+  const capT=CAP*servers;
+  $("#capNote").innerHTML=users>capT?`<span class="warn">The office server handles ${capT} users. Traditional needs another server for ${users}.</span> The cloud just bills ${users} × ${rs(FEE)}.`:`Office server copes with up to ${capT} users. Cloud fee: ${users} × ${rs(FEE)} a month (illustrative).`;
+  // user icons
+  let g="";for(let i=0;i<Math.min(users,20);i++){const x=476+i*20;g+=`<use href="#person" x="${x}" y="364" width="12" height="24" fill="var(--web)"/>`;}
+  $("#rUsers").innerHTML=g;$("#rUsersT").textContent=`${users} users · ${rs(users*FEE)} a month`;
+}
+
+/* ---------- scene helpers ---------- */
+function op(id,v){$(id).setAttribute("opacity",v);}
+function scr(id,txt,fill){$(id+"T").textContent=txt;$(id+"S").setAttribute("fill",fill||"var(--panel)");}
+function pulse(pathId,col,ms,rev,stopAt){return new Promise(res=>{
+  const p=$(pathId),L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);$("#dots").appendChild(c);
+  const end=stopAt||1,t0=performance.now(),dur=reduce?60:ms;
+  const step=now=>{const k=Math.min(1,(now-t0)/dur)*end;const pt=p.getPointAtLength((rev?1-k:k)*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+    if(k<end)requestAnimationFrame(step);else{setTimeout(()=>c.remove(),stopAt?500:120);res();}};requestAnimationFrame(step);});}
+function msg(side,t,col){const e=$(side==="L"?"#lMsg":"#rMsg");e.textContent=t;e.setAttribute("fill",col||"var(--ink)");}
+function clearScene(){
+  ["#lCrash","#lUpd","#lXh","#lXc","#lHacker","#lHack","#lSrvT","#rBust","#rAbroad","#rShield","#rHacker","#rHack","#rCrash"].forEach(i=>op(i,0));
+  scr("#lScr","Ledger");scr("#lHome","-");scr("#lPh","-");scr("#rPc","Ledger");scr("#rLap","Ledger");scr("#rPh","Ledger");
+  ["#lSrvA","#lSrvB"].forEach(i=>$(i).setAttribute("fill","var(--ok)"));$("#lSrv").setAttribute("fill","var(--steel)");
+  ["#rLp","#rLl","#rLh"].forEach(i=>{$(i).setAttribute("stroke","var(--web)");$(i).removeAttribute("stroke-dasharray");});
+  $("#rCloud").setAttribute("stroke","var(--web)");$("#rCloud").setAttribute("fill","var(--panel)");
+  msg("L","");msg("R","");$("#L").classList.remove("dim");$("#R").classList.remove("dim");
+}
+const ALLR=()=>Promise.all([pulse("#rLp","var(--web)",650),pulse("#rLl","var(--web)",650),pulse("#rLh","var(--web)",650)]);
+
+/* ---------- events ---------- */
+const EV={
+ enter:{grp:"day",label:"Gita enters an invoice",
+  L:["mixed","Saved on the office PC only. Nobody else sees it until someone emails a copy."],R:["good","Saved once in the cloud. Office, home and phone all show it within seconds."],ben:["Easier collaboration"],
+  run:async()=>{scr("#lScr","INV-310 ✎");scr("#rPc","INV-310 ✎");await sleep(500);
+    await Promise.all([pulse("#lL1","var(--loy)",600),pulse("#rLp","var(--web)",600,true)]);
+    scr("#lScr","INV-310 saved","var(--ok-soft)");msg("L","Saved on 1 PC","var(--warn)");
+    await ALLR();scr("#rPc","INV-310","var(--ok-soft)");scr("#rLap","INV-310","var(--ok-soft)");scr("#rPh","INV-310","var(--ok-soft)");msg("R","Same invoice on every device","var(--ok)");}},
+ check:{grp:"day",label:"Manager checks a payment at a client's shop",
+  L:["bad","The ledger is on the office PC. He has to ring the office and wait for someone to look."],R:["good","He opens the ledger in his phone browser and sees the payment arrived."],ben:["Access from anywhere, at any time"],
+  run:async()=>{scr("#lPh","…");scr("#rPh","…");
+    await Promise.all([pulse("#lLc","var(--loy)",900,true,.5),pulse("#rLh","var(--web)",600,true)]);
+    op("#lXc",1);scr("#lPh","No access","var(--bad-soft)");msg("L","Phone can't reach the office PC","var(--bad)");
+    await pulse("#rLh","var(--web)",600);scr("#rPh","Paid ✓","var(--ok-soft)");msg("R","Paid: Rs 48,000","var(--ok)");}},
+ home:{grp:"day",label:"Gita works from home",
+  L:["bad","Gita can't reach the office PC from home, so the invoices wait till she is back."],R:["good","Gita logs in from her own laptop. Same ledger, same data, and her manager can work in it at the same time."],ben:["Access from anywhere, at any time","Easier collaboration"],
+  run:async()=>{scr("#lHome","…");scr("#rLap","…");
+    await Promise.all([pulse("#lLh","var(--loy)",900,true,.5),pulse("#rLl","var(--web)",600,true)]);
+    op("#lXh",1);scr("#lHome","No access","var(--bad-soft)");msg("L","Home laptop is cut off","var(--bad)");
+    await pulse("#rLl","var(--web)",600);scr("#rLap","Ledger open","var(--ok-soft)");msg("R","Working from home","var(--ok)");}},
+ crash:{grp:"bad",label:"The office PC dies",
+  L:["bad","The PC won't start. Everything since Friday's USB backup is gone: 37 invoices to type again."],R:["good","Gita picks up any ordinary laptop and logs in. Nothing is lost: the provider backs up automatically."],ben:["Automatic backups","No powerful PCs needed"],
+  run:async()=>{op("#lCrash",1);op("#rCrash",1);await sleep(700);msg("L","37 invoices lost","var(--bad)");
+    $("#lUsb").animate([{transform:"translateY(0)"},{transform:"translateY(-6px)"},{transform:"translateY(0)"}],{duration:500,iterations:2});
+    await pulse("#rLl","var(--web)",650);scr("#rLap","All data here","var(--ok-soft)");msg("R","Back at work in minutes","var(--ok)");}},
+ update:{grp:"bad",label:"A software update is released",
+  L:["mixed","A technician installs it. The PC is out of action for two hours and the call-out costs Rs 5,000."],R:["good","The provider updates everyone overnight. Gita doesn't notice, and Himal Textiles needs no IT expert."],ben:["Automatic software updates","Reduced overhead costs"],
+  run:async()=>{op("#lUpd",1);$("#rVer").textContent="updating…";await sleep(900);$("#rVer").textContent="ledger v5.2";await ALLR();
+    scr("#rPc","v5.2 ✓","var(--ok-soft)");scr("#rLap","v5.2 ✓","var(--ok-soft)");scr("#rPh","v5.2","var(--ok-soft)");msg("R","Updated automatically","var(--ok)");
+    await sleep(500);op("#lUpd",0);scr("#lScr","v5.2 ✓");msg("L","2 hours offline + Rs 5,000","var(--warn)");lRun+=5000;renderCosts();}},
+ grow:{grp:"bad",label:"Business doubles",
+  L:["bad","The server is full. A new server and faster PCs cost Rs 4,50,000 up front."],R:["good","Add licences for the new staff. The monthly fee grows; there is nothing to buy."],ben:["Scalable","No upfront costs"],
+  run:async()=>{const target=Math.min(20,users*2);op("#lSrvT",1);$("#lSrvA").setAttribute("fill","var(--bad)");await sleep(600);
+    if(servers<2){servers=2;lUp+=450000;}op("#lSrv2",1);msg("L","New server: Rs 4,50,000","var(--bad)");
+    for(let u=users+1;u<=target;u++){users=u;renderCosts();await sleep(120);}msg("R",users+" users, nothing to buy","var(--ok)");renderCosts();}},
+ hack:{grp:"bad",label:"A hacker tries to break in",
+  L:["bad","A small office's firewall is easy to get past. Customer records are exposed."],R:["good","The provider's security team blocks it. Its protection is better than Himal Textiles could afford alone."],ben:["Better security"],
+  run:async()=>{op("#lHacker",1);op("#rHacker",1);op("#lHack",1);op("#rHack",1);
+    await Promise.all([pulse("#lHack","var(--bad)",900),pulse("#rHack","var(--bad)",900)]);
+    $("#lSrv").setAttribute("fill","var(--bad)");msg("L","Records exposed","var(--bad)");op("#rShield",1);msg("R","Blocked","var(--ok)");}},
+ net:{grp:"bad",label:"The internet goes down",
+  L:["good","No internet needed for the office PC. Invoices keep going in."],R:["bad","No internet, no ledger. Month-end stops until the line is back."],risk:["Permanent internet dependency"],
+  run:async()=>{["#rLp","#rLl","#rLh"].forEach(i=>{$(i).setAttribute("stroke","var(--bad)");$(i).setAttribute("stroke-dasharray","4 8");});
+    $("#rCloud").setAttribute("stroke","var(--bad)");await sleep(500);
+    scr("#rPc","Offline","var(--bad-soft)");scr("#rLap","Offline","var(--bad-soft)");scr("#rPh","Offline","var(--bad-soft)");msg("R","Everything stops","var(--bad)");
+    await pulse("#lL1","var(--loy)",600);scr("#lScr","Working","var(--ok-soft)");msg("L","Still working","var(--ok)");}},
+ bust:{grp:"bad",label:"The cloud provider goes bust",
+  L:["good","Nothing changes. The software and data sit on Himal Textiles's own PC."],R:["bad","The provider shuts down. Himal Textiles kept no local backup, so its data is out of reach unless it has a contingency plan."],risk:["Supplier failure","Reliance on provider security"],
+  run:async()=>{op("#rBust",1);await sleep(600);scr("#rPc","No access","var(--bad-soft)");scr("#rLap","No access","var(--bad-soft)");scr("#rPh","No access","var(--bad-soft)");
+    msg("R","Locked out of its own data","var(--bad)");msg("L","Unaffected","var(--ok)");}},
+ surprise:{grp:"bad",label:"Provider changes the software without warning",
+  L:["good","The software only changes when Himal Textiles decides to update."],R:["bad","New screens appear in the middle of month-end. Gita can't find the VAT report."],risk:["Unannounced software changes"],
+  run:async()=>{$("#rVer").textContent="ledger v6 (new!)";await ALLR();scr("#rPc","Where's VAT?","var(--warn-soft)");scr("#rLap","New layout?","var(--warn-soft)");scr("#rPh","Changed","var(--warn-soft)");
+    msg("R","Disrupted mid month-end","var(--bad)");msg("L","Same as yesterday","var(--ok)");}},
+ abroad:{grp:"bad",label:"The provider's servers are abroad",
+  L:["good","Himal Textiles's data stays in its own office in Nepal."],R:["mixed","Customer data sits in another country with different privacy laws. Himal Textiles must check it still complies."],risk:["Legislation risk"],
+  run:async()=>{op("#rAbroad",1);await sleep(700);msg("R","Different privacy laws apply","var(--warn)");msg("L","Data stays local","var(--ok)");}},
+ breach:{grp:"bad",label:"The provider itself is hacked",
+  L:["good","Not affected this time."],R:["bad","Attackers get into the provider. Himal Textiles's customer data may be stolen even though Himal Textiles did nothing wrong."],risk:["Security breaches"],
+  run:async()=>{op("#rHacker",1);op("#rHack",1);await pulse("#rHack","var(--bad)",900);$("#rCloud").setAttribute("fill","var(--bad-soft)");$("#rCloud").setAttribute("stroke","var(--bad)");
+    msg("R","Data theft and privacy risk","var(--bad)");msg("L","Not affected","var(--ok)");}}
+};
+const order={day:["enter","check","home"],bad:["crash","update","grow","hack","net","bust","surprise","abroad","breach"]};
+const evBtns={};
+function mkBtns(){["day","bad"].forEach(g=>{const row=$(g==="day"?"#evDay":"#evBad");row.innerHTML="";order[g].forEach(k=>{const b=document.createElement("button");b.type="button";b.className="ev";b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<span class="dot"></span>${EV[k].label}`;b.onclick=()=>fire(k);row.appendChild(b);evBtns[k]=b;});});}
+function chip(v){return `<span class="chip ${v}">${v==="good"?"copes":v==="bad"?"struggles":"so-so"}</span>`;}
+async function fire(k){
+  if(busy)return;busy=true;Object.values(evBtns).forEach(b=>b.disabled=true);
+  const e=EV[k];Object.entries(evBtns).forEach(([kk,b])=>b.setAttribute("aria-pressed",kk===k));
+  clearScene();$("#capTxt").textContent=tour>=0?TOUR[tour].t:e.label+"…";
+  try{await e.run();}catch(err){console.error(err);}
+  const tags=(e.ben||[]).map(b=>`Benefit: <b>${b}</b>`).concat((e.risk||[]).map(r=>`Risk: <b>${r}</b>`)).join(" · ");
+  $("#out").innerHTML=`<div class="oc fresh"><div class="side"><span>Traditional</span>${chip(e.L[0])}</div><p>${e.L[1]}</p></div>
+    <div class="oc fresh"><div class="side"><span>Cloud</span>${chip(e.R[0])}</div><p>${e.R[1]}</p><p class="tag">${tags}</p></div>`;
+  (e.ben||[]).forEach(b=>foundB.add(b));(e.risk||[]).forEach(r=>foundR.add(r));renderLists();
+  evBtns[k].classList.add("done");
+  if(tour<0)$("#capTxt").textContent=(e.risk?"The cloud loses this one. ":"")+"Try another event. "+(15-foundB.size-foundR.size>0?(15-foundB.size-foundR.size)+" benefits and risks still to uncover.":"You've uncovered all 15.");
+  busy=false;Object.values(evBtns).forEach(b=>b.disabled=false);
+}
+
+/* ---------- story ---------- */
+const TOUR=[
+ {t:"Himal Textiles makes curtains and cushions. Its accounts live on one office PC, backed up to a USB stick on Fridays.",a:()=>{clearScene();$("#R").classList.add("dim");}},
+ {t:"Gita types an invoice. On the left it stays on that one PC. On the right it saves to the cloud and appears everywhere.",a:()=>fire("enter")},
+ {t:"A manager visiting a client's shop wants to know if they've paid. One side can tell him in seconds.",a:()=>fire("check")},
+ {t:"Then the office PC dies. One office loses a week of work, the other doesn't notice.",a:()=>fire("crash")},
+ {t:"But the cloud isn't perfect. When the internet goes down, it's the cloud office that stops.",a:()=>fire("net")},
+ {t:"Your turn. Try every event and uncover all nine benefits and six risks.",a:()=>clearScene()}
+];
+let tour=-1;
+async function goTour(i){if(busy)return;tour=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;$("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";
+  $("#tNext").disabled=true;await TOUR[i].a();$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;}
+$("#bStory").onclick=()=>goTour(0);
+$("#tNext").onclick=()=>{if(tour<TOUR.length-1)goTour(tour+1);else endTour();};
+$("#tSkip").onclick=endTour;
+function endTour(){tour=-1;$("#tourNav").hidden=true;clearScene();$("#capTxt").textContent="Pick any event. Both offices face it at the same time.";}
+
+/* ---------- controls ---------- */
+$("#users").oninput=e=>{users=+e.target.value;renderCosts();};
+$("#bReset").onclick=()=>{if(busy)return;users=4;lUp=180000;lRun=0;servers=1;op("#lSrv2",0);$("#rVer").textContent="ledger v5.1";foundB.clear();foundR.clear();renderLists();renderCosts();
+  Object.values(evBtns).forEach(b=>{b.classList.remove("done");b.setAttribute("aria-pressed","false");});endTour();
+  $("#out").innerHTML='<div class="oc"><div class="side"><span>Traditional</span></div><p class="note">Pick an event to see what happens here.</p></div><div class="oc"><div class="side"><span>Cloud</span></div><p class="note">And here.</p></div>';};
+$("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+$("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+
+mkBtns();renderLists();renderCosts();clearScene();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Back Office Shake-Up</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: map of five stores with finance desks that glide into one shared service centre; activity switches, trade-off meters, real-life scenarios */
+.acts{display:grid;gap:6px}
+.act{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:6px 10px;min-height:48px;background:var(--panel);text-align:left}
+.act .sw{width:14px;height:14px;border-radius:4px}
+.act i{font:600 .66rem var(--f-mono);font-style:normal;padding:2px 8px;border-radius:999px;background:var(--panel2)}
+.act[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.act[aria-pressed="true"] i{background:var(--brand);color:var(--panel)}
+.mets{display:grid;gap:8px}
+.met{display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:4px 10px;align-items:center;font-size:.86em}
+.met .meter{grid-column:1/-1;height:8px}
+.met b{font-family:var(--f-mono);text-align:right}
+.grp{font:600 .68rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.desk{transition:transform 1s cubic-bezier(.3,.7,.2,1),opacity .6s}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Shared service centre simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.9 Shared service centres</div>
+      <h1>Back Office Shake-Up</h1>
+      <p class="role">Every Everest Fashion store runs its own little finance office. Ramesh wants to move the work into one shared service centre. Move it piece by piece and watch what you gain and lose.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card split">
+    <div style="min-width:0">
+      <div class="scroll">
+        <svg class="scene" id="scene" viewBox="0 0 960 460" role="img" aria-label="Five stores, each with finance desks, and a shared service centre in the middle">
+          <rect width="960" height="460" fill="var(--panel2)"/>
+          <path d="M40 150 C180 80, 320 120, 470 110 S760 90, 920 160 L900 330 C760 360, 600 340, 470 360 S180 380, 60 320 Z" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>
+          <g id="roads"></g><g id="stores"></g>
+          <g id="ssc"><rect x="400" y="230" width="160" height="110" rx="10" fill="var(--brand-soft)" stroke="var(--brand)" stroke-width="2.5"/><text x="480" y="252" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">Shared service centre</text><text id="sscN" x="480" y="330" text-anchor="middle" class="tm" font-size="10">empty</text></g>
+          <g id="desks"></g>
+          <g id="bubble"></g>
+          <g id="dots"></g>
+        </svg>
+      </div>
+      <div class="caption" aria-live="polite"><span id="capAva" data-k="ramesh"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Ramesh · Finance manager, Everest Fashion</div><p id="capTxt">Tap Watch the story, or move one finance activity into the shared service centre.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+    </div>
+    <aside class="side pad" aria-label="Controls and results">
+      <div><h2 style="font-size:1rem">Move into the centre</h2></div>
+      <div class="acts" id="acts"></div>
+      <div class="row"><button class="btn" id="bAll" type="button">Move everything</button><button class="btn" id="bNone" type="button">Bring it all back</button></div>
+      <div class="mets" id="mets"></div>
+    </aside>
+  </div>
+  <section class="card pad" aria-label="Real-life tests">
+    <div><h2 style="font-size:1.05rem">Real-life tests</h2><p class="note">Run each with some work moved, then with none, and compare.</p></div>
+    <div class="row"><button class="btn" id="sLocal" type="button">Pokhara has a local problem</button><button class="btn" id="sBill" type="button">The centre's bill reaches the stores</button><button class="btn" id="sMonth" type="button">Month-end across all stores</button></div>
+    <div id="scRes" aria-live="polite"></div>
+  </section>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Shared service centre (SSC)</cite>Consolidates the transaction-processing activities of many operations within a company, such as HR, payroll, accounting and IT. The aim is significant cost reductions while improving service levels through standardised technology, processes and service level agreements.</div>
+    <div class="tw"><table style="min-width:460px"><thead><tr><th>Advantages</th><th>Disadvantages</th></tr></thead><tbody>
+      <tr><td>Reduced headcount from economies of scale in one location.</td><td>Loss of business-specific knowledge about individual departments.</td></tr>
+      <tr><td>Lower premises and other overhead costs.</td><td>Removed from decision making, so less able to give meaningful financial information.</td></tr>
+      <tr><td>Knowledge sharing improves the quality of service.</td><td>Weakened relationships because of distance from the business areas.</td></tr>
+      <tr><td>Standard approaches give more consistent management of business data.</td><td>Cost inefficiencies may be passed on to divisions, causing friction.</td></tr>
+    </tbody></table></div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion, Ramesh, the store towns, staff numbers and costs are illustrative.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const ST=[["Butwal",130,190],["Pokhara",280,150],["Kathmandu",650,140],["Chitwan",470,175],["Biratnagar",820,200]];
+const ACT=[{k:"pay",n:"Payroll",col:"var(--blue)"},{k:"ap",n:"Paying suppliers",col:"var(--amber)"},{k:"rec",n:"Bank reconciliation",col:"var(--violet)"},{k:"rep",n:"Reporting",col:"var(--rose)"}];
+let moved=new Set(),busy=false;
+function home(si,ai){return[ST[si][1]-30+ai*16,ST[si][2]+22];}
+function sscPos(si,ai){const slot=ai*5+si;return[420+(slot%10)*13,270+Math.floor(slot/10)*20];}
+function draw(){
+  $("#roads").innerHTML=ST.map(s=>`<line x1="${s[1]}" y1="${s[2]}" x2="480" y2="285" stroke="var(--line)" stroke-width="2" stroke-dasharray="4 6"/>`).join("");
+  $("#stores").innerHTML=ST.map(s=>`<g><rect x="${s[1]-40}" y="${s[2]-30}" width="80" height="70" rx="8" fill="var(--panel)" stroke="var(--ink)" stroke-width="1.5"/><rect x="${s[1]-40}" y="${s[2]-30}" width="80" height="14" rx="4" fill="var(--brand)"/><text x="${s[1]}" y="${s[2]-50}" text-anchor="middle" style="font:600 12px var(--f-disp);fill:var(--ink)">${s[0]}</text></g>`).join("");
+  let g="";ST.forEach((s,si)=>ACT.forEach((a,ai)=>{g+=`<g class="desk" id="d-${si}-${ai}"><rect x="-6" y="-6" width="12" height="12" rx="3" fill="${a.col}"/></g>`;}));$("#desks").innerHTML=g;place(true);}
+function place(instant){ST.forEach((s,si)=>ACT.forEach((a,ai)=>{const el=$(`#d-${si}-${ai}`);const m=moved.has(a.k);const[x,y]=m?sscPos(si,ai):home(si,ai);
+  const merge=m&&si>=3;if(instant)el.style.transition="none";el.style.transform=`translate(${x}px,${y}px)`;el.style.opacity=merge?0:1;if(instant){void el.getBoundingClientRect();el.style.transition="";}}));
+  const staff=moved.size*3;$("#sscN").textContent=moved.size?`${staff} staff (was ${moved.size*5})`:"empty";}
+function metrics(){const f=moved.size/4,rep=moved.has("rep");
+  const staff=20-moved.size*2,cost=100-f*35;
+  return{good:[["Finance staff",staff,staff/20,"lower is cheaper",true],["Premises and overheads",Math.round(cost)+"%",cost/100,"",true],["Knowledge sharing and quality",Math.round(40+f*55)+"%",.4+f*.55],["Standard, consistent data",Math.round(30+f*65)+"%",.3+f*.65]],
+    bad:[["Local business knowledge",Math.round(90-f*60)+"%",.9-f*.6],["Involvement in decisions",Math.round(rep?35:85)+"%",rep?.35:.85],["Relationships with stores",Math.round(90-f*55)+"%",.9-f*.55]]};}
+function renderMets(){const m=metrics();const row=(r,good)=>{const w=Math.round(r[2]*100);const col=r[4]?(r[2]<.75?"var(--ok)":"var(--amber)"):(good?(r[2]>.6?"var(--ok)":"var(--amber)"):(r[2]<.5?"var(--bad)":"var(--ok)"));
+    return `<div class="met"><span>${r[0]}</span><b>${r[1]}</b><div class="meter"><i style="width:${w}%;background:${col}"></i></div></div>`;};
+  $("#mets").innerHTML=`<div class="grp" style="color:var(--ok)">What you gain</div>${m.good.map(r=>row(r,true)).join("")}<div class="grp" style="color:var(--bad)">What you risk</div>${m.bad.map(r=>row(r,false)).join("")}`;}
+function renderActs(){$("#acts").innerHTML=ACT.map(a=>`<button type="button" class="act" data-k="${a.k}" aria-pressed="${moved.has(a.k)}"><span class="sw" style="background:${a.col}"></span><span>${a.n}</span><i>${moved.has(a.k)?"IN CENTRE":"IN STORES"}</i></button>`).join("");
+  $$(".act").forEach(b=>b.onclick=()=>toggle(b.dataset.k));}
+function toggle(k,quiet){const a=ACT.find(x=>x.k===k);if(moved.has(k))moved.delete(k);else moved.add(k);renderActs();place(false);renderMets();
+  if(!quiet){const inC=moved.has(k);log(a.n,inC?`Five store desks become one team of 3 in the centre: fewer people, one standard way of working.${k==="rep"?" But reporting is now far from day-to-day store decisions.":""}`:`${a.n} goes back to each store.`,inC?"good":"");
+    cap(inC?`${a.n} moved. Watch the desks glide in and two of them disappear: economies of scale.`:`${a.n} is back in the stores.`);}}
+$("#bAll").onclick=()=>{ACT.forEach(a=>{if(!moved.has(a.k))toggle(a.k,true);});log("All moved","Twenty store desks become twelve in one centre. Costs fall, but stores lose their own finance people.");cap("Everything is in the centre now. Check what you gained and what you risk.");};
+$("#bNone").onclick=()=>{ACT.forEach(a=>{if(moved.has(a.k))toggle(a.k,true);});log("All back","Every store runs its own finance office again.");cap("Back to five separate finance offices.");};
+function bubble(si,text,col){const s=ST[si];$("#bubble").innerHTML=`<rect x="${s[1]-90}" y="${s[2]-118}" width="180" height="44" rx="10" fill="var(--panel)" stroke="${col}" stroke-width="2"/><text x="${s[1]}" y="${s[2]-100}" text-anchor="middle" style="font:600 10.5px var(--f-body);fill:var(--ink)">${text[0]}</text><text x="${s[1]}" y="${s[2]-85}" text-anchor="middle" style="font:500 10px var(--f-body);fill:var(--muted)">${text[1]}</text>`;}
+$("#sLocal").onclick=async()=>{const off=moved.size>0;bubble(1,["Big festival next week:","can we stock extra and pay staff overtime?"],"var(--amber)");
+  await movePath(`M${ST[1][1]} ${ST[1][2]} L480 285`,"var(--amber)",900,7);
+  $("#scRes").innerHTML=off?`<div class="result bad"><b>Slow answer.</b> The centre doesn't know Pokhara's festival calendar or its local suppliers. Business-specific knowledge has been lost, and the store feels far away from its finance team.</div>`:`<div class="result ok"><b>Quick answer.</b> Pokhara's own finance clerk knows the festival and the suppliers, and sorts it out the same day.</div>`;
+  log("Local problem",off?"The centre lacked local knowledge and the relationship was weaker.":"Local finance staff knew the store well.",off?"bad":"good");};
+$("#sBill").onclick=async()=>{if(!moved.size){$("#scRes").innerHTML='<div class="result mid">Nothing is in the centre yet, so there is no bill to share out.</div>';return;}
+  await Promise.all(ST.map(s=>movePath(`M480 285 L${s[1]} ${s[2]}`,"var(--rose)",900,6)));bubble(4,["Why are we paying for","the centre's overtime?"],"var(--bad)");
+  $("#scRes").innerHTML='<div class="result bad"><b>Friction.</b> The centre had an inefficient month and passed its costs on to every store. Biratnagar\'s manager is angry about costs he cannot control.</div>';log("Recharge","SSC cost inefficiencies passed to stores caused friction.","bad");};
+$("#sMonth").onclick=async()=>{const f=moved.size;await Promise.all(ST.map(s=>movePath(`M${s[1]} ${s[2]} L480 285`,"var(--ok)",700,6)));$("#bubble").innerHTML="";
+  $("#scRes").innerHTML=f?`<div class="result ok"><b>Smoother month-end.</b> ${f===4?"All":"Some"} stores follow one standard process in one place, so figures arrive in the same format and staff share know-how. Fewer people did the same work.</div>`:`<div class="result mid"><b>Five different ways.</b> Each store closes its books its own way, so head office spends days matching up figures.</div>`;
+  log("Month-end",f?"Standardised processes in the centre gave consistent data.":"Five separate offices, five formats.",f?"good":"");};
+const endTour=tourSetup([
+ {t:"Five Everest Fashion stores, each with its own payroll, supplier payments, bank reconciliation and reporting. That's 20 desks doing the same jobs.",a:()=>{if(moved.size)$("#bNone").click();}},
+ {t:"Move payroll into one shared service centre. Five desks become a team of three.",a:()=>toggle("pay")},
+ {t:"Move the rest. Costs fall and data becomes consistent, but watch the bottom meters drop.",a:()=>$("#bAll").click()},
+ {t:"Your turn. Try the real-life tests below with some work moved and none moved.",a:()=>{}}
+],"Move activities in or out, then run the real-life tests.");
+$("#bReset").onclick=()=>{moved.clear();renderActs();place(true);renderMets();$("#bubble").innerHTML="";$("#scRes").innerHTML="";feedReset();endTour();};
+shellSetup();draw();renderActs();renderMets();
+})();
+</script>
+
+</body>
+</html>

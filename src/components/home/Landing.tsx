@@ -16,6 +16,8 @@ import './landing.css'
 interface Props {
   chapters: Chapter[]
   done: ReadonlySet<string>
+  /** Everything the student has opened, for the Chapter 9 explored count */
+  started: ReadonlySet<string>
   dark: boolean
   onToggleDark: () => void
   /** Settings button, built by the app so it shares state with the study screens */
@@ -26,7 +28,7 @@ interface Props {
  * The landing page, built to landing-handoff/design/Main.dc.html. All links are plain hash links.
  * Chapter 7 sections and Chapter 8 open as topic boards; Chapter 7 topics with a built lesson open as lessons.
  */
-export function Landing({ chapters, done, dark, onToggleDark, settingsSlot }: Props) {
+export function Landing({ chapters, done, started, dark, onToggleDark, settingsSlot }: Props) {
   const root = useRef<HTMLDivElement>(null)
   const calm = useCalm()
   useReveal(root)
@@ -35,7 +37,7 @@ export function Landing({ chapters, done, dark, onToggleDark, settingsSlot }: Pr
     const a = heroAction(chapters, done)
     return a && { ...a, label: 'Start Chapter 7', returning: false }
   }, [chapters, done])
-  const cards = useMemo(() => chapterCards(chapters, done), [chapters, done])
+  const cards = useMemo(() => chapterCards(chapters, done, started), [chapters, done, started])
   const ch7 = sectionHash('s1')
   const goto = (id: string) => scrollToId(id, calm)
   const startHref = sectionHash('s1')

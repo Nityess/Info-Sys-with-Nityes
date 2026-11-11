@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Digital Asset Scanner</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#eef2f5;--panel:#fff;--panel2:#f5f7fa;--ink:#14202b;--muted:#536170;--line:#d5dce3;
+  --brand:#0d5f63;--brand-soft:#d9eeee;--blue:#1d68c9;--blue-soft:#e3eefb;--violet:#6a47cc;--violet-soft:#ece7fb;
+  --amber:#a86400;--amber-soft:#fbefd9;--rose:#c0365f;--rose-soft:#fbe6ed;
+  --bad:#d0262b;--bad-soft:#fde7e7;--ok:#1f7d46;--ok-soft:#e3f3e9;--hl:#fff3c4;
+  --wood:#c9a477;--steel:#8a97a5;--skin:#c98f63;--skin2:#a8724c;--hair:#231c18;
+  --f-disp:"Sora","Segoe UI",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--fs:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e141a;--panel:#16202a;--panel2:#1b2733;--ink:#e4ebf1;--muted:#9aa9b8;--line:#2a3846;--brand:#5cc3c1;--brand-soft:#173a3d;
+  --blue:#5ea5ff;--blue-soft:#16283f;--violet:#a58bff;--violet-soft:#241d3d;--amber:#f1a43a;--amber-soft:#3a2c14;--rose:#ff6f98;--rose-soft:#3a1a26;
+  --bad:#ff5a5f;--bad-soft:#3a1c1f;--ok:#4fd087;--ok-soft:#173326;--hl:#3b3416;--wood:#7d6244;--steel:#5d6b79;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:var(--fs);line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 44px}
+body.class{--fs:18px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:16px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;letter-spacing:-.01em;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.lab{display:grid;gap:14px;background:var(--bg)}
+.lab:fullscreen{padding:18px;overflow:auto}
+.head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font:600 .72rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.head h1{font-size:clamp(1.45rem,3.2vw,2rem);line-height:1.15;margin-top:4px}
+.role{margin:6px 0 0;color:var(--muted);max-width:62ch}
+.tools,.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:0 14px;min-height:44px;font-size:.9em;font-weight:500;text-align:left}
+.btn:hover:not(:disabled){border-color:var(--brand)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:var(--panel);font-weight:600}
+.btn.warn{border-color:var(--bad);color:var(--bad)}
+.btn[aria-pressed="true"]{background:var(--brand-soft);border-color:var(--brand)}
+.btn.warn[aria-pressed="true"]{background:var(--bad-soft);border-color:var(--bad)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:40px;font-size:.86em}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--panel)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}
+.pad{padding:16px;display:grid;gap:12px;align-content:start}
+.scroll{overflow-x:auto;min-width:0}
+.scene{display:block;width:100%;min-width:620px;height:auto}
+.split{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:0}
+.split>.side{border-left:1px solid var(--line)}
+@media (max-width:980px){.split{grid-template-columns:minmax(0,1fr)}.split>.side{border-left:0;border-top:1px solid var(--line)}}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.two{grid-template-columns:minmax(0,1fr)}}
+.stat{background:var(--panel2);border-radius:8px;padding:8px 10px}
+.stat span{display:block;font-size:.7em;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.stat b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.ctl{display:grid;gap:5px}
+.ctl label,.ctl .lbl{display:flex;justify-content:space-between;gap:8px;font-weight:500;font-size:.92em}
+.ctl output{font-family:var(--f-mono)}
+input[type=range]{width:100%;accent-color:var(--brand);min-height:30px}
+.meter{height:10px;border-radius:5px;background:var(--panel2);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .5s,background .3s}
+.note{font-size:.86em;color:var(--muted);margin:0}
+.try{background:var(--panel2);border-radius:10px;padding:10px 12px;font-size:.9em}
+.try b{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin-bottom:2px}
+.say{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);border-radius:12px;padding:10px}
+.say p{margin:0;font-size:.92em}
+.result{border-radius:12px;padding:12px 14px;font-size:.92em;animation:pop .35s ease}
+.result.ok{background:var(--ok-soft)}.result.bad{background:var(--bad-soft)}.result.mid{background:var(--amber-soft)}
+.caption{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line);min-height:72px}
+.caption .who{font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.caption p{margin:2px 0 0;font-size:1.02em}
+.ava{width:42px;height:42px;border-radius:50%;flex:none;overflow:hidden}
+.say .ava{width:38px;height:38px}
+.tour{display:flex;gap:6px;align-items:center;margin-left:auto}
+.tour .ct{font:500 .78rem var(--f-mono);color:var(--muted)}
+.lower{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;align-items:start}
+@media (max-width:900px){.lower{grid-template-columns:minmax(0,1fr)}}
+.feed h2,.keys h2{font-size:1.05rem}
+.feed ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.feed li{border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:.86em;background:var(--panel2);animation:pop .35s ease}
+.feed li.empty{animation:none;background:none;border:0;padding:0;color:var(--muted)}
+.feed .vt{font:600 .66rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:4px;background:var(--brand-soft);margin-right:6px}
+.feed li.bad .vt{background:var(--bad-soft)}.feed li.good .vt{background:var(--ok-soft)}
+.def{padding:10px 14px;background:var(--panel2);border-radius:10px;font-size:.92em}
+.def cite{display:block;font:600 .7rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-style:normal;margin-bottom:4px}
+.spots{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.spots div{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.spots b{font-family:var(--f-disp)}
+.spots p{margin:4px 0 0;font-size:.86em}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.86em}
+th{text-align:left;font:600 .68rem var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:var(--panel2)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+details{font-size:.86em;color:var(--muted)}
+summary{cursor:pointer;color:var(--ink);font-weight:500;min-height:28px}
+.tm{font-family:var(--f-mono);fill:var(--muted)}
+.tl{font:600 11px var(--f-mono);letter-spacing:.06em;fill:var(--muted)}
+.tx{font-family:var(--f-body);fill:var(--ink)}
+.fade{transition:opacity .35s}
+@keyframes pop{from{transform:translateY(-6px);opacity:.3}to{transform:none;opacity:1}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* Layout: marketing folder of file cards, a scanner gate, three bins; protection lab and device-upgrade demo below */
+.folder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:16px}
+@media (max-width:900px){.folder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.file{border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:6px;background:var(--panel);align-content:start}
+.file .ic{width:40px;height:46px;border-radius:6px;display:grid;place-items:center;font:700 .66rem var(--f-mono);color:#fff;position:relative}
+.file .ic::after{content:"";position:absolute;right:0;top:0;border-left:10px solid transparent;border-top:10px solid var(--panel)}
+.file b{font-size:.86em;line-height:1.3}
+.file .meta{font:500 .7rem var(--f-mono);color:var(--muted)}
+.rights{border:1px dashed var(--line);border-radius:8px;padding:0 8px;min-height:36px;font-size:.78em;background:var(--panel2);text-align:left}
+.rights[aria-pressed="true"]{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.file.gone{visibility:hidden}
+.gatebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel2)}
+.gate{position:relative;width:120px;height:64px;border-radius:10px;border:3px solid var(--brand);display:grid;place-items:center;font:600 .7rem var(--f-mono);color:var(--brand);overflow:hidden;background:var(--panel)}
+.gate .beam{position:absolute;left:0;right:0;height:3px;background:var(--brand);top:0;opacity:0}
+.gate.scan .beam{opacity:1;animation:sweep .6s linear infinite}
+@keyframes sweep{to{top:100%}}
+.gate .stamp{font:700 .8rem var(--f-mono)}
+.bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:16px}
+@media (max-width:700px){.bins{grid-template-columns:minmax(0,1fr)}}
+.bin{border:2px solid;border-radius:14px;padding:10px;min-height:120px;display:grid;gap:6px;align-content:start}
+.bin h3{font-size:.95rem}.bin small{color:var(--muted);font-size:.74em}
+.bin.media{border-color:var(--violet);background:var(--violet-soft)}.bin.text{border-color:var(--blue);background:var(--blue-soft)}.bin.none{border-color:var(--line);border-style:dashed;background:var(--panel2)}
+.chipf{display:flex;justify-content:space-between;align-items:center;gap:6px;border-radius:8px;padding:5px 8px;background:var(--panel);font-size:.8em;animation:pop .3s ease}
+.chipf .pt{font:600 .62rem var(--f-mono);color:var(--ok)}
+.fly{position:fixed;z-index:30;pointer-events:none}
+.prot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:760px){.prot{grid-template-columns:minmax(0,1fr)}}
+.copy{position:relative;border-radius:12px;border:1px solid var(--line);height:170px;overflow:hidden;display:grid;place-items:center;background:var(--panel2)}
+.wm{position:absolute;inset:0;display:grid;place-items:center;font:800 1.4rem var(--f-disp);color:#ffffffcc;transform:rotate(-18deg);text-shadow:0 1px 3px #0006;pointer-events:none}
+.devs{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.dev{border:3px solid var(--ink);border-radius:12px;padding:8px;min-width:140px;min-height:90px;display:grid;gap:4px;align-content:start;font-size:.78em;transition:opacity .5s}
+.dev.dead{opacity:.35;border-style:dashed}
+</style>
+
+
+</head>
+<body>
+<div class="wrap">
+<section class="lab" id="lab" aria-label="Digital assets simulator">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Chapter 9 · 2.3 Digital assets</div>
+      <h1>Digital Asset Scanner</h1>
+      <p class="role">Everest Fashion's marketing folder is full of files. Only some are real digital assets. Set the rights, run the scanner, then protect what you own.</p>
+    </div>
+    <div class="tools"><button class="btn pri" id="bStory" type="button">Watch the story</button><button class="btn" id="bReset" type="button">Reset</button><button class="btn" id="bClass" type="button" aria-pressed="false">Classroom</button><button class="btn" id="bFull" type="button">Full screen</button></div>
+  </div>
+  <div class="card">
+    <div class="folder" id="folder"></div>
+    <div class="gatebar">
+      <div class="gate" id="gate"><div class="beam"></div><span class="stamp" id="stamp">SCANNER</span></div>
+      <div style="flex:1 1 260px;display:grid;gap:4px"><b>Two checks for every file</b><span class="note">1. Is it a text or media file in binary form? 2. Does it come with the right to use it?</span></div>
+      <button class="btn pri" id="bScan" type="button">Run the scanner</button>
+    </div>
+    <div class="bins">
+      <div class="bin media" id="b-media"><h3>Media assets</h3><small>images and multimedia: photos, video, audio</small></div>
+      <div class="bin text" id="b-text"><h3>Textual content</h3><small>reports, technical data, presentations, websites, graphics</small></div>
+      <div class="bin none" id="b-none"><h3>Just a file</h3><small>no right to use it, so not a digital asset</small></div>
+    </div>
+    <div class="caption" aria-live="polite"><span id="capAva" data-k="anita"></span><div style="flex:1 1 260px;min-width:0"><div class="who">Anita · CEO, Everest Fashion</div><p id="capTxt">Tap Watch the story, or set the rights on each file and run the scanner.</p></div><div class="tour" id="tourNav" hidden><span class="ct" id="tourCt"></span><button class="btn pri" id="tNext" type="button">Next</button><button class="btn" id="tSkip" type="button">Skip</button></div></div>
+  </div>
+
+  <section class="card pad" aria-label="Protect an asset">
+    <h2 style="font-size:1.05rem">Protect it, then let someone copy it</h2>
+    <div class="prot">
+      <div style="display:grid;gap:10px;align-content:start">
+        <div class="ctl"><span class="lbl">Asset to protect</span><div class="seg" id="assetSel" role="group" aria-label="Asset"></div></div>
+        <div class="row"><button class="btn" id="pEnc" type="button" aria-pressed="false">Encrypt</button><button class="btn" id="pWm" type="button" aria-pressed="false">Watermark</button><button class="btn" id="pLic" type="button" aria-pressed="false">Clear licence wording</button></div>
+        <button class="btn warn" id="bCopy" type="button">A rival copies it</button>
+        <div id="protRes" aria-live="polite"></div>
+      </div>
+      <div class="copy" id="copy"><span class="note">The copy appears here.</span></div>
+    </div>
+    <h2 style="font-size:1.05rem;margin-top:6px">Replace the old laptop</h2>
+    <div class="devs"><div class="dev" id="devOld"><b>Old office laptop</b><span id="devOldL"></span></div><div aria-hidden="true" style="font:700 1.4rem var(--f-disp);color:var(--muted)">→</div><div class="dev" id="devNew" style="opacity:.4"><b>New laptop + cloud</b><span id="devNewL"></span></div><button class="btn" id="bUpg" type="button">Upgrade</button></div>
+  </section>
+</section>
+<div class="lower">
+  <section class="card pad feed" aria-label="What just happened"><h2>What just happened</h2><ol id="feed"><li class="empty">Change something and the reason shows up here.</li></ol></section>
+  <section class="card pad keys" aria-label="Remember this">
+    <h2>Remember this</h2>
+    <div class="def"><cite>Digital asset</cite>Any text or media file that is formatted into a binary source and that includes the right to use it. Digital files that do not carry this right are not considered digital assets.</div>
+    <div class="spots">
+      <div><b>Two types</b><p>Media assets (images, multimedia) and textual content (documents, websites, graphics).</p></div>
+      <div><b>They last</b><p>Digital assets continue to exist as technology progresses, whatever device they sit on.</p></div>
+      <div><b>Keep them safe</b><p>Unless meant to be free: encoding, encryption or watermarks, carefully worded licences, and clear copyright or IP ownership.</p></div>
+    </div>
+    <details><summary>About this simulation</summary><p>A simplified teaching model. Everest Fashion is a made-up shop based on the study note's fashion retailer case. File names, owners and rights are illustrative.</p></details>
+  </section>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const sleep=ms=>new Promise(r=>setTimeout(r,REDUCE?Math.min(ms,60):ms));
+const rs=n=>"Rs "+Math.round(n).toLocaleString("en-IN");
+const AVA={
+ anita:'<rect width="42" height="42" fill="var(--panel)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="#7a2b3a"/><path d="M17 30l4 6 4-6z" fill="var(--panel)"/><circle cx="21" cy="19" r="8" fill="var(--skin2)"/><path d="M13 19c0-7 4-10 8-10s8 3 8 10c-2-4-4-5-8-5s-6 1-8 5z" fill="var(--hair)"/><circle cx="21" cy="8" r="4" fill="var(--hair)"/>',
+ nisha:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--brand)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 19c-1-8 4-12 9-12s10 3 9 12c-2-4-4-6-9-6s-7 2-9 6z" fill="var(--hair)"/><path d="M12 19v9h3v-8zM30 19v9h-3v-8z" fill="var(--hair)"/><rect x="15" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/><rect x="22" y="16.5" width="5" height="3.5" rx="1.5" fill="none" stroke="var(--ink)" stroke-width="1"/>',
+ sujan:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--blue)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/>',
+ ramesh:'<rect width="42" height="42" fill="var(--brand-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--amber)"/><path d="M17 30l4 5 4-5z" fill="var(--panel)"/><circle cx="21" cy="18" r="8" fill="var(--skin2)"/><path d="M13 16c0-6 4-9 8-9s8 3 8 9c-2-3-4-4-8-4s-6 1-8 4z" fill="var(--hair)"/><path d="M16 23c3 2 7 2 10 0" fill="none" stroke="var(--hair)" stroke-width="1.6"/>',
+ kabita:'<rect width="42" height="42" fill="var(--violet-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--violet)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M11 22c-2-10 4-15 10-15s12 5 10 15c-1-6-4-9-10-9s-9 3-10 9z" fill="var(--hair)"/><path d="M11 22v12h4V20zM31 22v12h-4V20z" fill="var(--hair)"/>',
+ bikash:'<rect width="42" height="42" fill="var(--rose-soft)"/><path d="M6 42c1-9 7-13 15-13s14 4 15 13z" fill="var(--rose)"/><circle cx="21" cy="18" r="8" fill="var(--skin)"/><path d="M12 15c1-6 5-8 9-8s9 2 9 8c-3-2-6-3-9-3s-6 1-9 3z" fill="var(--hair)"/>'
+};
+function ava(k,cls){return `<svg class="ava${cls?" "+cls:""}" viewBox="0 0 42 42" aria-hidden="true">${AVA[k]}</svg>`;}
+function log(v,t,cls){const ol=$("#feed");if(!ol)return;const e=ol.querySelector(".empty");if(e)e.remove();
+  const li=document.createElement("li");if(cls)li.className=cls;li.innerHTML=`<span class="vt">${v}</span>${t}`;ol.prepend(li);while(ol.children.length>5)ol.lastChild.remove();}
+function feedReset(){$("#feed").innerHTML='<li class="empty">Change something and the reason shows up here.</li>';}
+let TOUR_I=-1;
+function tourSetup(TOUR,idle){
+  const go=async i=>{TOUR_I=i;$("#tourNav").hidden=false;$("#tourCt").textContent=`${i+1} / ${TOUR.length}`;$("#capTxt").textContent=TOUR[i].t;
+    $("#tNext").textContent=i===TOUR.length-1?"Start exploring":"Next";$("#tNext").disabled=true;try{await (TOUR[i].a&&TOUR[i].a());}catch(e){console.error(e);}$("#tNext").disabled=false;$("#capTxt").textContent=TOUR[i].t;};
+  const end=()=>{TOUR_I=-1;$("#tourNav").hidden=true;$("#capTxt").textContent=idle;};
+  $("#bStory").onclick=()=>go(0);$("#tNext").onclick=()=>{TOUR_I<TOUR.length-1?go(TOUR_I+1):end();};$("#tSkip").onclick=end;
+  return end;
+}
+function shellSetup(){
+  const ca=$("#capAva");if(ca)ca.outerHTML=ava(ca.dataset.k);
+  $$("[data-ava]").forEach(e=>{e.outerHTML=ava(e.dataset.ava);});
+  $("#bClass").onclick=e=>{const on=document.body.classList.toggle("class");e.currentTarget.setAttribute("aria-pressed",on);};
+  $("#bFull").onclick=()=>{try{const l=$("#lab");if(document.fullscreenElement)document.exitFullscreen();else l.requestFullscreen&&l.requestFullscreen().catch(()=>{});}catch(e){}};
+}
+function cap(t){if(TOUR_I<0)$("#capTxt").textContent=t;}
+function movePath(d,col,ms,r){return new Promise(res=>{const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill","none");
+  const svg=$("#dots");svg.appendChild(p);const L=p.getTotalLength(),c=document.createElementNS(NS,"circle");c.setAttribute("r",r||6);c.setAttribute("fill",col);c.setAttribute("stroke","var(--panel)");c.setAttribute("stroke-width",2);svg.appendChild(c);
+  const t0=performance.now(),dur=REDUCE?40:ms;const step=now=>{const k=Math.min(1,(now-t0)/dur);const pt=p.getPointAtLength(k*L);c.setAttribute("cx",pt.x);c.setAttribute("cy",pt.y);
+  if(k<1)requestAnimationFrame(step);else{c.remove();p.remove();res();}};requestAnimationFrame(step);});}
+
+const F0=[
+ {id:1,n:"Winter campaign photo",ext:"JPG",kind:"media",col:"var(--violet)",right:true,who:"Shot by Everest's own photographer"},
+ {id:2,n:"Lookbook video",ext:"MP4",kind:"media",col:"var(--violet)",right:true,who:"Made by a hired agency, rights bought"},
+ {id:3,n:"Bikash's Instagram outfit photo",ext:"JPG",kind:"media",col:"var(--violet)",right:false,who:"Saved from Instagram. Bikash never agreed"},
+ {id:4,n:"Ad background song",ext:"MP3",kind:"media",col:"var(--violet)",right:false,who:"Downloaded. No music licence"},
+ {id:5,n:"Annual sales report",ext:"PDF",kind:"text",col:"var(--blue)",right:true,who:"Written by the finance team"},
+ {id:6,n:"Store launch presentation",ext:"PPTX",kind:"text",col:"var(--blue)",right:true,who:"Made in-house"},
+ {id:7,n:"Website homepage",ext:"HTML",kind:"text",col:"var(--blue)",right:true,who:"Built by Everest's web team"},
+ {id:8,n:"Logo graphic",ext:"SVG",kind:"text",col:"var(--blue)",right:true,who:"Designed for Everest, copyright assigned"}
+];
+let F=[],placed=[],busy=false,prot={enc:false,wm:false,lic:false},sel=null;
+function reset(){F=F0.map(f=>Object.assign({},f));placed=[];prot={enc:false,wm:false,lic:false};sel=null;render();renderBins();renderProt();$("#copy").innerHTML='<span class="note">The copy appears here.</span>';$("#protRes").innerHTML="";
+  $("#devOld").classList.remove("dead");$("#devNew").style.opacity=.4;$("#devNewL").textContent="";$("#stamp").textContent="SCANNER";}
+function render(){$("#folder").innerHTML=F.map(f=>`<div class="file${placed.find(p=>p.id===f.id)?" gone":""}" id="f-${f.id}"><div class="row"><div class="ic" style="background:${f.col}">${f.ext}</div><div style="min-width:0;flex:1"><b>${f.n}</b><div class="meta">.${f.ext.toLowerCase()} · binary</div></div></div><button type="button" class="rights" data-id="${f.id}" aria-pressed="${f.right}">${f.right?"✓ Right to use: yes":"✗ Right to use: no"}<br><span class="note" style="font-size:.95em">${f.right?f.who:f.who}</span></button></div>`).join("");
+  $$(".rights").forEach(b=>b.onclick=()=>{const f=F.find(x=>x.id===+b.dataset.id);f.right=!f.right;
+    if(f.id===3)f.who=f.right?"Bikash agreed in writing":"Saved from Instagram. Bikash never agreed";
+    if(f.id===4)f.who=f.right?"Music licence bought":"Downloaded. No music licence";
+    if(f.id<=2||f.id>=5)f.who=f.right?F0.find(x=>x.id===f.id).who:"Rights not cleared";
+    render();log("Rights",`${f.n}: right to use ${f.right?"added":"removed"}. Run the scanner to see what that changes.`);});}
+function renderBins(){["media","text","none"].forEach(k=>{const b=$("#b-"+k);b.querySelectorAll(".chipf").forEach(e=>e.remove());
+  placed.filter(p=>p.bin===k).forEach(p=>b.insertAdjacentHTML("beforeend",`<div class="chipf">${p.n}<span class="pt">${k==="none"?"":"ASSET"}</span></div>`));});
+  $("#devOldL").textContent=placed.filter(p=>p.bin!=="none").length+" assets";}
+function fly(fromEl,toEl){return new Promise(res=>{if(REDUCE||!fromEl||!toEl){res();return;}const a=fromEl.getBoundingClientRect(),b=toEl.getBoundingClientRect();const g=fromEl.cloneNode(true);g.classList.add("fly");
+  Object.assign(g.style,{left:a.left+"px",top:a.top+"px",width:a.width+"px",margin:0});document.body.appendChild(g);fromEl.classList.add("gone");
+  g.animate([{transform:"none"},{transform:`translate(${b.left+b.width/2-a.left-a.width/2}px,${b.top+30-a.top}px) scale(.35)`,opacity:.3}],{duration:450,easing:"cubic-bezier(.3,.7,.2,1)"}).onfinish=()=>{g.remove();res();};});}
+async function scan(){
+  if(busy)return;busy=true;$("#bScan").disabled=true;placed=[];renderBins();render();
+  const gate=$("#gate");
+  for(const f of F){
+    const el=$("#f-"+f.id);gate.classList.add("scan");$("#stamp").textContent=f.ext;await fly(el,gate);await sleep(220);
+    const bin=f.right?f.kind:"none";gate.classList.remove("scan");$("#stamp").textContent=f.right?"ASSET":"NOT ASSET";$("#stamp").style.color=f.right?"var(--ok)":"var(--bad)";
+    await sleep(200);const tmp=document.createElement("div");tmp.className="file";tmp.style.cssText="position:fixed;left:-9999px";tmp.innerHTML=`<b>${f.n}</b>`;document.body.appendChild(tmp);
+    const r=gate.getBoundingClientRect();Object.assign(tmp.style,{left:r.left+"px",top:r.top+"px",width:"160px"});await fly(tmp,$("#b-"+bin));tmp.remove();
+    placed.push({id:f.id,n:f.n,bin});renderBins();$("#stamp").style.color="";
+  }
+  $("#stamp").textContent="DONE";const n=placed.filter(p=>p.bin!=="none").length;
+  cap(`${n} digital assets, ${8-n} plain files. Same file formats, but only files with the right to use them count.`);
+  log("Scanner",`${n} of 8 files are digital assets. ${8-n?"The rest are just files, because Everest Fashion has no right to use them.":"Every file carried the right to use it."}`,8-n?"bad":"good");
+  renderProt();busy=false;$("#bScan").disabled=false;
+}
+function renderProt(){const assets=placed.filter(p=>p.bin!=="none");
+  if(!assets.length){$("#assetSel").innerHTML='<span class="note" style="padding:8px">Run the scanner first.</span>';return;}
+  if(!sel||!assets.find(a=>a.id===sel))sel=assets[0].id;
+  $("#assetSel").innerHTML=assets.map(a=>`<button type="button" data-id="${a.id}" aria-pressed="${a.id===sel}">${a.n}</button>`).join("");
+  $$("#assetSel button").forEach(b=>b.onclick=()=>{sel=+b.dataset.id;renderProt();});}
+["enc","wm","lic"].forEach(k=>{const id={enc:"#pEnc",wm:"#pWm",lic:"#pLic"}[k];$(id).onclick=e=>{prot[k]=!prot[k];e.currentTarget.setAttribute("aria-pressed",prot[k]);}});
+$("#bCopy").onclick=()=>{
+  const a=placed.find(p=>p.id===sel);if(!a){$("#protRes").innerHTML='<div class="result mid">Run the scanner first, then pick an asset.</div>';return;}
+  const f=F.find(x=>x.id===a.id),media=f.kind==="media";
+  let html=media?`<svg viewBox="0 0 300 170" width="100%" height="100%" preserveAspectRatio="xMidYMid slice"><rect width="300" height="170" fill="var(--violet-soft)"/><circle cx="230" cy="40" r="18" fill="var(--amber)"/><path d="M0 170l90-90 60 60 40-40 110 70z" fill="var(--violet)"/></svg>`
+    :`<div style="padding:14px;font:500 .8rem var(--f-mono);line-height:1.6;color:var(--ink);width:100%">${f.n}<br>Sales grew 18% in Pokhara...<br>Q3 margin 41%...</div>`;
+  if(prot.enc)html=`<div style="padding:14px;font:500 .8rem var(--f-mono);color:var(--muted);word-break:break-all">8f2a·ÿ91c€0x4d··7e1b3c9a0f…<br>Encrypted. Unreadable without the key.</div>`;
+  $("#copy").innerHTML=html+(prot.wm&&!prot.enc?'<div class="wm">© EVEREST FASHION</div>':"");
+  const parts=[];if(prot.enc)parts.push("encryption makes the copy unreadable");if(prot.wm)parts.push("the watermark shows who owns it");if(prot.lic)parts.push("the licence wording makes clear any use is not allowed, so Everest Fashion can act");
+  $("#protRes").innerHTML=parts.length?`<div class="result ok"><b>Protected.</b> ${(t=>t[0].toUpperCase()+t.slice(1))(parts.join("; "))}.</div>`:`<div class="result bad"><b>Unprotected.</b> The rival now has a perfect copy and nothing shows who owns it.</div>`;
+  log("Copy",parts.length?"Protection worked: "+parts.join("; ")+".":"An unprotected asset was copied freely.",parts.length?"good":"bad");};
+$("#bUpg").onclick=async()=>{const n=placed.filter(p=>p.bin!=="none").length;if(!n){$("#protRes").innerHTML='<div class="result mid">Run the scanner first.</div>';return;}
+  $("#devOld").classList.add("dead");await sleep(400);$("#devNew").style.opacity=1;$("#devNewL").textContent=n+" assets, all still there";
+  cap("The old laptop is gone, but the assets are not. Digital assets continue to exist as technology progresses.");log("Upgrade","Assets moved to the new device and the cloud. They outlive any one device.","good");};
+$("#bScan").onclick=scan;
+const endTour=tourSetup([
+ {t:"Everest Fashion's marketing folder: photos, a video, a song, reports, the website and the logo. All digital files.",a:()=>{}},
+ {t:"But a file is only a digital asset if it is binary and comes with the right to use it. Watch the scanner check each one.",a:()=>scan()},
+ {t:"Bikash's photo and the downloaded song failed: no right to use them. Get permission, flip the switch, and scan again.",a:()=>{}},
+ {t:"Your turn. Then protect an asset below and let a rival copy it.",a:()=>{}}
+],"Set the rights on each file, then run the scanner.");
+$("#bReset").onclick=()=>{if(busy)return;reset();feedReset();endTour();};
+shellSetup();reset();
+})();
+</script>
+
+</body>
+</html>
